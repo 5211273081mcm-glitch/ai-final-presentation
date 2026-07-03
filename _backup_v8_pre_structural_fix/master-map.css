@@ -1,0 +1,767 @@
+/* ═══ 总纲页 v7.7 · 1920×1080 固定画布 ═══ */
+
+.mmap-v77 {
+  --planet-left-x: 285px;
+  --planet-right-x: 1635px;
+  --planet-y: 565px;
+  --planet-d: 255px;
+  --planet-r: calc(var(--planet-d) / 2);
+  --stage-1-x: 720px;
+  --stage-2-x: 960px;
+  --stage-3-x: 1200px;
+  --stage-y: 565px;
+  --ai-copy-y: 400px;
+  --pain-copy-y: 700px;
+  --ai-route-apex-y: 285px;
+  --current-route-apex-y: 835px;
+  --mmap-safe-l: 96px;
+  --mmap-safe-r: 1824px;
+  --mmap-safe-t: 92px;
+  --mmap-safe-b: 1010px;
+  --color-ai: #48D7FF;
+  --color-pain-route: rgba(240, 240, 250, 0.26);
+  --z-bg: 0;
+  --z-routes: 10;
+  --z-planets: 20;
+  --z-copy: 30;
+  --z-stages: 40;
+  --z-title: 50;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.master-map-canvas {
+  width: 1920px;
+  height: 1080px;
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+  font-family: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+/* ── 背景 ── */
+.master-map-canvas::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: var(--z-bg);
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 19% 52%, rgba(255, 111, 61, 0.07), transparent 22%),
+    radial-gradient(circle at 81% 52%, rgba(72, 215, 255, 0.06), transparent 22%);
+}
+
+/* ── 标题区 z-50 ── */
+.mmap-v77 .mmap-hd {
+  position: absolute;
+  left: 96px;
+  top: 128px;
+  max-width: 1120px;
+  z-index: var(--z-title);
+  padding: 0;
+}
+
+.mmap-v77 .mmap-hd .spx-display {
+  font-size: 60px;
+  font-weight: 700;
+  line-height: 1.08;
+  letter-spacing: 0.02em;
+  color: #F0F0FA;
+  margin: 0 0 10px;
+  white-space: nowrap;
+  width: 1120px;
+  overflow: visible;
+}
+
+.mmap-v77 .mmap-subtitle {
+  font-size: 26px;
+  font-weight: 500;
+  color: rgba(240, 240, 250, 0.72);
+  margin: 0;
+  white-space: nowrap;
+}
+
+/* ── SVG 路径层 z-10 ── */
+.master-map-routes {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: var(--z-routes);
+  pointer-events: none;
+  overflow: visible;
+}
+
+.route-spine {
+  fill: none;
+  stroke: rgba(240, 240, 250, 0.22);
+  stroke-width: 2;
+  stroke-dasharray: 1200;
+  stroke-dashoffset: 1200;
+  transition: stroke-dashoffset 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.route-ai {
+  fill: none;
+  stroke: var(--color-ai);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 6px rgba(72, 215, 255, 0.28));
+  stroke-dasharray: 2000;
+  stroke-dashoffset: 2000;
+  transition: stroke-dashoffset 1.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.route-current {
+  fill: none;
+  stroke: var(--color-pain-route);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-dasharray: 800;
+  stroke-dashoffset: 800;
+  transition: stroke-dashoffset 1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.route-current-b { transition-delay: 0.15s; }
+.route-current-c { transition-delay: 0.3s; }
+.route-current-d { transition-delay: 0.45s; }
+
+/* Stage visibility for routes */
+.mmap-v77[data-stage="1"] .route-spine,
+.mmap-v77[data-stage="2"] .route-spine,
+.mmap-v77[data-stage="3"] .route-spine,
+.mmap-v77[data-stage="4"] .route-spine,
+.mmap-v77[data-stage="5"] .route-spine,
+.mmap-v77.mmap-complete .route-spine {
+  stroke-dashoffset: 0;
+}
+
+.mmap-v77[data-stage="2"] .route-current,
+.mmap-v77[data-stage="3"] .route-current,
+.mmap-v77[data-stage="4"] .route-current,
+.mmap-v77[data-stage="5"] .route-current,
+.mmap-v77.mmap-complete .route-current {
+  stroke-dashoffset: 0;
+}
+
+.mmap-v77[data-stage="3"] .route-ai,
+.mmap-v77[data-stage="4"] .route-ai,
+.mmap-v77[data-stage="5"] .route-ai,
+.mmap-v77.mmap-complete .route-ai {
+  stroke-dashoffset: 0;
+}
+
+/* ── 路径标签 ── */
+.route-label {
+  position: absolute;
+  z-index: var(--z-copy);
+  font-size: 19px;
+  font-weight: 600;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  pointer-events: none;
+}
+
+.route-label::before {
+  content: '';
+  position: absolute;
+  inset: -6px -14px;
+  background: #000;
+  z-index: -1;
+}
+
+.route-label-ai {
+  left: 418px;
+  top: 262px;
+  color: var(--color-ai);
+}
+
+.route-label-pain {
+  left: 406px;
+  top: 812px;
+  color: rgba(240, 240, 250, 0.52);
+  font-weight: 500;
+}
+
+.mmap-v77[data-stage="3"] .route-label-ai,
+.mmap-v77[data-stage="4"] .route-label-ai,
+.mmap-v77[data-stage="5"] .route-label-ai,
+.mmap-v77.mmap-complete .route-label-ai {
+  opacity: 1;
+}
+
+.mmap-v77[data-stage="2"] .route-label-pain,
+.mmap-v77[data-stage="3"] .route-label-pain,
+.mmap-v77[data-stage="4"] .route-label-pain,
+.mmap-v77[data-stage="5"] .route-label-pain,
+.mmap-v77.mmap-complete .route-label-pain {
+  opacity: 1;
+}
+
+/* ── 上下文案 z-30 ── */
+.route-copy {
+  position: absolute;
+  z-index: var(--z-copy);
+  text-align: center;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  transition: opacity 0.55s ease, transform 0.55s ease;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.route-copy .copy-line1 {
+  display: block;
+  font-size: 21px;
+  font-weight: 500;
+  line-height: 1.3;
+  margin-bottom: 9px;
+}
+
+.route-copy .copy-line2 {
+  display: block;
+  font-size: 19px;
+  font-weight: 400;
+  line-height: 1.3;
+}
+
+.ai-copy .copy-line1 { color: #F0F0FA; }
+.ai-copy .copy-line2 { color: rgba(240, 240, 250, 0.66); }
+
+.pain-copy .copy-line1 { color: rgba(240, 240, 250, 0.74); }
+.pain-copy .copy-line2 { color: rgba(240, 240, 250, 0.42); }
+
+.ai-copy[data-col="0"] { left: var(--stage-1-x); top: var(--ai-copy-y); }
+.ai-copy[data-col="1"] { left: var(--stage-2-x); top: var(--ai-copy-y); }
+.ai-copy[data-col="2"] { left: var(--stage-3-x); top: var(--ai-copy-y); }
+
+.pain-copy[data-col="0"] { left: var(--stage-1-x); top: var(--pain-copy-y); }
+.pain-copy[data-col="1"] { left: var(--stage-2-x); top: var(--pain-copy-y); }
+.pain-copy[data-col="2"] { left: var(--stage-3-x); top: var(--pain-copy-y); }
+
+.mmap-v77[data-stage="3"] .ai-copy[data-col="0"],
+.mmap-v77.mmap-complete .ai-copy[data-col="0"] {
+  opacity: 1;
+  transition-delay: 0.1s;
+}
+.mmap-v77[data-stage="3"] .ai-copy[data-col="1"],
+.mmap-v77.mmap-complete .ai-copy[data-col="1"] {
+  opacity: 1;
+  transition-delay: 0.35s;
+}
+.mmap-v77[data-stage="3"] .ai-copy[data-col="2"],
+.mmap-v77.mmap-complete .ai-copy[data-col="2"] {
+  opacity: 1;
+  transition-delay: 0.6s;
+}
+
+.mmap-v77[data-stage="4"] .ai-copy,
+.mmap-v77[data-stage="5"] .ai-copy,
+.mmap-v77.mmap-complete .ai-copy {
+  opacity: 1;
+}
+
+.mmap-v77[data-stage="2"] .pain-copy[data-col="0"],
+.mmap-v77.mmap-complete .pain-copy[data-col="0"] {
+  opacity: 1;
+  transition-delay: 0.1s;
+}
+.mmap-v77[data-stage="2"] .pain-copy[data-col="1"],
+.mmap-v77.mmap-complete .pain-copy[data-col="1"] {
+  opacity: 1;
+  transition-delay: 0.35s;
+}
+.mmap-v77[data-stage="2"] .pain-copy[data-col="2"],
+.mmap-v77.mmap-complete .pain-copy[data-col="2"] {
+  opacity: 1;
+  transition-delay: 0.6s;
+}
+
+.mmap-v77[data-stage="3"] .pain-copy,
+.mmap-v77[data-stage="4"] .pain-copy,
+.mmap-v77[data-stage="5"] .pain-copy,
+.mmap-v77.mmap-complete .pain-copy {
+  opacity: 1;
+}
+
+/* ── 星球 z-20 ── */
+.planet-node {
+  position: absolute;
+  z-index: var(--z-planets);
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  transition: opacity 0.7s ease;
+}
+
+.planet-node.left {
+  left: var(--planet-left-x);
+  top: var(--planet-y);
+}
+
+.planet-node.right {
+  left: var(--planet-right-x);
+  top: var(--planet-y);
+}
+
+.mmap-v77[data-stage="0"] .planet-node.left,
+.mmap-v77[data-stage="1"] .planet-node.left,
+.mmap-v77[data-stage="2"] .planet-node.left,
+.mmap-v77[data-stage="3"] .planet-node.left,
+.mmap-v77[data-stage="4"] .planet-node.left,
+.mmap-v77[data-stage="5"] .planet-node.left,
+.mmap-v77.mmap-complete .planet-node.left,
+.mmap-v77.mmap-complete .planet-node.right {
+  opacity: 1;
+}
+
+.mmap-v77[data-stage="0"] .planet-node.right,
+.mmap-v77[data-stage="1"] .planet-node.right,
+.mmap-v77[data-stage="2"] .planet-node.right,
+.mmap-v77[data-stage="3"] .planet-node.right,
+.mmap-v77[data-stage="4"] .planet-node.right,
+.mmap-v77[data-stage="5"] .planet-node.right {
+  opacity: 1;
+}
+
+.planet-wrap {
+  position: relative;
+  width: var(--planet-d);
+  height: var(--planet-d);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.planet-sphere {
+  width: calc(var(--planet-d) * 0.92);
+  height: calc(var(--planet-d) * 0.92);
+  border-radius: 50%;
+  position: relative;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background: #000;
+  box-shadow:
+    inset -28px -34px 48px rgba(0, 0, 0, 0.85),
+    0 0 40px rgba(240, 240, 250, 0.04);
+  animation: planet-breathe 8s ease-in-out infinite;
+}
+
+.planet-node.left .planet-sphere {
+  box-shadow:
+    inset -28px -34px 48px rgba(0, 0, 0, 0.85),
+    0 0 34px rgba(255, 120, 62, 0.18);
+}
+
+.planet-node.right .planet-sphere {
+  opacity: 0.55;
+  filter: saturate(0.5);
+  transition: opacity 1s ease, filter 1s ease, box-shadow 1s ease;
+}
+
+.planet-node.right.lit .planet-sphere,
+.mmap-v77[data-stage="4"] .planet-node.right .planet-sphere,
+.mmap-v77[data-stage="5"] .planet-node.right .planet-sphere,
+.mmap-v77.mmap-complete .planet-node.right .planet-sphere {
+  opacity: 1;
+  filter: saturate(1);
+  box-shadow:
+    inset -28px -34px 48px rgba(0, 0, 0, 0.85),
+    0 0 50px rgba(72, 215, 255, 0.22);
+}
+
+.planet-texture {
+  position: absolute;
+  inset: -6%;
+  width: 112%;
+  height: 112%;
+  object-fit: cover;
+  opacity: 0.92;
+  filter: brightness(1.15) contrast(1.1) saturate(1.1);
+  animation: planet-texture-drift 90s linear infinite;
+}
+
+.planet-node.right .planet-texture {
+  animation-direction: reverse;
+  animation-duration: 100s;
+}
+
+.planet-sphere::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  z-index: 3;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 26% 20%, rgba(255, 255, 255, 0.32), transparent 18%),
+    radial-gradient(circle at 76% 74%, rgba(0, 0, 0, 0.65), transparent 48%);
+  mix-blend-mode: screen;
+  opacity: 0.55;
+}
+
+.planet-sphere::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  z-index: 4;
+  pointer-events: none;
+  box-shadow:
+    inset -30px -36px 50px rgba(0, 0, 0, 0.55),
+    inset 12px 10px 22px rgba(255, 255, 255, 0.06);
+}
+
+.planet-core-title {
+  position: relative;
+  z-index: 5;
+  font-size: 36px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+}
+
+.saturn-ring {
+  position: absolute;
+  left: 50%;
+  top: 54%;
+  width: calc(var(--planet-d) * 1.38);
+  height: calc(var(--planet-d) * 0.32);
+  transform: translate(-50%, -50%) rotateZ(-6deg);
+  pointer-events: none;
+  overflow: visible;
+}
+
+.saturn-ring-back {
+  z-index: 1;
+  opacity: 0.28;
+}
+
+.saturn-ring-front {
+  z-index: 6;
+}
+
+.saturn-ring ellipse {
+  fill: none;
+  stroke-width: 1.5;
+  vector-effect: non-scaling-stroke;
+}
+
+.planet-node.left .saturn-ring ellipse {
+  stroke: rgba(255, 178, 126, 0.75);
+}
+
+.planet-node.right .saturn-ring ellipse {
+  stroke: rgba(72, 215, 255, 0.65);
+}
+
+/* ── 中央阶段 z-40 ── */
+.stage-node {
+  position: absolute;
+  z-index: var(--z-stages);
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  opacity: 0;
+  transition: opacity 0.5s ease, box-shadow 0.5s ease;
+}
+
+.stage-node[data-col="0"] { left: var(--stage-1-x); top: var(--stage-y); }
+.stage-node[data-col="1"] { left: var(--stage-2-x); top: var(--stage-y); }
+.stage-node[data-col="2"] { left: var(--stage-3-x); top: var(--stage-y); }
+
+.stage-num {
+  font-family: "JetBrains Mono", "Barlow Condensed", monospace;
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(240, 240, 250, 0.28);
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+}
+
+.stage-name {
+  font-size: 28px;
+  font-weight: 600;
+  color: #F0F0FA;
+  white-space: nowrap;
+  letter-spacing: 0.03em;
+}
+
+.mmap-v77[data-stage="1"] .stage-node[data-col="0"] {
+  opacity: 1;
+  transition-delay: 0.25s;
+}
+.mmap-v77[data-stage="1"] .stage-node[data-col="1"] {
+  opacity: 1;
+  transition-delay: 0.5s;
+}
+.mmap-v77[data-stage="1"] .stage-node[data-col="2"] {
+  opacity: 1;
+  transition-delay: 0.75s;
+}
+
+.mmap-v77[data-stage="2"] .stage-node,
+.mmap-v77[data-stage="3"] .stage-node,
+.mmap-v77[data-stage="4"] .stage-node,
+.mmap-v77[data-stage="5"] .stage-node,
+.mmap-v77.mmap-complete .stage-node {
+  opacity: 1;
+  transition-delay: 0s;
+}
+
+.mmap-v77[data-stage="4"] .stage-node.highlight,
+.mmap-v77.mmap-complete .stage-node.highlight {
+  text-shadow: 0 0 20px rgba(72, 215, 255, 0.35);
+}
+
+.mmap-v77[data-stage="4"] .stage-node[data-col="0"].highlight { transition-delay: 0s; }
+.mmap-v77[data-stage="4"] .stage-node[data-col="1"].highlight { transition-delay: 0.25s; }
+.mmap-v77[data-stage="4"] .stage-node[data-col="2"].highlight { transition-delay: 0.5s; }
+
+.mmap-v77[data-stage="4"] .stage-node .stage-name,
+.mmap-v77.mmap-complete .stage-node.highlight .stage-name {
+  color: var(--color-ai);
+}
+
+/* ── 粒子 ── */
+.mmap-particles {
+  position: absolute;
+  inset: 0;
+  z-index: calc(var(--z-copy) - 1);
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.particle {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  opacity: 0;
+}
+
+.particle.manual {
+  background: rgba(240, 240, 250, 0.4);
+  box-shadow: 0 0 6px rgba(240, 240, 250, 0.2);
+}
+
+.particle.ai {
+  background: var(--color-ai);
+  box-shadow: 0 0 10px rgba(72, 215, 255, 0.5);
+}
+
+.mmap-v77.anim-pain .particle.manual {
+  animation: particle-stall-once 4s ease-in-out 1 forwards;
+}
+
+.mmap-v77.anim-pain .particle.manual:nth-child(2) { animation-delay: 0.6s; }
+.mmap-v77.anim-pain .particle.manual:nth-child(3) { animation-delay: 1.2s; }
+
+.mmap-v77.anim-ai .particle.ai {
+  animation: particle-flow-once 2.8s ease-in-out 1 forwards;
+}
+
+.mmap-v77.anim-ai .particle.ai:nth-child(2) { animation-delay: 0.4s; }
+.mmap-v77.anim-ai .particle.ai:nth-child(3) { animation-delay: 0.8s; }
+
+@keyframes particle-stall-once {
+  0% { left: 14%; top: 72%; opacity: 0; }
+  10% { opacity: 0.5; }
+  30% { left: 32%; top: 68%; opacity: 0.55; }
+  45% { left: 38%; top: 66%; opacity: 0.3; }
+  55% { left: 40%; top: 66%; opacity: 0.15; }
+  70% { left: 42%; top: 66%; opacity: 0.08; }
+  100% { left: 44%; top: 66%; opacity: 0; }
+}
+
+@keyframes particle-flow-once {
+  0% { left: 14%; top: 28%; opacity: 0; }
+  8% { opacity: 0.9; }
+  92% { opacity: 0.85; }
+  100% { left: 86%; top: 28%; opacity: 0; }
+}
+
+@keyframes planet-breathe {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.008); }
+}
+
+@keyframes planet-texture-drift {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* ── 底部总结 ── */
+.mmap-v77 .mmap-ft {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 72px;
+  z-index: var(--z-title);
+  text-align: center;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+  padding: 0 96px;
+}
+
+.mmap-v77 .mmap-ft p {
+  font-size: 32px;
+  font-weight: 500;
+  color: rgba(240, 240, 250, 0.82);
+  margin: 0;
+  white-space: nowrap;
+  letter-spacing: 0.02em;
+}
+
+.mmap-v77 .mmap-ft em {
+  font-style: normal;
+  color: var(--color-ai);
+  font-weight: 600;
+}
+
+.mmap-v77[data-stage="5"] .mmap-ft,
+.mmap-v77.mmap-complete .mmap-ft {
+  opacity: 1;
+}
+
+/* ── 紧凑 / 完成态 ── */
+.mmap-compact .mmap-hd { display: none; }
+.mmap-compact .mmap-ft { display: none; }
+
+.mmap-complete .route-spine,
+.mmap-complete .route-ai,
+.mmap-complete .route-current,
+.mmap-complete .route-label,
+.mmap-complete .route-copy,
+.mmap-complete .stage-node,
+.mmap-complete .planet-node,
+.mmap-complete .mmap-ft {
+  opacity: 1;
+  stroke-dashoffset: 0;
+}
+
+.mmap-complete .stage-node .stage-name {
+  color: var(--color-ai);
+}
+
+/* ── 顶部框架弱化（总纲页） ── */
+body.on-master-map .deck-chrome {
+  opacity: 0.48;
+}
+
+body.on-master-map .deck-chrome .brand-mini,
+body.on-master-map .deck-chrome .chapter-nav,
+body.on-master-map .deck-chrome #clock {
+  font-size: 13px;
+}
+
+body.on-master-map .deck-chrome #clock {
+  color: rgba(240, 240, 250, 0.38);
+}
+
+body.on-master-map .cn-seg.active .cn-code,
+body.on-master-map .cn-seg.active .cn-label {
+  color: rgba(240, 240, 250, 0.72);
+}
+
+/* ── 调试模式 ── */
+.mmap-debug {
+  display: none;
+  position: absolute;
+  inset: 0;
+  z-index: 100;
+  pointer-events: none;
+}
+
+.mmap-v77.debug .mmap-debug {
+  display: block;
+}
+
+.mmap-debug .debug-safe {
+  position: absolute;
+  left: var(--mmap-safe-l);
+  top: var(--mmap-safe-t);
+  width: calc(var(--mmap-safe-r) - var(--mmap-safe-l));
+  height: calc(var(--mmap-safe-b) - var(--mmap-safe-t));
+  border: 1px dashed rgba(255, 80, 80, 0.5);
+}
+
+.mmap-debug .debug-line-v {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: rgba(255, 200, 0, 0.35);
+}
+
+.mmap-debug .debug-line-v[data-x="720"] { left: 720px; }
+.mmap-debug .debug-line-v[data-x="960"] { left: 960px; }
+.mmap-debug .debug-line-v[data-x="1200"] { left: 1200px; }
+
+.mmap-debug .debug-box {
+  position: absolute;
+  border: 1px solid rgba(0, 255, 120, 0.45);
+  transform: translate(-50%, -50%);
+}
+
+.mmap-debug .debug-box.planet-left {
+  left: var(--planet-left-x);
+  top: var(--planet-y);
+  width: var(--planet-d);
+  height: var(--planet-d);
+  border-radius: 50%;
+}
+
+.mmap-debug .debug-box.planet-right {
+  left: var(--planet-right-x);
+  top: var(--planet-y);
+  width: var(--planet-d);
+  height: var(--planet-d);
+  border-radius: 50%;
+}
+
+.mmap-debug .debug-box.stage {
+  width: 140px;
+  height: 80px;
+}
+
+.mmap-debug .debug-box.stage[data-col="0"] { left: var(--stage-1-x); top: var(--stage-y); }
+.mmap-debug .debug-box.stage[data-col="1"] { left: var(--stage-2-x); top: var(--stage-y); }
+.mmap-debug .debug-box.stage[data-col="2"] { left: var(--stage-3-x); top: var(--stage-y); }
+
+.mmap-debug .debug-zone {
+  position: absolute;
+  left: 600px;
+  right: 600px;
+  border: 1px dashed rgba(72, 215, 255, 0.3);
+  pointer-events: none;
+}
+
+.mmap-debug .debug-zone.ai-zone {
+  top: 340px;
+  height: 80px;
+}
+
+.mmap-debug .debug-zone.pain-zone {
+  top: 660px;
+  height: 80px;
+}
+
+/* hide legacy elements if any leak through */
+.mmap-v77 .orbit-band,
+.mmap-v77 .mmap-stage-card,
+.mmap-v77 .bridge-arrow,
+.mmap-v77 .distance-compress,
+.mmap-v77 .ring-copy {
+  display: none !important;
+}

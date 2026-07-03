@@ -1,0 +1,225 @@
+{
+  "meta": {
+    "title": "用AI重构舆情工作范式",
+    "evidenceLabel": "结合AI成果演示",
+    "totalMinutes": 10
+  },
+  "pages": [
+    {
+      "id": 1,
+      "chapter": "开场",
+      "beats": [
+        {
+          "hero": "当风险已经被看见",
+          "sub": "为什么仍然可能失控？",
+          "support": "舆情真正的难点，不是信息不足，而是信息无法及时形成统一判断和行动。",
+          "visual": "fragments"
+        },
+        {
+          "hero": "知道 ≠ 行动",
+          "sub": "信息散落在豆瓣、大秘书、业务群、社交媒体……彼此无法连接。",
+          "visual": "disconnect"
+        },
+        {
+          "hero": "AI重构的价值",
+          "sub": "缩短从「知道风险」到「推动行动」的距离",
+          "visual": "bridge",
+          "bridge": "接下来，用一个真实案例说明：一条主播争议，如何升级为公司级风险。"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "chapter": "案例背景",
+      "hasEvidence": true,
+      "evidenceIntro": "此时可打开「结合AI成果演示」——展示豆瓣采集、群预警、趋势视图",
+      "beats": [
+        {
+          "hero": "一条主播争议",
+          "sub": "如何升级为公司级风险",
+          "support": "年初姜添、萨满相关舆情——重点不是八卦，是风险传导。",
+          "visual": "title"
+        },
+        {
+          "hero": "风险升级链",
+          "sub": "",
+          "visual": "timeline",
+          "timeline": [
+            "早期敏感信号",
+            "粉圈集中扩散",
+            "举报路径形成",
+            "平台与监管介入",
+            "升级为公司级影响"
+          ],
+          "activeStep": 4
+        },
+        {
+          "hero": "我们看见了信号",
+          "sub": "但距离统一行动，仍然很远",
+          "visual": "contrast",
+          "left": { "title": "已经做到", "items": ["豆瓣实时采集", "飞书同步", "群机器人预警", "团队提前感知"] },
+          "right": { "title": "仍然存在的距离", "items": ["多渠道人工关联", "内容人工整理", "责任角色不清晰", "跨部门靠人工推动"] },
+          "evidenceCue": true,
+          "bridge": "问题的本质：不是缺工具，而是缺一条贯通的工作链。"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "chapter": "工作链",
+      "beats": [
+        {
+          "hero": "AI重构的不是一个工具",
+          "sub": "而是整条舆情工作链",
+          "visual": "title"
+        },
+        {
+          "hero": "01 智能感知",
+          "sub": "豆瓣 · 评论 · 大秘书私信 · 业务反馈",
+          "tag": "已运行",
+          "visual": "chain-single",
+          "chainIndex": 0
+        },
+        {
+          "hero": "02 智能研判",
+          "sub": "识别主体 · 提炼诉求 · 归并事件 · 判断高敏",
+          "tag": "已运行",
+          "visual": "chain-single",
+          "chainIndex": 1
+        },
+        {
+          "hero": "03 行动协同",
+          "sub": "双重预警 · 飞书推送 · 责任分发 · 介入跟踪",
+          "tag": "接通中",
+          "visual": "chain-single",
+          "chainIndex": 2
+        },
+        {
+          "hero": "04 风险沉淀",
+          "sub": "17类目 · 204场景 · SOP · 决策支持",
+          "tag": "持续建设",
+          "visual": "chain-single",
+          "chainIndex": 3
+        },
+        {
+          "hero": "AI聚合提醒，人核验决策",
+          "sub": "数据 × 智能研判 × 标准流程 × 决策协同",
+          "visual": "formula",
+          "bridge": "下面进入现场演示：一条高敏投诉，如何形成事件。"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "chapter": "现场演示",
+      "hasEvidence": true,
+      "evidenceIntro": "演示后可打开「结合AI成果演示」——原始私信、OCR、AI解析字段",
+      "beats": [
+        {
+          "hero": "现场演示",
+          "sub": "一条高敏投诉如何形成事件",
+          "support": "九叔—哈哈解绑及健康高敏争议 · 确定性仿真",
+          "tag": "基于真实业务流程",
+          "visual": "demo-title"
+        },
+        {
+          "hero": "原始信息流入",
+          "sub": "大秘书私信持续进入",
+          "visual": "demo-messages",
+          "stat": "8 条消息 · 4 个会话"
+        },
+        {
+          "hero": "AI结构化解析",
+          "sub": "非结构化私信 → 可执行风险字段",
+          "visual": "demo-analysis",
+          "highlights": ["投诉对象", "医疗高敏标签", "P1预警等级"]
+        },
+        {
+          "hero": "聚合成事件",
+          "sub": "九叔—哈哈解绑及健康高敏争议",
+          "visual": "demo-event",
+          "emphasis": "AI识别风险升级，不判断谁应对病情负责"
+        },
+        {
+          "hero": "双重预警",
+          "sub": "有些问题，第一条就值得介入",
+          "visual": "demo-alert",
+          "left": "数量型：第5条触发",
+          "right": "性质型：医疗高敏第1条即触发"
+        },
+        {
+          "hero": "高敏风险预警",
+          "sub": "飞书机器人推送 · 原型接通中",
+          "visual": "demo-bot",
+          "evidenceCue": true,
+          "bridge": "预警不是终点——闭环才是舆情价值。"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "chapter": "闭环沉淀",
+      "hasEvidence": true,
+      "evidenceIntro": "可打开「结合AI成果演示」——月报大盘、3D知识宇宙、事件卡",
+      "beats": [
+        {
+          "hero": "预警不是终点",
+          "sub": "闭环才是舆情价值",
+          "visual": "title"
+        },
+        {
+          "hero": "人机协同闭环",
+          "sub": "发现 → 聚合 → 复核 → 分发 → 处置 → 沉淀",
+          "visual": "loop",
+          "loopStep": 0
+        },
+        {
+          "hero": "事件进入知识宇宙",
+          "sub": "17类目 · 204个风险场景",
+          "visual": "sphere",
+          "evidenceCue": true
+        },
+        {
+          "hero": "它不应只留在群聊里",
+          "sub": "应成为下一次判断可调用的组织资产",
+          "visual": "title",
+          "bridge": "这套方法，可以复制到公司其他岗位。"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "chapter": "收尾",
+      "hasEvidence": true,
+      "beats": [
+        {
+          "hero": "从一个舆情工具",
+          "sub": "复制为业务AI升级方法",
+          "visual": "title"
+        },
+        {
+          "hero": "非结构化输入",
+          "sub": "→ AI理解 → 规则判断 → 自动工作流 → 知识沉淀",
+          "visual": "method"
+        },
+        {
+          "hero": "AI舆情协同中枢",
+          "sub": "大秘书 · 粉丝运营 · 内容策划 · 主播管理 · 商务 · 法务",
+          "visual": "network",
+          "networkIndex": 0
+        },
+        {
+          "hero": "今天展示的",
+          "sub": "不是一套已完成的庞大系统",
+          "support": "而是一条已经跑通的路径",
+          "visual": "title"
+        },
+        {
+          "hero": "AI重构舆情的本质",
+          "sub": "就是缩短从知道到行动的距离",
+          "visual": "finale"
+        }
+      ]
+    }
+  ]
+}

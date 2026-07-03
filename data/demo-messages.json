@@ -1,0 +1,94 @@
+{
+  "messages": [
+    {
+      "id": "msg-001",
+      "source": "大秘书",
+      "time": "2026-03-12 09:14",
+      "sessionId": "S-7f2a",
+      "content": "用户投诉九叔长期语言刺激哈哈，要求公司调查",
+      "hasAttachment": false,
+      "status": "待处理",
+      "sensitive": false,
+      "tags": ["主播言行", "CP争议"]
+    },
+    {
+      "id": "msg-002",
+      "source": "大秘书",
+      "time": "2026-03-12 11:32",
+      "sessionId": "S-7f2a",
+      "content": "用户要求公司暂停九叔直播，认为言行不当",
+      "hasAttachment": false,
+      "status": "待处理",
+      "sensitive": false,
+      "tags": ["停播诉求"]
+    },
+    {
+      "id": "msg-003",
+      "source": "大秘书",
+      "time": "2026-03-12 14:08",
+      "sessionId": "S-8b1c",
+      "content": "用户质疑公司为什么没有及时介入双方矛盾",
+      "hasAttachment": false,
+      "status": "处理中",
+      "sensitive": false,
+      "tags": ["公司治理"]
+    },
+    {
+      "id": "msg-004",
+      "source": "大秘书",
+      "time": "2026-03-13 08:45",
+      "sessionId": "S-9c3d",
+      "content": "用户咨询哈哈当前病情，提及ICU与昏迷",
+      "hasAttachment": true,
+      "status": "待处理",
+      "sensitive": true,
+      "tags": ["ICU", "昏迷", "医疗高敏"]
+    },
+    {
+      "id": "msg-005",
+      "source": "大秘书",
+      "time": "2026-03-13 16:22",
+      "sessionId": "S-9c3d",
+      "content": "用户要求发布官方处理结果，追问停播性质",
+      "hasAttachment": false,
+      "status": "待处理",
+      "sensitive": false,
+      "tags": ["公告诉求", "停播性质"]
+    },
+    {
+      "id": "msg-006",
+      "source": "大秘书",
+      "time": "2026-03-14 10:11",
+      "sessionId": "S-a4e5",
+      "content": "用户投诉公开讨论病情隐私，涉及药物中毒传言",
+      "hasAttachment": true,
+      "status": "待处理",
+      "sensitive": true,
+      "tags": ["隐私泄露", "药物中毒", "医疗高敏"]
+    },
+    {
+      "id": "msg-007",
+      "source": "大秘书",
+      "time": "2026-03-15 19:47",
+      "sessionId": "S-b5f6",
+      "content": "用户追问停播属于主动停播还是公司处罚",
+      "hasAttachment": false,
+      "status": "待处理",
+      "sensitive": false,
+      "tags": ["停播性质", "处罚"]
+    },
+    {
+      "id": "msg-008",
+      "source": "大秘书",
+      "time": "2026-03-16 21:03",
+      "sessionId": "S-c6g7",
+      "content": "用户要求公司核验双方真实关系与责任，提及法律责任",
+      "hasAttachment": false,
+      "status": "待处理",
+      "sensitive": true,
+      "tags": ["法律责任", "责任认定"]
+    }
+  ],
+  "quantityThreshold": 5,
+  "natureTriggers": ["ICU", "昏迷", "药物中毒", "法律责任", "未成年人", "诈骗", "隐私泄露", "监管"]
+}

@@ -1,0 +1,154 @@
+/* SpaceX Design System — 纯黑 · 光谱白 · 工业大写 */
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap');
+
+:root {
+  --spx-black: #000000;
+  --spx-white: #f0f0fa;
+  --spx-white-35: rgba(240, 240, 250, 0.35);
+  --spx-white-10: rgba(240, 240, 250, 0.1);
+  --spx-overlay: rgba(0, 0, 0, 0.55);
+  --spx-accent: rgba(142, 180, 255, 0.92);
+  --spx-accent-dim: rgba(142, 180, 255, 0.35);
+  --spx-pain: rgba(248, 113, 113, 0.75);
+  --spx-font: 'Barlow Condensed', 'Noto Sans SC', 'D-DIN', Arial, sans-serif;
+  --spx-track-lg: 0.96px;
+  --spx-track-sm: 1.17px;
+  --spx-ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--spx-black);
+  color: var(--spx-white);
+  font-family: var(--spx-font);
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+
+/* Typography — aerospace stencil */
+.spx-micro {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: var(--spx-track-sm);
+  text-transform: uppercase;
+  color: rgba(240, 240, 250, 0.45);
+  line-height: 0.94;
+}
+.spx-display {
+  font-size: 42px;
+  font-weight: 700;
+  letter-spacing: var(--spx-track-lg);
+  line-height: 1.05;
+  margin: 0 0 8px;
+  color: var(--spx-white);
+}
+.spx-lede {
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--spx-white);
+  margin: 0 0 6px;
+  line-height: 1.35;
+}
+.spx-note {
+  font-size: 14px;
+  font-weight: 400;
+  color: rgba(240, 240, 250, 0.42);
+  margin: 0;
+  line-height: 1.5;
+  max-width: 52ch;
+}
+.spx-body {
+  font-size: 16px;
+  line-height: 1.55;
+  color: rgba(240, 240, 250, 0.65);
+}
+.spx-hero {
+  font-size: 52px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  line-height: 1.12;
+  margin: 0 0 12px;
+}
+
+/* Ghost — sole interactive surface */
+.spx-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 18px;
+  border-radius: 32px;
+  border: 1px solid var(--spx-white-35);
+  background: var(--spx-white-10);
+  color: var(--spx-white);
+  font-family: var(--spx-font);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: var(--spx-track-sm);
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.35s var(--spx-ease), border-color 0.35s;
+}
+.spx-ghost:hover {
+  background: rgba(240, 240, 250, 0.18);
+  border-color: rgba(240, 240, 250, 0.55);
+}
+
+.deck { background: var(--spx-black); }
+.progress-bar > span { background: var(--spx-white); height: 2px; opacity: 0.6; }
+
+.dim2 { color: rgba(240, 240, 250, 0.42); }
+.mono { font-family: 'JetBrains Mono', monospace; }
+
+.deck {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+}
+.deck-header, .deck-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  height: 48px;
+  flex-shrink: 0;
+  border-bottom: 1px solid rgba(240, 240, 250, 0.06);
+}
+.deck-footer {
+  display: none;
+  height: 36px;
+  border-bottom: none;
+  border-top: 1px solid rgba(240, 240, 250, 0.06);
+  font-size: 11px;
+}
+.progress-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  background: rgba(240, 240, 250, 0.06);
+  z-index: 30;
+}
+.progress-bar > span {
+  display: block;
+  height: 100%;
+  width: 0;
+  transition: width 0.35s var(--spx-ease);
+}
+.slide-open {
+  justify-content: center;
+  padding-top: 40px;
+}
+.open-title {
+  font-size: 56px;
+  line-height: 1.15;
+  max-width: 16ch;
+}
+.slide-head.compact .spx-display { font-size: 32px; }
+.demo-layout { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+.arr { opacity: 0.35; }

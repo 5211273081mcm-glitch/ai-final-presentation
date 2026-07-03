@@ -1,0 +1,524 @@
+/* ═══════════════════════════════════════════════════════════
+   总纲页 v8 — 1920×1080 固定画布 · 状态渲染（非叠加显示）
+   唯一核心链路：发现信号 → 舆情解析 → 舆情处置 → 舆情闭环 → 统一行动
+   ═══════════════════════════════════════════════════════════ */
+
+.mmap-v8 {
+  --planet-left-x: 285px;
+  --planet-right-x: 1635px;
+  --planet-y: 565px;
+  --planet-d: 255px;
+  --stage-1-x: 720px;
+  --stage-2-x: 960px;
+  --stage-3-x: 1200px;
+  --stage-y: 565px;
+  --ai-copy-y: 400px;
+  --pain-copy-y: 730px;
+  position: absolute;
+  inset: 0;
+  isolation: isolate;
+}
+
+.master-map-canvas {
+  width: 1920px;
+  height: 1080px;
+  position: relative;
+  overflow: hidden;
+  font-family: var(--font-body);
+}
+
+.master-map-canvas::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: var(--z-bg);
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 19% 52%, rgba(255, 111, 61, 0.06), transparent 22%),
+    radial-gradient(circle at 81% 52%, rgba(72, 215, 255, 0.05), transparent 22%);
+}
+
+/* ── 标题区（页面唯一标题基准，不与导航冲突） ── */
+.mmap-v8 .mmap-hd {
+  position: absolute;
+  left: var(--safe-left);
+  top: var(--content-top);
+  width: 1500px;
+  z-index: var(--z-title);
+}
+.mmap-v8 .mmap-hd .spx-display { font-size: var(--fs-page-title); margin-bottom: 8px; }
+.mmap-v8 .mmap-subtitle {
+  font-family: var(--font-body);
+  font-size: var(--fs-body-lg);
+  font-weight: var(--fw-body-strong);
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+/* ── SVG 路径层 ── */
+.master-map-routes {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: var(--z-routes);
+  pointer-events: none;
+  overflow: visible;
+}
+
+.route-spine {
+  fill: none;
+  stroke: rgba(240, 240, 250, 0.22);
+  stroke-width: 2;
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+  transition: stroke-dashoffset 1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.route-ai {
+  fill: none;
+  stroke: var(--ai-primary);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 0 5px rgba(72, 215, 255, 0.22));
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+  transition: stroke-dashoffset 1.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.route-current {
+  fill: none;
+  stroke: var(--signal-primary);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 0 5px rgba(255, 122, 69, 0.24));
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+  transition: stroke-dashoffset 1.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.route-link {
+  fill: none;
+  stroke: rgba(240, 240, 250, 0.22);
+  stroke-width: 1;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+/* SVG marker 不受 stroke-dashoffset 影响，需单独用 data-stage 控制箭头随曲线一起显现，
+   避免曲线尚未画出时箭头提前悬浮出现 */
+#arrow-ai path, #arrow-current path { opacity: 0; transition: opacity 0.25s ease; }
+.mmap-v8[data-stage="3"] #arrow-ai path,
+.mmap-v8[data-stage="4"] #arrow-ai path,
+.mmap-complete #arrow-ai path { opacity: 1; }
+.mmap-v8[data-stage="2"] #arrow-current path,
+.mmap-v8[data-stage="3"] #arrow-current path,
+.mmap-v8[data-stage="4"] #arrow-current path,
+.mmap-complete #arrow-current path { opacity: 1; }
+
+/* 阶段可见性由 data-stage 唯一驱动 */
+.mmap-v8[data-stage="1"] .route-spine,
+.mmap-v8[data-stage="2"] .route-spine,
+.mmap-v8[data-stage="3"] .route-spine,
+.mmap-v8[data-stage="4"] .route-spine {
+  stroke-dashoffset: 0;
+}
+
+.mmap-v8[data-stage="2"] .route-current,
+.mmap-v8[data-stage="3"] .route-current,
+.mmap-v8[data-stage="4"] .route-current {
+  stroke-dashoffset: 0;
+}
+.mmap-v8[data-stage="2"] .route-link.pain-link,
+.mmap-v8[data-stage="3"] .route-link.pain-link,
+.mmap-v8[data-stage="4"] .route-link.pain-link {
+  opacity: 1;
+}
+
+.mmap-v8[data-stage="3"] .route-ai,
+.mmap-v8[data-stage="4"] .route-ai {
+  stroke-dashoffset: 0;
+}
+.mmap-v8[data-stage="3"] .route-link.ai-link,
+.mmap-v8[data-stage="4"] .route-link.ai-link {
+  opacity: 1;
+}
+
+/* ── 路径标签：黑色遮罩嵌入曲线，水平文字 ── */
+.route-label {
+  position: absolute;
+  z-index: var(--z-copy);
+  font-family: var(--font-body);
+  font-size: var(--fs-body-lg);
+  font-weight: 700;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  pointer-events: none;
+}
+.route-label::before {
+  content: '';
+  position: absolute;
+  inset: -6px -16px;
+  background: #000;
+  z-index: -1;
+}
+.route-label-ai { left: 460px; top: 344px; color: var(--ai-primary); }
+.route-label-pain { left: 450px; top: 786px; color: var(--signal-primary); font-weight: 700; }
+
+.mmap-v8[data-stage="3"] .route-label-ai,
+.mmap-v8[data-stage="4"] .route-label-ai { opacity: 1; }
+
+.mmap-v8[data-stage="2"] .route-label-pain,
+.mmap-v8[data-stage="3"] .route-label-pain,
+.mmap-v8[data-stage="4"] .route-label-pain { opacity: 1; }
+
+/* ── 上下文案 ── */
+.route-copy {
+  position: absolute;
+  z-index: var(--z-copy);
+  text-align: center;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  pointer-events: none;
+  white-space: nowrap;
+}
+.route-copy .copy-line1 { display: block; font-size: var(--fs-body-lg); font-weight: var(--fw-body-strong); line-height: var(--lh-caption); margin-bottom: 8px; }
+.route-copy .copy-line2 { display: block; font-size: var(--fs-body); font-weight: var(--fw-body); line-height: var(--lh-caption); }
+
+.ai-copy .copy-line1 { color: var(--ai-primary); }
+.ai-copy .copy-line2 { color: var(--text-secondary); }
+.pain-copy .copy-line1 { color: var(--signal-primary); }
+.pain-copy .copy-line2 { color: var(--text-secondary); }
+
+.ai-copy[data-col="0"] { left: var(--stage-1-x); top: var(--ai-copy-y); }
+.ai-copy[data-col="1"] { left: var(--stage-2-x); top: var(--ai-copy-y); }
+.ai-copy[data-col="2"] { left: var(--stage-3-x); top: var(--ai-copy-y); }
+.pain-copy[data-col="0"] { left: var(--stage-1-x); top: var(--pain-copy-y); }
+.pain-copy[data-col="1"] { left: var(--stage-2-x); top: var(--pain-copy-y); }
+.pain-copy[data-col="2"] { left: var(--stage-3-x); top: var(--pain-copy-y); }
+
+.mmap-v8[data-stage="3"] .ai-copy[data-col="0"] { opacity: 1; transition-delay: 0.05s; }
+.mmap-v8[data-stage="3"] .ai-copy[data-col="1"] { opacity: 1; transition-delay: 0.2s; }
+.mmap-v8[data-stage="3"] .ai-copy[data-col="2"] { opacity: 1; transition-delay: 0.35s; }
+.mmap-v8[data-stage="4"] .ai-copy { opacity: 1; }
+
+.mmap-v8[data-stage="2"] .pain-copy[data-col="0"] { opacity: 1; transition-delay: 0.05s; }
+.mmap-v8[data-stage="2"] .pain-copy[data-col="1"] { opacity: 1; transition-delay: 0.2s; }
+.mmap-v8[data-stage="2"] .pain-copy[data-col="2"] { opacity: 1; transition-delay: 0.35s; }
+.mmap-v8[data-stage="3"] .pain-copy,
+.mmap-v8[data-stage="4"] .pain-copy { opacity: 1; }
+
+/* ── 星球 ── */
+.planet-node {
+  position: absolute;
+  z-index: var(--z-content);
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  transition: opacity 0.6s ease, filter 0.5s ease;
+}
+.planet-node.left { left: var(--planet-left-x); top: var(--planet-y); }
+.planet-node.right { left: var(--planet-right-x); top: var(--planet-y); }
+
+.mmap-v8[data-stage="0"] .planet-node,
+.mmap-v8[data-stage="1"] .planet-node,
+.mmap-v8[data-stage="2"] .planet-node,
+.mmap-v8[data-stage="3"] .planet-node,
+.mmap-v8[data-stage="4"] .planet-node { opacity: 1; }
+
+.planet-wrap { position: relative; width: var(--planet-d); height: var(--planet-d); display: flex; align-items: center; justify-content: center; }
+
+.planet-sphere {
+  width: calc(var(--planet-d) * 0.92);
+  height: calc(var(--planet-d) * 0.92);
+  border-radius: 50%;
+  position: relative;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background: #000;
+  box-shadow: inset -28px -34px 48px rgba(0, 0, 0, 0.85), 0 0 40px rgba(240, 240, 250, 0.04);
+  animation: planet-breathe 9s ease-in-out infinite;
+}
+.planet-node.left .planet-sphere { box-shadow: inset -28px -34px 48px rgba(0, 0, 0, 0.85), 0 0 34px rgba(255, 120, 62, 0.16); }
+.planet-node.right .planet-sphere {
+  filter: saturate(0.55);
+  transition: filter 0.8s ease, box-shadow 0.8s ease;
+}
+.mmap-v8[data-stage="4"] .planet-node.right .planet-sphere {
+  filter: saturate(1);
+  box-shadow: inset -28px -34px 48px rgba(0, 0, 0, 0.85), 0 0 52px rgba(72, 215, 255, 0.24);
+}
+
+.planet-texture {
+  position: absolute;
+  inset: -6%;
+  width: 112%;
+  height: 112%;
+  object-fit: cover;
+  opacity: 0.9;
+  filter: brightness(1.15) contrast(1.1) saturate(1.1);
+  animation: planet-texture-drift 120s linear infinite;
+}
+.planet-node.right .planet-texture { animation-direction: reverse; animation-duration: 130s; }
+
+.planet-sphere::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  z-index: 3;
+  pointer-events: none;
+  background: radial-gradient(circle at 26% 20%, rgba(255, 255, 255, 0.3), transparent 18%), radial-gradient(circle at 76% 74%, rgba(0, 0, 0, 0.6), transparent 48%);
+  mix-blend-mode: screen;
+  opacity: 0.55;
+}
+.planet-sphere::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  z-index: 4;
+  pointer-events: none;
+  box-shadow: inset -30px -36px 50px rgba(0, 0, 0, 0.5), inset 12px 10px 22px rgba(255, 255, 255, 0.06);
+}
+
+.planet-core-title {
+  position: relative;
+  z-index: 5;
+  font-family: var(--font-body);
+  font-size: var(--fs-key-message);
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.saturn-ring {
+  position: absolute;
+  left: 50%;
+  top: 54%;
+  width: calc(var(--planet-d) * 1.38);
+  height: calc(var(--planet-d) * 0.32);
+  transform: translate(-50%, -50%) rotateZ(-6deg);
+  pointer-events: none;
+  overflow: visible;
+}
+.saturn-ring-back { z-index: 1; opacity: 0.26; }
+.saturn-ring-front { z-index: 6; }
+.saturn-ring ellipse { fill: none; stroke-width: 1.5; vector-effect: non-scaling-stroke; }
+.planet-node.left .saturn-ring ellipse { stroke: rgba(255, 178, 126, 0.72); }
+.planet-node.right .saturn-ring ellipse { stroke: rgba(72, 215, 255, 0.62); }
+
+/* ── 中央阶段 ── */
+.stage-node {
+  position: absolute;
+  z-index: var(--z-focus);
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+.stage-node[data-col="0"] { left: var(--stage-1-x); top: var(--stage-y); }
+.stage-node[data-col="1"] { left: var(--stage-2-x); top: var(--stage-y); }
+.stage-node[data-col="2"] { left: var(--stage-3-x); top: var(--stage-y); }
+
+.stage-num {
+  font-family: var(--font-mono);
+  font-size: var(--fs-micro);
+  font-weight: 500;
+  color: var(--text-muted);
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+}
+.stage-name {
+  position: relative;
+  display: inline-block;
+  font-family: var(--font-body);
+  font-size: var(--fs-node-title);
+  font-weight: var(--fw-module);
+  color: var(--text-primary);
+  white-space: nowrap;
+  letter-spacing: 0.01em;
+  transition: font-weight 0.45s ease, text-shadow 0.45s ease, letter-spacing 0.45s ease, opacity 0.45s ease;
+}
+/* 三维度中线标签始终保持白色，不与"当前痛点/AI方向"的橙蓝配色混淆；
+   通过字重、光晕与下划线表达"当前正在讲到哪一步"的注意力权重，而非切换色相 */
+.stage-name::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -9px;
+  width: 0;
+  height: 2px;
+  background: var(--text-primary);
+  transform: translateX(-50%);
+  opacity: 0;
+  transition: width 0.45s ease, opacity 0.45s ease;
+}
+
+.mmap-v8[data-stage="1"] .stage-node,
+.mmap-v8[data-stage="2"] .stage-node,
+.mmap-v8[data-stage="3"] .stage-node,
+.mmap-v8[data-stage="4"] .stage-node { opacity: 1; }
+.mmap-v8[data-stage="1"] .stage-node[data-col="0"] { transition-delay: 0.15s; }
+.mmap-v8[data-stage="1"] .stage-node[data-col="1"] { transition-delay: 0.3s; }
+.mmap-v8[data-stage="1"] .stage-node[data-col="2"] { transition-delay: 0.45s; }
+
+/* ── 强调层级（唯一状态入口，避免元素级随机透明度） ── */
+.planet-node.is-secondary { opacity: 0.7; filter: saturate(0.8); }
+.planet-node.is-primary { opacity: 1; filter: none; }
+
+.stage-node.is-secondary .stage-name { opacity: 0.8; }
+.stage-node.is-primary .stage-name {
+  opacity: 1;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.5), 0 0 6px rgba(255, 255, 255, 0.6);
+}
+.stage-node.is-primary .stage-name::after { width: 30px; opacity: 0.85; }
+
+.route-current.is-secondary,
+.route-link.pain-link.is-secondary { opacity: 0.55; }
+.route-ai.is-secondary,
+.route-link.ai-link.is-secondary { opacity: 0.6; }
+
+.route-copy.is-secondary { opacity: 0.55; }
+
+/* ── 粒子（单次播放，非循环） ── */
+.mmap-particles { position: absolute; inset: 0; z-index: calc(var(--z-copy) - 1); pointer-events: none; overflow: visible; }
+.particle { position: absolute; width: 5px; height: 5px; border-radius: 50%; opacity: 0; }
+.particle.manual { background: var(--signal-primary); box-shadow: 0 0 8px rgba(255, 122, 69, 0.45); }
+
+.mmap-v8.anim-pain .particle.manual { animation: particle-stall-once 3.6s ease-in-out 1 forwards; }
+.mmap-v8.anim-pain .particle.manual:nth-child(2) { animation-delay: 0.5s; }
+.mmap-v8.anim-pain .particle.manual:nth-child(3) { animation-delay: 1s; }
+
+@keyframes particle-stall-once {
+  0% { left: 22%; top: 70%; opacity: 0; }
+  10% { opacity: 0.5; }
+  32% { left: 38%; top: 76%; opacity: 0.5; }
+  50% { left: 44%; top: 78%; opacity: 0.25; }
+  70% { left: 46%; top: 78%; opacity: 0.1; }
+  100% { left: 47%; top: 78%; opacity: 0; }
+}
+
+/* ── 彗星式"压缩距离"动效：核心 + 拖尾均沿 AI 曲线真实路径运动，
+   而非近似的百分比直线位移，落点处右侧星球产生冲击光环，
+   强化"从发现信号到统一行动的距离被压缩"的观感 ── */
+.ai-comet {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 9px;
+  height: 9px;
+  margin: -4.5px 0 0 -4.5px;
+  border-radius: 50%;
+  background: var(--ai-primary);
+  box-shadow: 0 0 14px 4px rgba(72, 215, 255, 0.85), 0 0 30px 10px rgba(72, 215, 255, 0.25);
+  opacity: 0;
+  offset-path: path('M 400 505 C 610 270, 1310 270, 1520 505');
+  offset-distance: 0%;
+  offset-rotate: 0deg;
+}
+.ai-comet-tail {
+  background: var(--ai-primary);
+  box-shadow: 0 0 8px 2px rgba(72, 215, 255, 0.55);
+}
+.ai-comet-tail.t1 { width: 7px; height: 7px; margin: -3.5px 0 0 -3.5px; }
+.ai-comet-tail.t2 { width: 5px; height: 5px; margin: -2.5px 0 0 -2.5px; opacity: 0; }
+.ai-comet-tail.t3 { width: 3px; height: 3px; margin: -1.5px 0 0 -1.5px; opacity: 0; }
+
+.mmap-v8.anim-ai .ai-comet-core,
+.mmap-v8.anim-ai .ai-comet-tail {
+  animation: comet-fly 1.7s cubic-bezier(0.3, 0.55, 0.35, 1) 1 forwards;
+}
+.mmap-v8.anim-ai .ai-comet-tail.t1 { animation-delay: 0.05s; }
+.mmap-v8.anim-ai .ai-comet-tail.t2 { animation-delay: 0.11s; }
+.mmap-v8.anim-ai .ai-comet-tail.t3 { animation-delay: 0.18s; }
+
+@keyframes comet-fly {
+  0% { offset-distance: 0%; opacity: 0; }
+  6% { opacity: 1; }
+  88% { opacity: 0.9; }
+  100% { offset-distance: 100%; opacity: 0; }
+}
+
+.impact-ring {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: calc(var(--planet-d) * 0.92);
+  height: calc(var(--planet-d) * 0.92);
+  border-radius: 50%;
+  border: 2px solid var(--ai-primary);
+  transform: translate(-50%, -50%) scale(0.7);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 7;
+}
+.mmap-v8.anim-ai .planet-node.right .impact-ring {
+  animation: impact-pulse 0.9s ease-out 1.55s 1 forwards;
+}
+@keyframes impact-pulse {
+  0% { transform: translate(-50%, -50%) scale(0.72); opacity: 0.9; }
+  100% { transform: translate(-50%, -50%) scale(1.5); opacity: 0; }
+}
+
+@keyframes planet-breathe {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.006); }
+}
+@keyframes planet-texture-drift {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* ── 底部总结：与 AI 彗星点亮右侧星球同一步出现，共同强化"压缩距离" ── */
+.mmap-v8 .mmap-ft {
+  position: absolute;
+  left: var(--safe-left);
+  right: var(--safe-right);
+  bottom: 90px;
+  z-index: var(--z-title);
+  text-align: center;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+.mmap-v8 .mmap-ft p {
+  font-family: var(--font-body);
+  font-size: var(--fs-key-message);
+  font-weight: var(--fw-conclusion);
+  color: var(--text-primary);
+  margin: 0;
+  line-height: var(--lh-conclusion);
+}
+.mmap-v8 .mmap-ft em { font-style: normal; color: var(--ai-primary); }
+.mmap-v8[data-stage="4"] .mmap-ft { opacity: 1; }
+
+/* ── 紧凑态（用于收尾页复用，作为背景层）── 保留原始亮度，不做整体淡化，
+   仅隐藏"当前痛点/AI方向"分析性标签与阶段细节，让两颗星球（含球内文字）
+   与曲线本身作为总纲已完成的实景背景，为前景的居中文案让出空间 ── */
+.mmap-compact .mmap-hd { display: none; }
+.mmap-compact .mmap-ft { display: none; }
+.mmap-compact.mmap-complete .stage-node,
+.mmap-compact.mmap-complete .route-copy,
+.mmap-compact.mmap-complete .route-label { display: none; }
+.mmap-complete .route-spine,
+.mmap-complete .route-ai,
+.mmap-complete .route-current,
+.mmap-complete .route-link,
+.mmap-complete .route-label,
+.mmap-complete .route-copy,
+.mmap-complete .stage-node,
+.mmap-complete .planet-node {
+  opacity: 1;
+  stroke-dashoffset: 0;
+}

@@ -1,0 +1,97 @@
+{
+  "projectTitle": "用AI重构舆情工作范式",
+  "subtitle": "AI不是替舆情人员多写一份报告，而是缩短从「知道风险」到「推动行动」的距离",
+  "useAnonymizedNames": false,
+  "names": {
+    "real": { "hostA": "九叔", "hostB": "哈哈" },
+    "anon": { "hostA": "主播A", "hostB": "主播B" }
+  },
+  "demoEvent": {
+    "id": "EVT-2026-0147",
+    "name": "九叔—哈哈解绑及健康高敏争议",
+    "riskLevel": "高敏复核",
+    "priority": "P1立即关注",
+    "stage": "持续追问",
+    "duration": "6天",
+    "heating": true,
+    "sessionCount": 8,
+    "messageCount": 23,
+    "sceneCode": "R-087",
+    "category": "医疗高敏 / 主播行为 / 粉丝关系"
+  },
+  "sphere": {
+    "url": "https://5211273081mcm-glitch.github.io/tcg-scene-library-v41/",
+    "fallbackImage": "assets/evidence/3D场景球体截图.png",
+    "loadTimeoutMs": 8000,
+    "currentScene": {
+      "code": "R-087",
+      "name": "主播言行引发健康高敏争议",
+      "category": "医疗高敏",
+      "triggers": ["ICU", "昏迷", "药物中毒", "停播诉求"],
+      "weight": 0.92,
+      "alertLevel": "P1",
+      "roles": ["大秘书", "主播管理", "舆情公关", "法务"],
+      "relatedEvent": "九叔—哈哈解绑及健康高敏争议",
+      "sop": "高敏医疗类事件SOP v2.1"
+    }
+  },
+  "evidenceMapping": {
+    "page2": ["douban-crawler", "douban-alert-1", "douban-alert-2", "douban-trend-jiang", "douban-trend-saman", "douban-monitor-jiang", "douban-monitor-saman"],
+    "page4": ["secretary-raw", "secretary-ocr", "secretary-ai-1", "secretary-ai-2"],
+    "page5": ["monthly-june", "sphere-screenshot", "event-card-old"],
+    "page6": ["crawler-aggregate"]
+  },
+  "page4EvidenceFlow": ["原始私信", "OCR与链接解析", "会话聚合", "AI识别", "风险研判"],
+  "stats": {
+    "categories": 17,
+    "scenes": 204
+  },
+  "pages": [
+    {
+      "id": 1,
+      "title": "当风险已经被看见",
+      "subtitle": "为什么仍然可能失控？",
+      "durationSec": 35,
+      "stages": 3
+    },
+    {
+      "id": 2,
+      "title": "一条主播争议",
+      "subtitle": "如何升级为公司级风险",
+      "durationSec": 65,
+      "stages": 2,
+      "hasEvidence": true
+    },
+    {
+      "id": 3,
+      "title": "AI重构的不是一个工具",
+      "subtitle": "而是整条舆情工作链",
+      "durationSec": 55,
+      "stages": 4
+    },
+    {
+      "id": 4,
+      "title": "现场演示",
+      "subtitle": "一条高敏投诉如何形成事件",
+      "durationSec": 190,
+      "stages": 5,
+      "hasEvidence": true
+    },
+    {
+      "id": 5,
+      "title": "预警不是终点",
+      "subtitle": "闭环才是舆情价值",
+      "durationSec": 120,
+      "stages": 3,
+      "hasEvidence": true
+    },
+    {
+      "id": 6,
+      "title": "从一个舆情工具",
+      "subtitle": "复制为业务AI升级方法",
+      "durationSec": 115,
+      "stages": 4,
+      "hasEvidence": true
+    }
+  ]
+}

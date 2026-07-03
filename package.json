@@ -1,0 +1,13 @@
+{
+  "name": "ai-final-presentation",
+  "version": "1.0.0",
+  "description": "面向公司 AI 课代表决赛的 **6 页叙事型** HTML 演示，围绕 **「舆情工作链总图」** 展开，演讲者键盘完全掌控节奏。",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs"
+}

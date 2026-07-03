@@ -1,0 +1,56 @@
+{
+  "collisions": [],
+  "overflows": [],
+  "screenshots": [
+    "/Users/Lin/Desktop/Codex/AI比赛/AI/ai-final-presentation/qa-screenshots-v8/p1-opening-1920x1080.png",
+    "/Users/Lin/Desktop/Codex/AI比赛/AI/ai-final-presentation/qa-screenshots-v8/p2-mastermap-1920x1080.png",
+    "/Users/Lin/Desktop/Codex/AI比赛/AI/ai-final-presentation/qa-screenshots-v8/p3-parse-1920x1080.png",
+    "/Users/Lin/Desktop/Codex/AI比赛/AI/ai-final-presentation/qa-screenshots-v8/p4-demo-1920x1080.png",
+    "/Users/Lin/Desktop/Codex/AI比赛/AI/ai-final-presentation/qa-screenshots-v8/p5-loop-1920x1080.png",
+    "/Users/Lin/Desktop/Codex/AI比赛/AI/ai-final-presentation/qa-screenshots-v8/p6-closing-1920x1080.png",
+    "/Users/Lin/Desktop/Codex/AI比赛/AI/ai-final-presentation/qa-screenshots-v8/p1-opening-1600x900.png",
+    "/Users/Lin/Desktop/Codex/AI比赛/AI/ai-final-presentation/qa-screenshots-v8/p2-mastermap-1600x900.png",
+    "/Users/Lin/Desktop/Codex/AI比赛/AI/ai-final-presentation/qa-screenshots-v8/p3-parse-1600x900.png",
+    "/Users/Lin/Desktop/Codex/AI比赛/AI/ai-final-presentation/qa-screenshots-v8/p4-demo-1600x900.png",
+    "/Users/Lin/Desktop/Codex/AI比赛/AI/ai-final-presentation/qa-screenshots-v8/p5-loop-1600x900.png",
+    "/Users/Lin/Desktop/Codex/AI比赛/AI/ai-final-presentation/qa-screenshots-v8/p6-closing-1600x900.png",
+    "/Users/Lin/Desktop/Codex/AI比赛/AI/ai-final-presentation/qa-screenshots-v8/p1-opening-1440x810.png",
+    "/Users/Lin/Desktop/Codex/AI比赛/AI/ai-final-presentation/qa-screenshots-v8/p2-mastermap-1440x810.png",
+    "/Users/Lin/Desktop/Codex/AI比赛/AI/ai-final-presentation/qa-screenshots-v8/p3-parse-1440x810.png",
+    "/Users/Lin/Desktop/Codex/AI比赛/AI/ai-final-presentation/qa-screenshots-v8/p4-demo-1440x810.png",
+    "/Users/Lin/Desktop/Codex/AI比赛/AI/ai-final-presentation/qa-screenshots-v8/p5-loop-1440x810.png",
+    "/Users/Lin/Desktop/Codex/AI比赛/AI/ai-final-presentation/qa-screenshots-v8/p6-closing-1440x810.png"
+  ],
+  "stageChecks": [
+    {
+      "expected": "0",
+      "actual": "0",
+      "match": true
+    },
+    {
+      "expected": "1",
+      "actual": "1",
+      "match": true
+    },
+    {
+      "expected": "2",
+      "actual": "2",
+      "match": true
+    },
+    {
+      "expected": "3",
+      "actual": "3",
+      "match": true
+    },
+    {
+      "expected": "4",
+      "actual": "4",
+      "match": true
+    },
+    {
+      "expected": "5",
+      "actual": "5",
+      "match": true
+    }
+  ]
+}

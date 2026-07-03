@@ -1,0 +1,119 @@
+/* ═══ SpaceX Design System — 100% DESIGN.md ═══ */
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech&family=Noto+Sans+SC:wght@400;500;700&display=swap');
+
+:root {
+  --black: #000000;
+  --spectral: #f0f0fa;
+  --spectral-70: rgba(240, 240, 250, 0.7);
+  --spectral-50: rgba(240, 240, 250, 0.5);
+  --spectral-35: rgba(240, 240, 250, 0.35);
+  --spectral-10: rgba(240, 240, 250, 0.1);
+  --ghost-bg: rgba(240, 240, 250, 0.1);
+  --ghost-border: rgba(240, 240, 250, 0.35);
+  --overlay: rgba(0, 0, 0, 0.5);
+  --overlay-heavy: rgba(0, 0, 0, 0.72);
+  --font-display: 'Share Tech', 'D-DIN-Bold', Arial, Verdana, sans-serif;
+  --font-body: 'Noto Sans SC', 'D-DIN', Arial, Verdana, sans-serif;
+  --track-display: 0.96px;
+  --track-nav: 1.17px;
+  --track-micro: 1px;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --radius-btn: 32px;
+  --radius-sharp: 4px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  background: var(--black);
+  color: var(--spectral);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+
+/* Typography — aerospace stencil */
+.t-display {
+  font-family: var(--font-display);
+  font-size: 48px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: var(--track-display);
+  text-transform: uppercase;
+}
+.t-nav-bold {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 0.94;
+  letter-spacing: var(--track-nav);
+  text-transform: uppercase;
+}
+.t-nav {
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 2;
+  letter-spacing: var(--track-micro);
+  text-transform: uppercase;
+}
+.t-caption {
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: var(--track-micro);
+  text-transform: uppercase;
+}
+.t-micro {
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 400;
+  line-height: 0.94;
+  letter-spacing: var(--track-micro);
+  text-transform: uppercase;
+  color: var(--spectral-50);
+}
+.t-body {
+  font-family: var(--font-body);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.7;
+  letter-spacing: normal;
+  text-transform: none;
+  color: var(--spectral-70);
+}
+.t-body-cn {
+  font-size: 18px;
+  line-height: 1.65;
+  color: var(--spectral);
+  text-transform: none;
+  letter-spacing: 0.02em;
+}
+
+/* Ghost button — sole interactive element */
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 18px 24px;
+  border-radius: var(--radius-btn);
+  border: 1px solid var(--ghost-border);
+  background: var(--ghost-bg);
+  color: var(--spectral);
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: var(--track-nav);
+  text-transform: uppercase;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.25s var(--ease);
+}
+.btn-ghost:hover { background: rgba(240, 240, 250, 0.2); }
+.btn-ghost.sm { padding: 8px 18px; font-size: 12px; }
+
+em { font-style: normal; color: var(--spectral); }

@@ -1,0 +1,62 @@
+@keyframes float {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-12px) scale(1.02); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 20px rgba(72,215,255,0.2); }
+  50% { box-shadow: 0 0 40px rgba(72,215,255,0.4); }
+}
+
+@keyframes flow-line {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+
+@keyframes node-pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.15); opacity: 0.85; }
+}
+
+.glow-pulse { animation: glow-pulse 2s ease-in-out infinite; }
+.node-pulse { animation: node-pulse 2s ease-in-out infinite; }
+
+.flow-active {
+  background: linear-gradient(90deg, transparent, var(--ai-cyan), transparent);
+  background-size: 200% 100%;
+  animation: flow-line 2s linear infinite;
+}
+
+.fade-in { animation: fadeIn 0.6s ease forwards; }
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.slide-in-right { animation: slideRight 0.5s ease forwards; }
+@keyframes slideRight {
+  from { opacity: 0; transform: translateX(30px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.scale-in { animation: scaleIn 0.6s cubic-bezier(0.4,0,0.2,1) forwards; }
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.85); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.shrink-to-node {
+  transition: all 1.5s cubic-bezier(0.4,0,0.2,1);
+  transform: scale(0.05);
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .p1-fragment.floating { animation: none; }
+  .glow-pulse, .node-pulse, .flow-active { animation: none; }
+}

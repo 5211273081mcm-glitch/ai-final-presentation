@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>用 AI 重构舆情工作范式</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="css/spacex-theme.css"/>
+<link rel="stylesheet" href="css/deck.css"/>
+<link rel="stylesheet" href="css/master-map.css"/>
+</head>
+<body>
+<div class="deck" id="deck">
+  <div class="deck-header" id="deck-header" data-qa-id="deck-header">
+    <div class="brand-mini"><span class="spx-micro">用AI重构舆情范式</span></div>
+    <nav class="chapter-nav" id="chapter-nav"></nav>
+    <span id="clock" class="mono">00:00</span>
+  </div>
+  <div class="deck-main" id="scene-viewport">
+    <div class="scene-stage" id="scene-stage">
+      <div class="slide is-active" id="current-slide">
+        <div class="slide-canvas" id="slide-canvas"></div>
+      </div>
+      <div class="qa-debug-layer" id="qa-debug-layer">
+        <div class="qa-canvas-frame"></div>
+        <div class="qa-safe-frame"></div>
+      </div>
+    </div>
+  </div>
+  <div class="progress-bar"><span id="progress-fill"></span></div>
+</div>
+<div class="lightbox" id="lightbox">
+  <button class="lb-close" id="lb-close">×</button>
+  <button class="lb-nav lb-prev" id="lb-prev">‹</button>
+  <img id="lb-img" alt=""/>
+  <button class="lb-nav lb-next" id="lb-next">›</button>
+  <div class="lb-footer">
+    <p class="lb-cap" id="lb-cap"></p>
+    <a class="lb-source" id="lb-source" target="_blank" rel="noopener">打开来源网站 ↗</a>
+  </div>
+</div>
+<script src="js/presentation.all.js"></script>
+</body>
+</html>
