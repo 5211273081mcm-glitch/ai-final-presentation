@@ -8,7 +8,9 @@
 
   var CHANNEL = 'ai-final-presentation-v1';
   var STORAGE_KEY = 'ai-final-presentation-speaker-notes-v8';
+  var EDITED_URL = 'data/speaker-beats-v8-edited.json';
   var ACTION_KEY = 'ai-final-presentation-audience-action';
+  var SERVER_POLL_MS = 30000;
   var BEATS_PER_PAGE = [2, 5, 4, 5, 2, 3];
   var TARGET_SEC = 600;
 
@@ -106,21 +108,63 @@
     }).join(' · ');
   }
 
-  function loadSavedNotes(data) {
-    var saved = null;
-    try { saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null'); } catch (err) {}
-    if (!saved || !saved.pages || !Array.isArray(saved.pages)) return data;
-    return saved;
+  function notesSavedAt(obj) {
+    return (obj && obj.savedAt) ? +obj.savedAt : 0;
   }
 
-  function persistNotes(statusText) {
+  function withSavedAt(obj) {
+    var copy = clone(obj);
+    copy.savedAt = Date.now();
+    copy.source = 'presenter';
+    return copy;
+  }
+
+  function mergeNotes(base, local, server) {
+    var winner = clone(base);
+    var localAt = notesSavedAt(local);
+    var serverAt = notesSavedAt(server);
+    if (server && server.pages && serverAt >= localAt && serverAt > 0) winner = clone(server);
+    else if (local && local.pages) winner = clone(local);
+    if (localAt > serverAt && local && local.pages) winner = clone(local);
+    if (!winner.savedAt) winner.savedAt = Math.max(localAt, serverAt) || Date.now();
+    return winner;
+  }
+
+  function fetchEditedNotes() {
+    return fetch(EDITED_URL + '?t=' + Date.now(), { cache: 'no-store' })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .catch(function () { return null; });
+  }
+
+  function persistNotes(statusText, skipServerHint) {
     if (!notes) return;
+    notes = withSavedAt(notes);
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(notes));
-      setStatus(statusText || '已保存到本机浏览器，下次打开仍会使用这一版逐字稿。', 'is-saved');
+      var msg = statusText || '已保存到本机；各设备将自动拉取线上最新稿（若已发布）。';
+      if (!skipServerHint) msg += ' 导出后可放入 data/speaker-beats-v8-edited.json 推送全站。';
+      setStatus(msg, 'is-saved');
     } catch (err) {
       setStatus('保存失败：浏览器本地存储不可用，请先导出备份。');
     }
+  }
+
+  function flushPendingSave() {
+    if (saveTimer) {
+      clearTimeout(saveTimer);
+      saveTimer = null;
+      saveCurrentBeat('离开前已自动保存逐字稿。', true);
+    }
+  }
+
+  function applyServerNotesIfNewer(server) {
+    if (!server || !server.pages || !notes) return false;
+    if (notesSavedAt(server) <= notesSavedAt(notes)) return false;
+    notes = clone(server);
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(notes)); } catch (err) {}
+    syncEditorFromState(true);
+    setStatus('已同步线上最新逐字稿（' + new Date(notes.savedAt).toLocaleString() + '）。', 'is-saved');
+    return true;
   }
 
   function syncEditorFromState(force) {
@@ -131,17 +175,17 @@
     setStatus('可直接在线编辑；点“保存”立即固化到本机，或自动保存。');
   }
 
-  function saveCurrentBeat(statusText) {
+  function saveCurrentBeat(statusText, skipServerHint) {
     if (!notes || !notes.pages[state.chapter]) return;
     notes.pages[state.chapter].beats[state.beat] = scriptBox.value;
-    persistNotes(statusText || '本步逐字稿已保存。');
+    persistNotes(statusText || '本步逐字稿已保存。', skipServerHint);
   }
 
   function scheduleSave() {
     if (saveTimer) clearTimeout(saveTimer);
     setStatus('检测到修改，1 秒后自动保存…', 'is-dirty');
     saveTimer = setTimeout(function () {
-      saveCurrentBeat('已自动保存到本机浏览器。');
+      saveCurrentBeat('已自动保存到本机浏览器。', true);
     }, 1000);
   }
 
@@ -149,6 +193,10 @@
     var ch = state.chapter;
     var beat = state.beat;
     var next = nextState(ch, beat);
+
+    closeEvidenceOverlay();
+    evidenceState.ids = [];
+    evidenceState.idx = 0;
 
     document.getElementById('pv-cur-label').textContent = label(ch, beat);
     document.getElementById('pv-next-label').textContent = next ? label(next.chapter, next.beat) : '（终场）';
@@ -213,13 +261,14 @@
   }
 
   function getAudienceWindow() {
+    if (!audienceWin || audienceWin.closed) return null;
     try {
-      if (audienceWin && !audienceWin.closed) return audienceWin;
-      audienceWin = window.open('', 'ai-final-audience');
-      return audienceWin;
+      var href = audienceWin.location.href || '';
+      if (!href || href === 'about:blank') return null;
     } catch (err) {
-      return null;
+      return audienceWin;
     }
+    return audienceWin;
   }
 
   function broadcastAudienceAction(action, payload) {
@@ -258,7 +307,8 @@
   function syncAudienceEvidence(action, payload) {
     payload = payload || {};
     if (action === 'close-evidence') {
-      if (!controlAudience('close-evidence')) send({ type: 'close-evidence' });
+      controlAudience('close-evidence');
+      send({ type: 'close-evidence' });
       broadcastAudienceAction('close-evidence');
       return;
     }
@@ -308,10 +358,14 @@
   function openAudience() {
     var url = 'index.html';
     var win = getAudienceWindow();
-    if (win && !win.closed) {
+    if (win) {
       audienceWin = win;
       audienceWin.focus();
-      audienceWin.location.href = url;
+      try {
+        if (win.location.href === 'about:blank' || !/\/index\.html/.test(win.location.pathname + win.location.href)) {
+          win.location.href = url;
+        }
+      } catch (err) {}
     } else {
       audienceWin = window.open(url, 'ai-final-audience');
     }
@@ -323,12 +377,15 @@
     iframeCur.classList.toggle('is-interactive', interactEnabled);
     interactBtn.classList.toggle('is-on', interactEnabled);
     interactBtn.textContent = interactEnabled ? '关闭点击' : '启用点击';
-    frameHint.textContent = interactEnabled ? '点击模式：可点 Evidence' : '悬停可放大';
+    frameHint.textContent = interactEnabled ? '点击模式：可点 Evidence，画面略缩小以露出底部按钮' : '悬停可轻量放大';
     frameHint.classList.toggle('is-visible', true);
     frameWrap.classList.remove('zoom-on');
   }
 
   function exportNotes() {
+    if (!notes) return;
+    notes = withSavedAt(notes);
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(notes)); } catch (err) {}
     var blob = new Blob([JSON.stringify(notes, null, 2)], { type: 'application/json;charset=utf-8' });
     var url = URL.createObjectURL(blob);
     var a = document.createElement('a');
@@ -338,12 +395,18 @@
     a.click();
     a.remove();
     URL.revokeObjectURL(url);
-    setStatus('已导出当前编辑稿 JSON，可备份或继续交给我同步回项目文件。', 'is-saved');
+    setStatus('已导出 speaker-beats-v8-edited.json；放入 data/ 并推送后，各设备将自动同步。', 'is-saved');
   }
 
   function bindKeys() {
     document.addEventListener('keydown', function (e) {
       if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+      if (e.key === 'Escape' && !pvOverlay.hidden) {
+        e.preventDefault();
+        closeEvidenceOverlay();
+        syncAudienceEvidence('close-evidence');
+        return;
+      }
       switch (e.key) {
         case ' ':
         case 'ArrowRight':
@@ -406,8 +469,6 @@
   document.getElementById('pv-close-evidence').onclick = function () {
     closeEvidenceOverlay();
     syncAudienceEvidence('close-evidence');
-    broadcastAudienceAction('close-evidence');
-    setStatus('已发送关闭图片指令到投屏页。');
   };
   document.getElementById('pv-reset-beat').onclick = function () {
     if (!baseNotes || !baseNotes.pages[state.chapter]) return;
@@ -442,19 +503,28 @@
   };
 
   Promise.all([
-    fetch('data/speaker-beats-v8.json').then(function (r) { return r.json(); }),
-    fetch('data/asset-manifest.json').then(function (r) { return r.json(); })
+    fetch('data/speaker-beats-v8.json?t=' + Date.now(), { cache: 'no-store' }).then(function (r) { return r.json(); }),
+    fetch('data/asset-manifest.json?t=' + Date.now(), { cache: 'no-store' }).then(function (r) { return r.json(); }),
+    fetchEditedNotes()
   ])
     .then(function (res) {
       var data = res[0];
       var manifest = res[1];
+      var serverEdited = res[2];
+      var localSaved = null;
+      try { localSaved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null'); } catch (err) {}
       baseNotes = clone(data);
-      notes = loadSavedNotes(clone(data));
+      notes = mergeNotes(data, localSaved, serverEdited);
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(notes)); } catch (err) {}
       if (notes.targetTotalSec) TARGET_SEC = notes.targetTotalSec;
       (manifest.assets || []).forEach(function (a) { manifestMap[a.id] = a; });
       ensureIframes();
       updateUI();
       send({ type: 'request-sync' });
+      var src = notesSavedAt(serverEdited) >= notesSavedAt(localSaved) && notesSavedAt(serverEdited) > 0
+        ? '线上稿'
+        : (notesSavedAt(localSaved) > 0 ? '本机稿' : '默认稿');
+      setStatus('逐字稿已加载（' + src + '）。编辑后自动保存；导出可发布全站。');
     })
     .catch(function () {
       setStatus('逐字稿加载失败，请检查 data/speaker-beats-v8.json');
@@ -471,13 +541,22 @@
     if (!interactEnabled) frameHint.classList.remove('is-visible');
   });
   frameWrap.addEventListener('mousemove', function (e) {
+    if (interactEnabled || !pvOverlay.hidden) return;
     var rect = frameWrap.getBoundingClientRect();
     var x = ((e.clientX - rect.left) / rect.width) * 100;
     var y = ((e.clientY - rect.top) / rect.height) * 100;
+    var originY = y > 50 ? Math.min(94, y + 10) : y;
+    var scale = y > 50 ? 1.08 : 1.12;
     iframeCur.style.setProperty('--zoom-x', x.toFixed(2) + '%');
-    iframeCur.style.setProperty('--zoom-y', y.toFixed(2) + '%');
-    if (!interactEnabled) frameWrap.classList.add('zoom-on');
+    iframeCur.style.setProperty('--zoom-y', originY.toFixed(2) + '%');
+    iframeCur.style.setProperty('--zoom-scale', String(scale));
+    frameWrap.classList.add('zoom-on');
   });
+  window.addEventListener('beforeunload', flushPendingSave);
+  window.addEventListener('pagehide', flushPendingSave);
+  setInterval(function () {
+    fetchEditedNotes().then(applyServerNotesIfNewer);
+  }, SERVER_POLL_MS);
   setInterval(updateTimers, 500);
   updateTimers();
 
