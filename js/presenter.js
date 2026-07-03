@@ -8,6 +8,7 @@
 
   var CHANNEL = 'ai-final-presentation-v1';
   var STORAGE_KEY = 'ai-final-presentation-speaker-notes-v8';
+  var ACTION_KEY = 'ai-final-presentation-audience-action';
   var BEATS_PER_PAGE = [2, 5, 4, 5, 2, 3];
   var TARGET_SEC = 600;
 
@@ -19,16 +20,23 @@
   };
   var notes = null;
   var baseNotes = null;
+  var manifestMap = {};
   var audienceWin = null;
   var interactEnabled = false;
   var saveTimer = null;
   var lastSyncedKey = '';
+  var evidenceState = { ids: [], idx: 0 };
   var iframeCur = document.getElementById('pv-iframe-cur');
   var iframeNext = document.getElementById('pv-iframe-next');
   var scriptBox = document.getElementById('pv-script-text');
   var scriptStatus = document.getElementById('pv-script-status');
   var interactBtn = document.getElementById('pv-toggle-interact');
   var frameHint = document.getElementById('pv-frame-hint');
+  var frameWrap = iframeCur.parentElement;
+  var pvOverlay = document.getElementById('pv-evidence-overlay');
+  var pvImg = document.getElementById('pv-evidence-img');
+  var pvCap = document.getElementById('pv-evidence-cap');
+  var pvSource = document.getElementById('pv-evidence-source');
   var channel = typeof BroadcastChannel !== 'undefined' ? new BroadcastChannel(CHANNEL) : null;
 
   function fmt(sec) {
@@ -73,6 +81,10 @@
     if (!notes || !notes.pages[ch]) return 'P' + (ch + 1) + ' · Beat ' + (beat + 1);
     var p = notes.pages[ch];
     return p.code + ' ' + p.tag + ' · ' + (beat + 1) + '/' + p.beats.length;
+  }
+
+  function getAsset(id) {
+    return manifestMap[id] || null;
   }
 
   function scriptText(ch, beat) {
@@ -200,9 +212,104 @@
     if (channel) channel.postMessage(cmd);
   }
 
+  function getAudienceWindow() {
+    try {
+      if (audienceWin && !audienceWin.closed) return audienceWin;
+      audienceWin = window.open('', 'ai-final-audience');
+      return audienceWin;
+    } catch (err) {
+      return null;
+    }
+  }
+
+  function broadcastAudienceAction(action, payload) {
+    try {
+      localStorage.setItem(ACTION_KEY, JSON.stringify({
+        action: action,
+        payload: payload || {},
+        at: Date.now()
+      }));
+    } catch (err) {}
+  }
+
+  function controlAudience(action, payload) {
+    payload = payload || {};
+    try {
+      var win = getAudienceWindow();
+      if (win && !win.closed && win.document) {
+        if (action === 'close-evidence') {
+          var lb = win.document.getElementById('lightbox');
+          if (lb) lb.classList.remove('open');
+          if (win.APP) win.APP.lbOpen = false;
+          return true;
+        }
+        if (action === 'move-evidence') {
+          var btn = win.document.getElementById(payload.dir < 0 ? 'lb-prev' : 'lb-next');
+          if (btn) {
+            btn.click();
+            return true;
+          }
+        }
+      }
+    } catch (err) {}
+    return false;
+  }
+
+  function syncAudienceEvidence(action, payload) {
+    payload = payload || {};
+    if (action === 'close-evidence') {
+      if (!controlAudience('close-evidence')) send({ type: 'close-evidence' });
+      broadcastAudienceAction('close-evidence');
+      return;
+    }
+    if (action === 'move-evidence') {
+      send({ type: 'move-evidence', dir: payload.dir || 1 });
+      return;
+    }
+    if (action === 'open-evidence') {
+      send({ type: 'open-evidence', ids: payload.ids || [], idx: payload.idx || 0 });
+    }
+  }
+
+  function renderEvidenceOverlay() {
+    var id = evidenceState.ids[evidenceState.idx];
+    var a = getAsset(id);
+    if (!a) return;
+    pvImg.src = a.path;
+    pvImg.alt = a.title || '';
+    pvCap.textContent = (a.title || '') + (a.description ? ' - ' + a.description : '');
+    if (a.sourceUrl) {
+      pvSource.hidden = false;
+      pvSource.href = a.sourceUrl;
+      pvSource.textContent = (a.sourceLabel || '打开来源') + ' ↗';
+    } else {
+      pvSource.hidden = true;
+      pvSource.removeAttribute('href');
+    }
+    pvOverlay.hidden = false;
+  }
+
+  function openEvidenceOverlay(ids, idx) {
+    evidenceState.ids = (ids || []).slice();
+    evidenceState.idx = Math.max(0, Math.min(evidenceState.ids.length - 1, idx || 0));
+    renderEvidenceOverlay();
+  }
+
+  function moveEvidenceOverlay(dir) {
+    if (!evidenceState.ids.length) return;
+    evidenceState.idx = (evidenceState.idx + dir + evidenceState.ids.length) % evidenceState.ids.length;
+    renderEvidenceOverlay();
+  }
+
+  function closeEvidenceOverlay() {
+    pvOverlay.hidden = true;
+  }
+
   function openAudience() {
     var url = 'index.html';
-    if (audienceWin && !audienceWin.closed) {
+    var win = getAudienceWindow();
+    if (win && !win.closed) {
+      audienceWin = win;
       audienceWin.focus();
       audienceWin.location.href = url;
     } else {
@@ -216,9 +323,9 @@
     iframeCur.classList.toggle('is-interactive', interactEnabled);
     interactBtn.classList.toggle('is-on', interactEnabled);
     interactBtn.textContent = interactEnabled ? '关闭点击' : '启用点击';
-    frameHint.textContent = interactEnabled
-      ? '点击模式开启：可直接点当前页 Evidence。点击后会同步到投屏窗，并自动把焦点拉回控制台。'
-      : '点击模式关闭：避免误触翻页。需要点 Evidence 时先开启。';
+    frameHint.textContent = interactEnabled ? '点击模式：可点 Evidence' : '悬停可放大';
+    frameHint.classList.toggle('is-visible', true);
+    frameWrap.classList.remove('zoom-on');
   }
 
   function exportNotes() {
@@ -267,6 +374,26 @@
     };
   }
 
+  window.addEventListener('message', function (e) {
+    var msg = e.data;
+    if (!msg) return;
+    if (msg.type === 'presenter-open-evidence') {
+      openEvidenceOverlay(msg.ids || [], msg.idx || 0);
+      syncAudienceEvidence('open-evidence', { ids: msg.ids || [], idx: msg.idx || 0 });
+      return;
+    }
+    if (msg.type !== 'presenter-audience-action') return;
+    if (msg.action === 'close-evidence') {
+      closeEvidenceOverlay();
+      syncAudienceEvidence('close-evidence');
+      return;
+    }
+    if (msg.action === 'move-evidence') {
+      moveEvidenceOverlay(msg.dir || 1);
+      send({ type: 'move-evidence', dir: msg.dir || 1 });
+    }
+  });
+
   document.getElementById('pv-open-audience').onclick = openAudience;
   document.getElementById('pv-reset-timer').onclick = function () {
     state.startTime = Date.now();
@@ -276,6 +403,12 @@
   document.getElementById('pv-save-script').onclick = function () {
     saveCurrentBeat('已手动保存当前逐字稿。');
   };
+  document.getElementById('pv-close-evidence').onclick = function () {
+    closeEvidenceOverlay();
+    syncAudienceEvidence('close-evidence');
+    broadcastAudienceAction('close-evidence');
+    setStatus('已发送关闭图片指令到投屏页。');
+  };
   document.getElementById('pv-reset-beat').onclick = function () {
     if (!baseNotes || !baseNotes.pages[state.chapter]) return;
     notes.pages[state.chapter].beats[state.beat] = baseNotes.pages[state.chapter].beats[state.beat] || '';
@@ -284,6 +417,18 @@
   };
   document.getElementById('pv-export-script').onclick = exportNotes;
   interactBtn.onclick = function () { setInteractMode(!interactEnabled); };
+  document.getElementById('pv-evidence-close').onclick = function () {
+    closeEvidenceOverlay();
+    syncAudienceEvidence('close-evidence');
+  };
+  document.getElementById('pv-evidence-prev').onclick = function () {
+    moveEvidenceOverlay(-1);
+    syncAudienceEvidence('move-evidence', { dir: -1 });
+  };
+  document.getElementById('pv-evidence-next').onclick = function () {
+    moveEvidenceOverlay(1);
+    syncAudienceEvidence('move-evidence', { dir: 1 });
+  };
   scriptBox.addEventListener('input', function () {
     if (!notes || !notes.pages[state.chapter]) return;
     notes.pages[state.chapter].beats[state.beat] = scriptBox.value;
@@ -296,12 +441,17 @@
     if (n) postGoto(iframeNext, n.chapter, n.beat);
   };
 
-  fetch('data/speaker-beats-v8.json')
-    .then(function (r) { return r.json(); })
-    .then(function (data) {
+  Promise.all([
+    fetch('data/speaker-beats-v8.json').then(function (r) { return r.json(); }),
+    fetch('data/asset-manifest.json').then(function (r) { return r.json(); })
+  ])
+    .then(function (res) {
+      var data = res[0];
+      var manifest = res[1];
       baseNotes = clone(data);
       notes = loadSavedNotes(clone(data));
       if (notes.targetTotalSec) TARGET_SEC = notes.targetTotalSec;
+      (manifest.assets || []).forEach(function (a) { manifestMap[a.id] = a; });
       ensureIframes();
       updateUI();
       send({ type: 'request-sync' });
@@ -313,6 +463,21 @@
 
   bindKeys();
   setInteractMode(false);
+  frameWrap.addEventListener('mouseenter', function () {
+    frameHint.classList.add('is-visible');
+  });
+  frameWrap.addEventListener('mouseleave', function () {
+    frameWrap.classList.remove('zoom-on');
+    if (!interactEnabled) frameHint.classList.remove('is-visible');
+  });
+  frameWrap.addEventListener('mousemove', function (e) {
+    var rect = frameWrap.getBoundingClientRect();
+    var x = ((e.clientX - rect.left) / rect.width) * 100;
+    var y = ((e.clientY - rect.top) / rect.height) * 100;
+    iframeCur.style.setProperty('--zoom-x', x.toFixed(2) + '%');
+    iframeCur.style.setProperty('--zoom-y', y.toFixed(2) + '%');
+    if (!interactEnabled) frameWrap.classList.add('zoom-on');
+  });
   setInterval(updateTimers, 500);
   updateTimers();
 

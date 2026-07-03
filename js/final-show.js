@@ -931,6 +931,7 @@
 
   /* ═══ 讲者双屏：preview iframe + BroadcastChannel（不改变投屏默认行为） ═══ */
   var PRESENTER_CH = 'ai-final-presentation-v1';
+  var PRESENTER_ACTION_KEY = 'ai-final-presentation-audience-action';
   var presenterChannel = null;
   var presenterWin = null;
 
@@ -977,6 +978,7 @@
     if (!presenterChannel) return;
     APP.pageStartTime = APP.startTime;
     APP._lastBroadcastCh = APP.chapter;
+    bindPresenterStorageActions();
     presenterChannel.onmessage = function (ev) {
       var msg = ev.data;
       if (!msg) return;
@@ -989,6 +991,13 @@
         case 'open-evidence':
           if (msg.ids && msg.ids.length) openLightbox(msg.ids, msg.idx || 0);
           break;
+        case 'close-evidence':
+          APP.lbOpen = false;
+          if ($('lightbox')) $('lightbox').classList.remove('open');
+          break;
+        case 'move-evidence':
+          moveLightbox(msg.dir || 1);
+          break;
         case 'request-sync':
         case 'request-state':
           broadcastPresenterState();
@@ -1000,6 +1009,37 @@
           break;
       }
     };
+  }
+
+  function bindPresenterStorageActions() {
+    if (APP._storageBridgeBound) return;
+    APP._storageBridgeBound = true;
+    function runAction(raw) {
+      try {
+        var msg = JSON.parse(raw);
+        if (!msg || !msg.action) return;
+        if (APP._lastPresenterActionAt === msg.at) return;
+        APP._lastPresenterActionAt = msg.at;
+        if (msg.action === 'close-evidence') {
+          APP.lbOpen = false;
+          if ($('lightbox')) $('lightbox').classList.remove('open');
+          return;
+        }
+        if (msg.action === 'move-evidence') {
+          moveLightbox(msg.payload && msg.payload.dir ? msg.payload.dir : 1);
+        }
+      } catch (err) {}
+    }
+    window.addEventListener('storage', function (e) {
+      if (e.key !== PRESENTER_ACTION_KEY || !e.newValue) return;
+      runAction(e.newValue);
+    });
+    setInterval(function () {
+      try {
+        var raw = localStorage.getItem(PRESENTER_ACTION_KEY);
+        if (raw) runAction(raw);
+      } catch (err) {}
+    }, 300);
   }
 
   function previewGoto(ch, beat) {
@@ -1018,6 +1058,7 @@
       }
     });
     bindPreviewInteractions();
+    bindPreviewLightboxBridge();
     if (presenterChannel) {
       presenterChannel.onmessage = function (ev) {
         var msg = ev.data;
@@ -1027,34 +1068,113 @@
   }
 
   function bindPreviewInteractions() {
+    function refocusLater() {
+      if (!presenterChannel) return;
+      setTimeout(function () {
+        presenterChannel.postMessage({ type: 'presenter-refocus' });
+      }, 120);
+    }
     document.addEventListener('click', function (e) {
       var chip = e.target.closest('.ev-chip[data-ev-id]');
       if (chip) {
+        e.preventDefault();
+        e.stopPropagation();
         if (presenterChannel) {
           presenterChannel.postMessage({
             type: 'open-evidence',
             ids: chip.dataset.evGroup ? chip.dataset.evGroup.split(',') : [chip.dataset.evId],
             idx: +chip.dataset.evIdx || 0
           });
-          presenterChannel.postMessage({ type: 'presenter-refocus' });
         }
+        try {
+          window.parent.postMessage({
+            type: 'presenter-open-evidence',
+            ids: chip.dataset.evGroup ? chip.dataset.evGroup.split(',') : [chip.dataset.evId],
+            idx: +chip.dataset.evIdx || 0
+          }, '*');
+        } catch (err) {}
+        refocusLater();
         return;
       }
       var btn = e.target.closest('.ev-btn[data-ev-id]');
       if (btn) {
+        e.preventDefault();
+        e.stopPropagation();
         if (presenterChannel) {
           presenterChannel.postMessage({
             type: 'open-evidence',
             ids: [btn.dataset.evId],
             idx: 0
           });
-          presenterChannel.postMessage({ type: 'presenter-refocus' });
         }
+        try {
+          window.parent.postMessage({
+            type: 'presenter-open-evidence',
+            ids: [btn.dataset.evId],
+            idx: 0
+          }, '*');
+        } catch (err) {}
+        refocusLater();
         return;
       }
-      var nav = e.target.closest('.lb-close, .lb-prev, .lb-next');
-      if (nav && presenterChannel) presenterChannel.postMessage({ type: 'presenter-refocus' });
+      var close = e.target.closest('.lb-close');
+      if (close) {
+        if (presenterChannel) {
+          presenterChannel.postMessage({ type: 'close-evidence' });
+        }
+        try { window.parent.postMessage({ type: 'presenter-audience-action', action: 'close-evidence' }, '*'); } catch (err) {}
+        refocusLater();
+        return;
+      }
+      var prev = e.target.closest('.lb-prev');
+      if (prev) {
+        if (presenterChannel) {
+          presenterChannel.postMessage({ type: 'move-evidence', dir: -1 });
+        }
+        try { window.parent.postMessage({ type: 'presenter-audience-action', action: 'move-evidence', dir: -1 }, '*'); } catch (err) {}
+        refocusLater();
+        return;
+      }
+      var next = e.target.closest('.lb-next');
+      if (next) {
+        if (presenterChannel) {
+          presenterChannel.postMessage({ type: 'move-evidence', dir: 1 });
+        }
+        try { window.parent.postMessage({ type: 'presenter-audience-action', action: 'move-evidence', dir: 1 }, '*'); } catch (err) {}
+        refocusLater();
+        return;
+      }
     }, true);
+  }
+
+  function bindPreviewLightboxBridge() {
+    var closeBtn = $('lb-close');
+    var prevBtn = $('lb-prev');
+    var nextBtn = $('lb-next');
+    if (closeBtn && !closeBtn.dataset.previewBridge) {
+      closeBtn.dataset.previewBridge = '1';
+      var closeOrig = closeBtn.onclick;
+      closeBtn.onclick = function (ev) {
+        if (typeof closeOrig === 'function') closeOrig.call(this, ev);
+        if (presenterChannel) presenterChannel.postMessage({ type: 'close-evidence' });
+      };
+    }
+    if (prevBtn && !prevBtn.dataset.previewBridge) {
+      prevBtn.dataset.previewBridge = '1';
+      var prevOrig = prevBtn.onclick;
+      prevBtn.onclick = function (ev) {
+        if (typeof prevOrig === 'function') prevOrig.call(this, ev);
+        if (presenterChannel) presenterChannel.postMessage({ type: 'move-evidence', dir: -1 });
+      };
+    }
+    if (nextBtn && !nextBtn.dataset.previewBridge) {
+      nextBtn.dataset.previewBridge = '1';
+      var nextOrig = nextBtn.onclick;
+      nextBtn.onclick = function (ev) {
+        if (typeof nextOrig === 'function') nextOrig.call(this, ev);
+        if (presenterChannel) presenterChannel.postMessage({ type: 'move-evidence', dir: 1 });
+      };
+    }
   }
 
   document.addEventListener('DOMContentLoaded', init);
