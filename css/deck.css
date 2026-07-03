@@ -1,6 +1,9 @@
-/* ═══════════════════════════════════════════════════════════
-   Deck 布局 v8 — 固定1920×1080设计画布 + 单一外层缩放
-   ═══════════════════════════════════════════════════════════ */
+/* 投屏预览模式（讲者控制台 iframe 用，不影响默认 index.html） */
+body.preview-mode .deck-header,
+body.preview-mode .progress-bar,
+body.preview-mode .qa-debug-layer { display: none !important; }
+body.preview-mode .deck-main { top: 0; bottom: 0; }
+
 
 .deck-main {
   position: absolute;

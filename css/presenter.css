@@ -1,0 +1,158 @@
+/* 讲者控制台 — 四宫格双屏模式（不影响投屏 index.html） */
+*, *::before, *::after { box-sizing: border-box; }
+html, body {
+  margin: 0;
+  height: 100%;
+  background: #0a0c10;
+  color: #e8eaef;
+  font-family: "Noto Sans SC", "PingFang SC", sans-serif;
+  overflow: hidden;
+}
+
+.presenter-shell {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 8px;
+  height: 100vh;
+  padding: 8px;
+}
+
+.pv-panel {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  border: 1px solid rgba(240, 240, 250, 0.12);
+  background: #0f1218;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.pv-head {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 12px;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(240, 240, 250, 0.5);
+  border-bottom: 1px solid rgba(240, 240, 250, 0.08);
+  background: rgba(0, 0, 0, 0.35);
+}
+.pv-head b { color: #48d7ff; font-weight: 600; }
+.pv-head-actions { display: flex; gap: 8px; }
+.pv-head-actions button {
+  padding: 4px 10px;
+  border: 1px solid rgba(72, 215, 255, 0.35);
+  background: rgba(72, 215, 255, 0.08);
+  color: #48d7ff;
+  font-size: 11px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.pv-head-actions button:hover { background: rgba(72, 215, 255, 0.16); }
+
+.pv-frame-wrap {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+  background: #000;
+}
+.pv-frame-wrap iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  pointer-events: none;
+}
+
+/* 左下：计时 */
+.pv-timer-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 20px 24px;
+  gap: 16px;
+}
+.pv-clock-row {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.pv-clock {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 42px;
+  font-weight: 500;
+  color: #f0f0fa;
+  letter-spacing: 0.04em;
+}
+.pv-clock.sub { font-size: 22px; color: rgba(240, 240, 250, 0.55); }
+.pv-clock.warn { color: #ffb45e; }
+.pv-clock.over { color: #ff6c72; }
+.pv-timer-meta {
+  font-size: 13px;
+  line-height: 1.6;
+  color: rgba(240, 240, 250, 0.45);
+}
+.pv-progress {
+  height: 4px;
+  background: rgba(240, 240, 250, 0.08);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.pv-progress span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, #48d7ff, #7c6cff);
+  width: 0%;
+  transition: width 0.4s ease;
+}
+
+/* 右下：逐字稿 */
+.pv-script-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 16px 20px 20px;
+}
+.pv-script-body p {
+  margin: 0 0 12px;
+  font-size: 17px;
+  line-height: 1.72;
+  color: rgba(240, 240, 250, 0.92);
+}
+.pv-script-hint {
+  margin-top: 14px;
+  padding: 10px 12px;
+  border-left: 2px solid #ff7a45;
+  background: rgba(255, 122, 69, 0.08);
+  font-size: 13px;
+  line-height: 1.55;
+  color: rgba(255, 180, 140, 0.95);
+}
+
+.pv-keys {
+  position: fixed;
+  bottom: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 11px;
+  color: rgba(240, 240, 250, 0.28);
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+/* 投屏预览模式：隐藏讲者无关 chrome */
+body.preview-mode .deck-header,
+body.preview-mode .progress-bar,
+body.preview-mode .qa-debug-layer { display: none !important; }
+body.preview-mode .deck-main {
+  top: 0;
+  bottom: 0;
+}

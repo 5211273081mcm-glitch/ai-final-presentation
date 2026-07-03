@@ -16,6 +16,8 @@ window.__PRESENTATION_DATA__ = {"config": {"projectTitle": "用AI重构舆情工
     beat: 0,
     lastChapter: -1,
     prevChapter: -1,
+    pageStartTime: 0,
+    isPreview: false,
     busy: false,
     lbOpen: false,
     lbIdx: 0,
@@ -532,6 +534,7 @@ window.__PRESENTATION_DATA__ = {"config": {"projectTitle": "用AI重构舆情工
       else if (i === APP.chapter) done += APP.beat + 1;
     });
     $('progress-fill').style.width = (done / total * 100) + '%';
+    if (!APP.isPreview) broadcastPresenterState();
   }
 
   function applyBeat(root, beat) {
@@ -823,6 +826,7 @@ window.__PRESENTATION_DATA__ = {"config": {"projectTitle": "用AI重构舆情工
   }
 
   function bindKeys() {
+    if (APP.isPreview) return;
     document.addEventListener('keydown', function (e) {
       if (APP.lbOpen) {
         if (e.key === 'Escape') { e.preventDefault(); closeLightbox(); return; }
@@ -868,6 +872,11 @@ window.__PRESENTATION_DATA__ = {"config": {"projectTitle": "用AI重构舆情工
           e.preventDefault();
           document.body.classList.toggle('qa-debug');
           break;
+        case 's':
+        case 'S':
+          e.preventDefault();
+          openPresenterWindow();
+          break;
         default:
           if (e.key >= '1' && e.key <= '6') {
             e.preventDefault();
@@ -893,19 +902,125 @@ window.__PRESENTATION_DATA__ = {"config": {"projectTitle": "用AI重构舆情工
   }
 
   function init() {
+    initPresenterMode();
     initData();
     buildChapterNav();
-    bindChrome();
-    bindKeys();
-    bindViewportLock();
+    if (!APP.isPreview) {
+      bindChrome();
+      bindKeys();
+      bindViewportLock();
+      bindPresenterChannel();
+    } else {
+      bindPreviewChannel();
+    }
     preloadUrl(C().masterMap.leftTexture);
     preloadUrl(C().masterMap.rightTexture);
-    setInterval(function () {
-      var sec = Math.floor((Date.now() - APP.startTime) / 1000);
-      $('clock').textContent = String(Math.floor(sec / 60)).padStart(2, '0') + ':' + String(sec % 60).padStart(2, '0');
-    }, 1000);
-    render();
+    if (!APP.isPreview) {
+      setInterval(function () {
+        var sec = Math.floor((Date.now() - APP.startTime) / 1000);
+        $('clock').textContent = String(Math.floor(sec / 60)).padStart(2, '0') + ':' + String(sec % 60).padStart(2, '0');
+      }, 1000);
+    }
+    if (APP.isPreview) {
+      goChapter(APP.chapter, APP.beat);
+    } else {
+      render();
+    }
     window.addEventListener('resize', stabilizeLayout);
+    if (!APP.isPreview) broadcastPresenterState();
+  }
+
+  /* ═══ 讲者双屏：preview iframe + BroadcastChannel（不改变投屏默认行为） ═══ */
+  var PRESENTER_CH = 'ai-final-presentation-v1';
+  var presenterChannel = null;
+  var presenterWin = null;
+
+  function initPresenterMode() {
+    var q = new URLSearchParams(window.location.search);
+    APP.isPreview = q.get('preview') === '1';
+    if (APP.isPreview) {
+      document.body.classList.add('preview-mode');
+      APP.chapter = Math.max(0, Math.min(PAGES.length - 1, +(q.get('ch') || 0)));
+      APP.beat = Math.max(0, +(q.get('beat') || 0));
+      APP.busy = false;
+      APP.lastChapter = -1;
+      return;
+    }
+    try { presenterChannel = new BroadcastChannel(PRESENTER_CH); } catch (err) { presenterChannel = null; }
+  }
+
+  function openPresenterWindow() {
+    if (presenterWin && !presenterWin.closed) {
+      presenterWin.focus();
+      broadcastPresenterState();
+      return;
+    }
+    presenterWin = window.open('presenter.html', 'ai-final-presenter', 'width=1280,height=800');
+    setTimeout(broadcastPresenterState, 600);
+  }
+
+  function broadcastPresenterState() {
+    if (APP.isPreview || !presenterChannel) return;
+    if (APP.chapter !== APP._lastBroadcastCh) {
+      APP.pageStartTime = Date.now();
+      APP._lastBroadcastCh = APP.chapter;
+    }
+    presenterChannel.postMessage({
+      type: 'state',
+      chapter: APP.chapter,
+      beat: APP.beat,
+      startTime: APP.startTime,
+      pageStartTime: APP.pageStartTime || APP.startTime
+    });
+  }
+
+  function bindPresenterChannel() {
+    if (!presenterChannel) return;
+    APP.pageStartTime = APP.startTime;
+    APP._lastBroadcastCh = APP.chapter;
+    presenterChannel.onmessage = function (ev) {
+      var msg = ev.data;
+      if (!msg) return;
+      switch (msg.type) {
+        case 'advance': advance(); break;
+        case 'retreat': retreat(); break;
+        case 'go':
+          goChapter(msg.chapter || 0, msg.beat || 0);
+          break;
+        case 'request-sync':
+        case 'request-state':
+          broadcastPresenterState();
+          break;
+        case 'reset-timer':
+          APP.startTime = Date.now();
+          APP.pageStartTime = Date.now();
+          broadcastPresenterState();
+          break;
+      }
+    };
+  }
+
+  function previewGoto(ch, beat) {
+    if (!APP.isPreview) return;
+    APP.chapter = Math.max(0, Math.min(PAGES.length - 1, ch));
+    APP.beat = Math.max(0, Math.min(PAGES[APP.chapter].beats - 1, beat));
+    APP.lastChapter = -1;
+    APP.busy = false;
+    render();
+  }
+
+  function bindPreviewChannel() {
+    window.addEventListener('message', function (e) {
+      if (e.data && e.data.type === 'preview-goto') {
+        previewGoto(e.data.chapter, e.data.beat);
+      }
+    });
+    if (presenterChannel) {
+      presenterChannel.onmessage = function (ev) {
+        var msg = ev.data;
+        if (msg && msg.type === 'preview-goto') previewGoto(msg.chapter, msg.beat);
+      };
+    }
   }
 
   document.addEventListener('DOMContentLoaded', init);
