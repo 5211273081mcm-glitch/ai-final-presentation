@@ -456,7 +456,7 @@ window.__PRESENTATION_DATA__ = {"config": {"projectTitle": "用AI重构舆情工
     if (conclusion) conclusion.classList.toggle('is-dormant', beat < 1);
     if (beat >= 1) initSphere();
     else destroySphere();
-    resetViewport();
+    stabilizeLayout();
   }
 
   function initSphere() {
@@ -575,21 +575,20 @@ window.__PRESENTATION_DATA__ = {"config": {"projectTitle": "用AI重构舆情工
         applyBeat(canvas, APP.beat);
         canvas.classList.remove('fading');
         resetViewport();
-        scale();
+        stabilizeLayout();
         preloadChapter(APP.chapter);
         APP.busy = false;
       }, APP.lastChapter < 0 ? 0 : 160);
       APP.lastChapter = APP.chapter;
     } else {
       applyBeat(canvas, APP.beat);
-      resetViewport();
-      scale();
+      stabilizeLayout();
       APP.busy = false;
     }
     updateNav();
   }
 
-  /* 唯一缩放计算：用 translateY + scale 垂直居中，避免 flex 居中 + iframe 撑高导致 viewport 内部滚动 */
+  /* 唯一缩放计算：绝对定位 + translateX(-50%) + translateY + scale，避免 flex 子项撑出内部滚动 */
   function scale() {
     var viewport = $('scene-viewport');
     var stage = $('scene-stage');
@@ -597,7 +596,15 @@ window.__PRESENTATION_DATA__ = {"config": {"projectTitle": "用AI重构舆情工
     resetViewport();
     var s = Math.min(viewport.clientWidth / 1920, viewport.clientHeight / 1080);
     var gapY = Math.max(0, (viewport.clientHeight - 1080 * s) / 2);
-    stage.style.transform = 'translateY(' + gapY.toFixed(2) + 'px) scale(' + s + ')';
+    stage.style.transform = 'translateX(-50%) translateY(' + gapY.toFixed(2) + 'px) scale(' + s + ')';
+  }
+
+  function stabilizeLayout() {
+    scale();
+    requestAnimationFrame(function () {
+      resetViewport();
+      scale();
+    });
   }
 
   function goChapter(ch, beat) {
@@ -632,7 +639,19 @@ window.__PRESENTATION_DATA__ = {"config": {"projectTitle": "用AI重构舆情工
   function resetViewport() {
     window.scrollTo(0, 0);
     var vp = $('scene-viewport');
-    if (vp) vp.scrollTop = 0;
+    if (vp) {
+      vp.scrollTop = 0;
+      vp.scrollLeft = 0;
+    }
+  }
+
+  function bindViewportLock() {
+    var vp = $('scene-viewport');
+    if (!vp || vp.dataset.lock) return;
+    vp.dataset.lock = '1';
+    vp.addEventListener('scroll', function () {
+      if (vp.scrollTop !== 0 || vp.scrollLeft !== 0) resetViewport();
+    }, { passive: true });
   }
 
   /* 预加载：星球纹理 + 当前页 Evidence 图片，减少外部预览时的等待 */
@@ -667,8 +686,12 @@ window.__PRESENTATION_DATA__ = {"config": {"projectTitle": "用AI重构舆情工
     iframe.title = '风险场景库';
     iframe.setAttribute('loading', 'lazy');
     iframe.setAttribute('scrolling', 'no');
+    iframe.setAttribute('tabindex', '-1');
     iframe.setAttribute('referrerpolicy', 'no-referrer-when-downgrade');
-    iframe.onload = function () { box.classList.remove('is-loading'); };
+    iframe.onload = function () {
+      box.classList.remove('is-loading');
+      stabilizeLayout();
+    };
     iframe.onerror = function () { box.classList.add('fallback'); box.classList.remove('is-loading'); };
     box.insertBefore(iframe, box.firstChild);
   }
@@ -808,6 +831,7 @@ window.__PRESENTATION_DATA__ = {"config": {"projectTitle": "用AI重构舆情工
     buildChapterNav();
     bindChrome();
     bindKeys();
+    bindViewportLock();
     preloadUrl(C().masterMap.leftTexture);
     preloadUrl(C().masterMap.rightTexture);
     setInterval(function () {
@@ -815,7 +839,7 @@ window.__PRESENTATION_DATA__ = {"config": {"projectTitle": "用AI重构舆情工
       $('clock').textContent = String(Math.floor(sec / 60)).padStart(2, '0') + ':' + String(sec % 60).padStart(2, '0');
     }, 1000);
     render();
-    window.addEventListener('resize', scale);
+    window.addEventListener('resize', stabilizeLayout);
   }
 
   document.addEventListener('DOMContentLoaded', init);
