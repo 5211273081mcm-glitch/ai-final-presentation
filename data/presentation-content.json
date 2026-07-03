@@ -130,6 +130,10 @@
             {
               "id": "douban-dashboard",
               "label": "豆瓣看板"
+            },
+            {
+              "id": "douban-daily-analysis",
+              "label": "每日豆瓣分析"
             }
           ]
         },

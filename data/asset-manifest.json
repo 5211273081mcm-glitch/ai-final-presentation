@@ -318,6 +318,18 @@
       "sourceLabel": "至豆瓣看板"
     },
     {
+      "id": "douban-daily-analysis",
+      "originalFilename": "【豆瓣】每日分析.png",
+      "path": "assets/evidence/【豆瓣】每日分析.webp",
+      "width": 1672,
+      "height": 941,
+      "category": "豆瓣-每日分析",
+      "suggestedPage": "page3",
+      "usageTier": "main",
+      "title": "每日豆瓣分析",
+      "description": "每日定时输出豆瓣线索概览：总讨论量、活跃话题、舆情提炼与主播相关动态，替代人工日报盘点"
+    },
+    {
       "id": "secretary-raw-quote",
       "originalFilename": "【大秘书】原声私信:投诉.png",
       "path": "assets/evidence/【大秘书】原声私信:投诉.webp",

@@ -14,6 +14,7 @@
     chapter: 0,
     beat: 0,
     lastChapter: -1,
+    prevChapter: -1,
     busy: false,
     lbOpen: false,
     lbIdx: 0,
@@ -270,13 +271,13 @@
   /* ═══════════════════════════════════════════════════════════
      Page 1 — 纯开场：标题 + 核心命题
      ═══════════════════════════════════════════════════════════ */
+  /* 核心命题不在开场页重复出现——总纲页底部已有同样结论 */
   function buildOpening() {
     var p = C().pages[0];
     var titleHtml = esc(p.title).replace(/\n/g, '<br>');
     return '<div class="open-slide">' +
       '<h1 class="open-title" data-qa-id="page-title">' + titleHtml + '</h1>' +
       rv('<p class="open-subtitle">' + esc(p.subtitle) + '</p>', 1) +
-      rv('<p class="open-proposition" data-qa-id="page-conclusion">' + (C().corePropositionHtml || esc(C().coreProposition)) + '</p>', 2) +
     '</div>';
   }
 
@@ -496,7 +497,7 @@
   }
 
   var PAGES = [
-    { beats: 3, build: buildOpening },
+    { beats: 2, build: buildOpening },
     { beats: 5, build: buildMasterTotalMap },
     { beats: 4, build: buildParsePage, evidence: parseEvidenceIds, apply: applyParseBeat },
     { beats: 5, build: buildHandlePage, evidence: handleEvidenceIds, apply: applyHandleBeat },
@@ -541,7 +542,27 @@
     if (map) setMasterStage(map, beat);
     var pg = PAGES[APP.chapter];
     if (pg.apply) pg.apply(root, beat);
+    markLiveEvidence(root, beat);
     document.body.classList.toggle('on-master-map', APP.chapter === 1);
+  }
+
+  /* Evidence 引导高亮：进度聚焦到含 Evidence 的内容时，按钮加光晕闪烁提示可点击；
+     进入下一进度时旧的自动清除，只强调"当前该看"的证据 */
+  function markLiveEvidence(root, beat) {
+    root.querySelectorAll('.ev-live').forEach(function (el) { el.classList.remove('ev-live'); });
+    var sel = [
+      '.signal-col.is-primary',
+      '.handle-col.is-primary',
+      '.reveal.is-on[data-step="' + beat + '"]',
+      '[data-conclusion]:not(.is-dormant)',
+      '[data-loop-flow]:not(.is-collapsed)',
+      '[data-sphere-panel].is-on'
+    ].join(',');
+    root.querySelectorAll(sel).forEach(function (box) {
+      box.querySelectorAll('.ev-chip, .ev-btn, .ev-link').forEach(function (b) {
+        b.classList.add('ev-live');
+      });
+    });
   }
 
   function bindEvButtons(root) {
@@ -567,6 +588,16 @@
     if (APP.chapter !== 4) destroySphere();
     var canvas = $('slide-canvas');
     if (APP.lastChapter !== APP.chapter) {
+      var dir = 0;
+      if (APP.prevChapter === 0 && APP.chapter === 1) dir = 1;
+      else if (APP.prevChapter === 1 && APP.chapter === 0) dir = -1;
+      APP.prevChapter = -1;
+      if (dir) {
+        slideChapter(canvas, dir);
+        APP.lastChapter = APP.chapter;
+        updateNav();
+        return;
+      }
       canvas.classList.add('fading');
       setTimeout(function () {
         canvas.innerHTML = PAGES[APP.chapter].build();
@@ -585,6 +616,37 @@
       APP.busy = false;
     }
     updateNav();
+  }
+
+  /* 总结构 ⇄ 总纲 链路式转场：旧内容整体左移退出，同时新内容自右滑入，
+     用快照层承载旧画面，双层同轨移动，呈现"沿链路推进"的观感 */
+  var SLIDE_MS = 620;
+  function slideChapter(canvas, dir) {
+    var slide = canvas.parentNode;
+    var ghost = document.createElement('div');
+    ghost.className = 'canvas-ghost';
+    ghost.innerHTML = canvas.innerHTML;
+    slide.appendChild(ghost);
+    canvas.classList.remove('fading');
+    canvas.style.transition = 'none';
+    canvas.style.transform = 'translateX(' + (dir > 0 ? 100 : -100) + '%)';
+    canvas.innerHTML = PAGES[APP.chapter].build();
+    bindEvButtons(canvas);
+    applyBeat(canvas, APP.beat);
+    resetViewport();
+    stabilizeLayout();
+    preloadChapter(APP.chapter);
+    void canvas.offsetWidth;
+    canvas.style.transition = 'transform ' + SLIDE_MS + 'ms cubic-bezier(0.66, 0, 0.22, 1)';
+    canvas.style.transform = 'translateX(0)';
+    ghost.style.transform = 'translateX(' + (dir > 0 ? -100 : 100) + '%)';
+    setTimeout(function () {
+      ghost.remove();
+      canvas.style.transition = '';
+      canvas.style.transform = '';
+      resetViewport();
+      APP.busy = false;
+    }, SLIDE_MS + 60);
   }
 
   /* 唯一缩放计算：绝对定位 + translateX(-50%) + translateY + scale，避免 flex 子项撑出内部滚动 */
@@ -608,9 +670,13 @@
 
   function goChapter(ch, beat) {
     if (APP.busy) return;
+    var prev = APP.chapter;
     APP.chapter = Math.max(0, Math.min(PAGES.length - 1, ch));
     APP.beat = beat || 0;
-    if (APP.lastChapter !== APP.chapter) APP.lastChapter = -1;
+    if (APP.lastChapter !== APP.chapter) {
+      APP.prevChapter = prev;
+      APP.lastChapter = -1;
+    }
     render();
   }
 

@@ -29,6 +29,7 @@
   opacity: 1;
   transform: none;
   pointer-events: auto;
+  overflow: hidden;
 }
 
 .slide-canvas {
@@ -37,8 +38,23 @@
   height: 1080px;
   overflow: hidden;
   transition: opacity 0.4s var(--spx-ease);
+  will-change: transform;
 }
 .slide-canvas.fading { opacity: 0; }
+
+/* 链路式转场的旧画面快照层：与新画布同轨反向移动 */
+.canvas-ghost {
+  position: absolute;
+  inset: 0;
+  width: 1920px;
+  height: 1080px;
+  overflow: hidden;
+  z-index: 3;
+  pointer-events: none;
+  transform: translateX(0);
+  transition: transform 620ms cubic-bezier(0.66, 0, 0.22, 1);
+  will-change: transform;
+}
 
 /* ═══ 页面标题基准区（所有非总纲页共用） ═══ */
 .slide-title-block {
@@ -180,6 +196,27 @@
 }
 .ev-chip::before { content: '▸'; color: var(--signal-primary); font-size: 10px; }
 .ev-chip:hover { background: rgba(255, 122, 69, 0.12); border-color: var(--signal-soft); color: var(--text-primary); }
+
+/* ═══ Evidence 引导高亮：进度到达时光晕闪烁，提示可点击查看 ═══ */
+@keyframes evGlowWarm {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 122, 69, 0), 0 0 6px rgba(255, 122, 69, 0.18); }
+  50% { box-shadow: 0 0 0 4px rgba(255, 122, 69, 0.13), 0 0 18px rgba(255, 122, 69, 0.55); }
+}
+@keyframes evGlowCyan {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(72, 215, 255, 0), 0 0 6px rgba(72, 215, 255, 0.18); }
+  50% { box-shadow: 0 0 0 4px rgba(72, 215, 255, 0.13), 0 0 18px rgba(72, 215, 255, 0.6); }
+}
+.ev-chip.ev-live {
+  animation: evGlowWarm 1.6s ease-in-out infinite;
+  border-color: var(--signal-soft);
+  color: var(--text-primary);
+}
+.ev-btn.ev-live,
+.ev-link.ev-live {
+  animation: evGlowCyan 1.6s ease-in-out infinite;
+  border-color: var(--ai-primary);
+  color: var(--text-primary);
+}
 
 .parse-conclusion {
   position: absolute;
@@ -523,27 +560,30 @@
 }
 .replicate-grid b { display: block; font-family: var(--font-display); font-size: var(--fs-node-title); font-weight: var(--fw-module); color: var(--text-primary); margin-bottom: 8px; }
 .replicate-grid p { margin: 0; font-size: var(--fs-caption); line-height: var(--lh-body); color: var(--text-tertiary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* 愿景块：从"小字附注"升级为带强调底色的信息面板，保证台下可读 */
 .replicate-grid .replicate-note {
   margin-top: 12px;
-  padding-top: 12px;
-  border-top: 1px dashed rgba(72, 215, 255, 0.28);
+  padding: 10px 12px;
+  background: rgba(72, 215, 255, 0.07);
+  border-left: 2px solid var(--ai-primary);
   white-space: normal;
   overflow: visible;
   text-overflow: clip;
-  font-size: 13px;
-  line-height: 1.55;
-  color: var(--text-secondary);
+  font-size: 16.5px;
+  line-height: 1.6;
+  color: var(--text-primary);
 }
 .replicate-note-tag {
   display: inline-block;
-  margin-right: 7px;
-  padding: 1px 7px;
+  margin-right: 8px;
+  padding: 2px 9px;
   border-radius: 2px;
-  background: rgba(72, 215, 255, 0.14);
+  background: rgba(72, 215, 255, 0.18);
   color: var(--ai-primary);
   font-family: var(--font-display);
-  font-size: 10px;
-  letter-spacing: 0.06em;
+  font-size: 12px;
+  font-weight: var(--fw-module);
+  letter-spacing: 0.08em;
   vertical-align: 1px;
   white-space: nowrap;
 }
