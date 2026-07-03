@@ -434,7 +434,7 @@
           '<div class="loop-evidence-top"><span class="loop-evidence-label">如何复盘沉淀 · 已接入证据</span><div class="ev-chip-row">' + topEv + '</div></div>' +
         '</div>' +
         '<div class="sphere-panel" data-sphere-panel>' +
-          '<div class="sphere-box" id="sphere-box"><iframe src="' + esc(APP.config.sphere.url) + '" title="风险场景库"></iframe><img class="sphere-fb" src="' + esc(APP.config.sphere.fallbackImage) + '" alt="风险知识宇宙截图"></div>' +
+          '<div class="sphere-box" id="sphere-box"><img class="sphere-fb" src="' + esc(APP.config.sphere.fallbackImage) + '" alt="风险知识宇宙截图"></div>' +
           '<div class="scene-card"><span class="mono">' + esc(sc.code) + '</span><h3>' + esc(sc.name) + '</h3><p>类目 ' + esc(sc.category) + ' · ' + esc(sc.alertLevel) + '</p>' +
             '<a class="ev-link" href="' + esc(APP.config.sphere.url) + '" target="_blank" rel="noopener"><span>Evidence</span>204场景3D场景库演示</a>' +
           '</div>' +
@@ -454,6 +454,21 @@
     var conclusion = root.querySelector('[data-conclusion]');
     if (conclusion) conclusion.classList.toggle('is-dormant', beat < 1);
     if (beat >= 1) initSphere();
+    else destroySphere();
+    resetViewport();
+  }
+
+  function initSphere() {
+    var box = $('sphere-box');
+    if (!box || box.dataset.ok) return;
+    box.dataset.ok = '1';
+    mountSphereIframe(box);
+    setTimeout(function () {
+      if (!navigator.onLine) {
+        box.classList.add('fallback');
+        box.classList.remove('is-loading');
+      }
+    }, APP.config.sphere.loadTimeoutMs || 8000);
   }
 
   /* ═══════════════════════════════════════════════════════════
@@ -549,6 +564,7 @@
     if (APP.busy) return;
     APP.busy = true;
     clearMapAnimTimers();
+    if (APP.chapter !== 4) destroySphere();
     var canvas = $('slide-canvas');
     if (APP.lastChapter !== APP.chapter) {
       canvas.classList.add('fading');
@@ -557,23 +573,30 @@
         bindEvButtons(canvas);
         applyBeat(canvas, APP.beat);
         canvas.classList.remove('fading');
+        resetViewport();
+        scale();
+        preloadChapter(APP.chapter);
         APP.busy = false;
       }, APP.lastChapter < 0 ? 0 : 160);
       APP.lastChapter = APP.chapter;
     } else {
       applyBeat(canvas, APP.beat);
+      resetViewport();
+      scale();
       APP.busy = false;
     }
     updateNav();
-    scale();
   }
 
-  /* 唯一缩放计算：deck-main 的 clientHeight 已经排除了 header/footer，
-     不再对其做二次扣减，避免"先响应式排版再被 transform 缩放"的双重计算 */
+  /* 唯一缩放计算：用 translateY + scale 垂直居中，避免 flex 居中 + iframe 撑高导致 viewport 内部滚动 */
   function scale() {
     var viewport = $('scene-viewport');
+    var stage = $('scene-stage');
+    if (!viewport || !stage) return;
+    resetViewport();
     var s = Math.min(viewport.clientWidth / 1920, viewport.clientHeight / 1080);
-    $('scene-stage').style.transform = 'scale(' + s + ')';
+    var gapY = Math.max(0, (viewport.clientHeight - 1080 * s) / 2);
+    stage.style.transform = 'translateY(' + gapY.toFixed(2) + 'px) scale(' + s + ')';
   }
 
   function goChapter(ch, beat) {
@@ -605,13 +628,57 @@
     }
   }
 
-  function initSphere() {
+  function resetViewport() {
+    window.scrollTo(0, 0);
+    var vp = $('scene-viewport');
+    if (vp) vp.scrollTop = 0;
+  }
+
+  /* 预加载：星球纹理 + 当前页 Evidence 图片，减少外部预览时的等待 */
+  var preloaded = {};
+  function preloadUrl(url) {
+    if (!url || preloaded[url]) return;
+    preloaded[url] = true;
+    var img = new Image();
+    img.decoding = 'async';
+    img.src = url;
+  }
+  function preloadChapter(ch) {
+    var pg = PAGES[ch];
+    if (!pg) return;
+    if (ch === 1 || ch === 5) {
+      preloadUrl(C().masterMap.leftTexture);
+      preloadUrl(C().masterMap.rightTexture);
+    }
+    var evSpec = pg.evidence;
+    var ids = typeof evSpec === 'function' ? evSpec() : evSpec;
+    (ids || []).forEach(function (id) {
+      var a = asset(id);
+      if (a) preloadUrl(a.path);
+    });
+  }
+
+  function mountSphereIframe(box) {
+    if (!box || box.querySelector('iframe')) return;
+    box.classList.add('is-loading');
+    var iframe = document.createElement('iframe');
+    iframe.src = APP.config.sphere.url;
+    iframe.title = '风险场景库';
+    iframe.setAttribute('loading', 'lazy');
+    iframe.setAttribute('scrolling', 'no');
+    iframe.setAttribute('referrerpolicy', 'no-referrer-when-downgrade');
+    iframe.onload = function () { box.classList.remove('is-loading'); };
+    iframe.onerror = function () { box.classList.add('fallback'); box.classList.remove('is-loading'); };
+    box.insertBefore(iframe, box.firstChild);
+  }
+
+  function destroySphere() {
     var box = $('sphere-box');
-    if (!box || box.dataset.ok) return;
-    box.dataset.ok = '1';
-    setTimeout(function () {
-      if (!navigator.onLine) box.classList.add('fallback');
-    }, APP.config.sphere.loadTimeoutMs || 8000);
+    if (!box) return;
+    var iframe = box.querySelector('iframe');
+    if (iframe) iframe.remove();
+    box.classList.remove('is-loading', 'fallback');
+    delete box.dataset.ok;
   }
 
   function openLightbox(ids, idx) {
@@ -619,14 +686,27 @@
     if (!APP.lbImages.length) return;
     APP.lbIdx = idx || 0;
     APP.lbOpen = true;
+    APP.lbImages.forEach(function (a) { preloadUrl(a.path); });
     syncLightbox();
     $('lightbox').classList.add('open');
   }
   function syncLightbox() {
     var a = APP.lbImages[APP.lbIdx];
     if (!a) return;
-    $('lb-img').src = a.path;
-    $('lb-img').alt = a.title;
+    var lb = $('lightbox');
+    var img = $('lb-img');
+    lb.classList.add('is-loading');
+    img.classList.add('is-loading');
+    img.onload = function () {
+      lb.classList.remove('is-loading');
+      img.classList.remove('is-loading');
+    };
+    img.onerror = function () {
+      lb.classList.remove('is-loading');
+      img.classList.remove('is-loading');
+    };
+    img.src = a.path;
+    img.alt = a.title;
     $('lb-cap').textContent = a.title + ' - ' + a.description;
     var src = $('lb-source');
     if (src) {
@@ -639,6 +719,8 @@
         src.classList.remove('has-link');
       }
     }
+    var next = APP.lbImages[(APP.lbIdx + 1) % APP.lbImages.length];
+    if (next) preloadUrl(next.path);
   }
   function closeLightbox() {
     APP.lbOpen = false;
@@ -725,6 +807,8 @@
     buildChapterNav();
     bindChrome();
     bindKeys();
+    preloadUrl(C().masterMap.leftTexture);
+    preloadUrl(C().masterMap.rightTexture);
     setInterval(function () {
       var sec = Math.floor((Date.now() - APP.startTime) / 1000);
       $('clock').textContent = String(Math.floor(sec / 60)).padStart(2, '0') + ':' + String(sec % 60).padStart(2, '0');

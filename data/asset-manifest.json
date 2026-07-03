@@ -4,7 +4,7 @@
     {
       "id": "sphere-screenshot",
       "originalFilename": "3D场景球体截图.png",
-      "path": "assets/evidence/3D场景球体截图.png",
+      "path": "assets/evidence/3D场景球体截图.webp",
       "width": 2874,
       "height": 1550,
       "category": "3D球体截图",
@@ -16,7 +16,7 @@
     {
       "id": "secretary-ai-1",
       "originalFilename": "【大秘书】AI解析后的字段结果1.png",
-      "path": "assets/evidence/【大秘书】AI解析后的字段结果1.png",
+      "path": "assets/evidence/【大秘书】AI解析后的字段结果1.webp",
       "width": 2934,
       "height": 1588,
       "category": "大秘书-AI解析",
@@ -30,7 +30,7 @@
     {
       "id": "secretary-cookie-import",
       "originalFilename": "【大秘书】原始私信内容.png",
-      "path": "assets/evidence/【大秘书】原始私信内容.png",
+      "path": "assets/evidence/【大秘书】原始私信内容.webp",
       "width": 2940,
       "height": 1588,
       "category": "大秘书-Cookie导入",
@@ -44,7 +44,7 @@
     {
       "id": "secretary-ai-2",
       "originalFilename": "【大秘书】AI解析后的字段结果2 补充解析维度.png",
-      "path": "assets/evidence/【大秘书】AI解析后的字段结果2 补充解析维度.png",
+      "path": "assets/evidence/【大秘书】AI解析后的字段结果2 补充解析维度.webp",
       "width": 2940,
       "height": 1590,
       "category": "大秘书-AI解析",
@@ -56,7 +56,7 @@
     {
       "id": "secretary-raw",
       "originalFilename": "【大秘书】原始私信内容.png",
-      "path": "assets/evidence/【大秘书】原始私信内容.png",
+      "path": "assets/evidence/【大秘书】原始私信内容.webp",
       "width": 2940,
       "height": 1588,
       "category": "大秘书-原始私信",
@@ -68,7 +68,7 @@
     {
       "id": "secretary-ocr",
       "originalFilename": "【大秘书】私信图片OCR 私信链接解析.png",
-      "path": "assets/evidence/【大秘书】私信图片OCR 私信链接解析.png",
+      "path": "assets/evidence/【大秘书】私信图片OCR 私信链接解析.webp",
       "width": 2934,
       "height": 1586,
       "category": "大秘书-OCR",
@@ -80,7 +80,7 @@
     {
       "id": "monthly-june",
       "originalFilename": "【月报】2026年6月舆情大盘图.png",
-      "path": "assets/evidence/【月报】2026年6月舆情大盘图.png",
+      "path": "assets/evidence/【月报】2026年6月舆情大盘图.webp",
       "width": 1672,
       "height": 941,
       "category": "月报",
@@ -92,7 +92,7 @@
     {
       "id": "crawler-aggregate",
       "originalFilename": "【爬虫分析】聚合.png",
-      "path": "assets/evidence/【爬虫分析】聚合.png",
+      "path": "assets/evidence/【爬虫分析】聚合.webp",
       "width": 1672,
       "height": 941,
       "category": "爬虫分析",
@@ -106,7 +106,7 @@
     {
       "id": "social-crawler",
       "originalFilename": "【社媒】数据爬虫.png",
-      "path": "assets/evidence/【社媒】数据爬虫.png",
+      "path": "assets/evidence/【社媒】数据爬虫.webp",
       "width": 2938,
       "height": 1458,
       "category": "社媒-爬虫",
@@ -120,7 +120,7 @@
     {
       "id": "douban-trend-jiang",
       "originalFilename": "【豆瓣】大盘视图（姜添）.png",
-      "path": "assets/evidence/【豆瓣】大盘视图（姜添）.png",
+      "path": "assets/evidence/【豆瓣】大盘视图（姜添）.webp",
       "width": 2796,
       "height": 1752,
       "category": "豆瓣-大盘",
@@ -132,7 +132,7 @@
     {
       "id": "douban-trend-saman",
       "originalFilename": "【豆瓣】大盘视图（萨满）.png",
-      "path": "assets/evidence/【豆瓣】大盘视图（萨满）.png",
+      "path": "assets/evidence/【豆瓣】大盘视图（萨满）.webp",
       "width": 2796,
       "height": 1752,
       "category": "豆瓣-大盘",
@@ -144,7 +144,7 @@
     {
       "id": "douban-monitor-jiang",
       "originalFilename": "【豆瓣】实时讨论监测+沉淀（1月底姜添）.png",
-      "path": "assets/evidence/【豆瓣】实时讨论监测+沉淀（1月底姜添）.png",
+      "path": "assets/evidence/【豆瓣】实时讨论监测+沉淀（1月底姜添）.webp",
       "width": 2936,
       "height": 1586,
       "category": "豆瓣-监测",
@@ -156,7 +156,7 @@
     {
       "id": "douban-monitor-saman",
       "originalFilename": "【豆瓣】实时讨论监测+沉淀（1月底萨满）.png",
-      "path": "assets/evidence/【豆瓣】实时讨论监测+沉淀（1月底萨满）.png",
+      "path": "assets/evidence/【豆瓣】实时讨论监测+沉淀（1月底萨满）.webp",
       "width": 2940,
       "height": 1588,
       "category": "豆瓣-监测",
@@ -170,7 +170,7 @@
     {
       "id": "douban-alert-1",
       "originalFilename": "【豆瓣】异常讨论群预警1.png",
-      "path": "assets/evidence/【豆瓣】异常讨论群预警1.png",
+      "path": "assets/evidence/【豆瓣】异常讨论群预警1.webp",
       "width": 1890,
       "height": 1422,
       "category": "豆瓣-群预警",
@@ -182,7 +182,7 @@
     {
       "id": "douban-alert-2",
       "originalFilename": "【豆瓣】异常讨论群预警2.png",
-      "path": "assets/evidence/【豆瓣】异常讨论群预警2.png",
+      "path": "assets/evidence/【豆瓣】异常讨论群预警2.webp",
       "width": 1894,
       "height": 1152,
       "category": "豆瓣-群预警",
@@ -194,7 +194,7 @@
     {
       "id": "douban-crawler",
       "originalFilename": "【豆瓣】数据爬虫.png",
-      "path": "assets/evidence/【豆瓣】数据爬虫.png",
+      "path": "assets/evidence/【豆瓣】数据爬虫.webp",
       "width": 2878,
       "height": 1548,
       "category": "豆瓣-爬虫",
@@ -208,7 +208,7 @@
     {
       "id": "event-card-old",
       "originalFilename": "聚合事件卡（旧版）.png",
-      "path": "assets/evidence/聚合事件卡（旧版）.png",
+      "path": "assets/evidence/聚合事件卡（旧版）.webp",
       "width": 1370,
       "height": 1462,
       "category": "聚合事件卡",
@@ -220,7 +220,7 @@
     {
       "id": "douban-slang-1",
       "originalFilename": "【豆瓣】黑话解析1.png",
-      "path": "assets/evidence/【豆瓣】黑话解析1.png",
+      "path": "assets/evidence/【豆瓣】黑话解析1.webp",
       "width": 2434,
       "height": 848,
       "category": "豆瓣-黑话",
@@ -232,7 +232,7 @@
     {
       "id": "douban-slang",
       "originalFilename": "【豆瓣】黑话解析.png",
-      "path": "assets/evidence/【豆瓣】黑话解析.png",
+      "path": "assets/evidence/【豆瓣】黑话解析.webp",
       "width": 1442,
       "height": 714,
       "category": "豆瓣-黑话",
@@ -246,7 +246,7 @@
     {
       "id": "douban-alert-4",
       "originalFilename": "【豆瓣】异常讨论群预警4.png",
-      "path": "assets/evidence/【豆瓣】异常讨论群预警4.png",
+      "path": "assets/evidence/【豆瓣】异常讨论群预警4.webp",
       "width": 1874,
       "height": 1142,
       "category": "豆瓣-群预警",
@@ -258,7 +258,7 @@
     {
       "id": "secretary-inbox",
       "originalFilename": "【大秘书】事件入库+解析.png",
-      "path": "assets/evidence/【大秘书】事件入库+解析.png",
+      "path": "assets/evidence/【大秘书】事件入库+解析.webp",
       "width": 2938,
       "height": 1460,
       "category": "大秘书-事件入库",
@@ -270,7 +270,7 @@
     {
       "id": "secretary-multiformat",
       "originalFilename": "【大秘书】将文字图片链接一并解析.png",
-      "path": "assets/evidence/【大秘书】将文字图片链接一并解析.png",
+      "path": "assets/evidence/【大秘书】将文字图片链接一并解析.webp",
       "width": 2938,
       "height": 1466,
       "category": "大秘书-多模态解析",
@@ -282,7 +282,7 @@
     {
       "id": "secretary-judgement",
       "originalFilename": "【大秘书】舆情结构性研判.png",
-      "path": "assets/evidence/【大秘书】舆情结构性研判.png",
+      "path": "assets/evidence/【大秘书】舆情结构性研判.webp",
       "width": 2934,
       "height": 1456,
       "category": "大秘书-结构性研判",
@@ -294,7 +294,7 @@
     {
       "id": "secretary-bot-alert",
       "originalFilename": "【大秘书】群机器人预警.png",
-      "path": "assets/evidence/【大秘书】群机器人预警.png",
+      "path": "assets/evidence/【大秘书】群机器人预警.webp",
       "width": 1672,
       "height": 941,
       "category": "大秘书-群预警",
@@ -306,7 +306,7 @@
     {
       "id": "douban-dashboard",
       "originalFilename": "【豆瓣大盘】.png",
-      "path": "assets/evidence/【豆瓣大盘】.png",
+      "path": "assets/evidence/【豆瓣大盘】.webp",
       "width": 2796,
       "height": 1752,
       "category": "豆瓣-大盘",
@@ -320,7 +320,7 @@
     {
       "id": "secretary-raw-quote",
       "originalFilename": "【大秘书】原声私信:投诉.png",
-      "path": "assets/evidence/【大秘书】原声私信:投诉.png",
+      "path": "assets/evidence/【大秘书】原声私信:投诉.webp",
       "width": 2876,
       "height": 1422,
       "category": "大秘书-原声投诉",
@@ -334,7 +334,7 @@
     {
       "id": "host-tag-library",
       "originalFilename": "【主播标签库】.png",
-      "path": "assets/evidence/【主播标签库】.png",
+      "path": "assets/evidence/【主播标签库】.webp",
       "width": 2876,
       "height": 1420,
       "category": "主播标签库",
@@ -348,7 +348,7 @@
     {
       "id": "event-card-new",
       "originalFilename": "聚合事件卡（新版）.png",
-      "path": "assets/evidence/聚合事件卡（新版）.png",
+      "path": "assets/evidence/聚合事件卡（新版）.webp",
       "width": 1576,
       "height": 998,
       "category": "聚合事件卡",
@@ -360,7 +360,7 @@
     {
       "id": "situation-review",
       "originalFilename": "【舆情态势复盘】.png",
-      "path": "assets/evidence/【舆情态势复盘】.png",
+      "path": "assets/evidence/【舆情态势复盘】.webp",
       "width": 1672,
       "height": 941,
       "category": "舆情态势复盘",

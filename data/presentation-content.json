@@ -10,13 +10,19 @@
     "note": "AI不是替代判断，而是重构从发现、解析、处置到闭环的协同链路。",
     "leftTitle": "发现信号",
     "leftDesc": "来自豆瓣、评论、私信、投诉和业务反馈的分散风险线索",
-    "leftTexture": "assets/generated/planet-signal-red.png",
+    "leftTexture": "assets/generated/planet-signal-red.webp",
     "leftCaption": "更少人力 · 更快 · 更准 · 更精 · 更专",
     "rightTitle": "统一行动",
     "rightDesc": "基于客观事实、统一口径与责任共识后的组织行动",
-    "rightTexture": "assets/generated/planet-action-blue.png",
+    "rightTexture": "assets/generated/planet-action-blue.webp",
     "rightCaption": "更全面 · 有事实 · 有依据 · 有建议",
-    "signalTags": ["豆瓣", "评论", "私信", "投诉", "业务反馈"]
+    "signalTags": [
+      "豆瓣",
+      "评论",
+      "私信",
+      "投诉",
+      "业务反馈"
+    ]
   },
   "stages": [
     {
@@ -45,10 +51,26 @@
     }
   ],
   "replication": [
-    { "role": "大秘书 / 小秘书", "desc": "同一事件卡驱动回复口径与介入跟踪", "note": "后续将打通全部小秘书私信接入，100% 实现投诉自动化。" },
-    { "role": "粉丝运营", "desc": "风险信号与处置状态同步可见", "note": "粉丝投诉自动化后，长期协同看清粉丝诉求，更好维护管理粉丝。" },
-    { "role": "内容策划", "desc": "基于历史场景规避同类内容风险", "note": "评论区、大字报、社媒负面爬虫抓取，快速看清内容创意的问题。" },
-    { "role": "主播管理 / 法务", "desc": "责任清单与待核验事项自动分发", "note": "舆情整合系统（建设中），舆情从发酵初期，关键人员全链路提前感知，提升处置时效。" }
+    {
+      "role": "大秘书 / 小秘书",
+      "desc": "同一事件卡驱动回复口径与介入跟踪",
+      "note": "后续将打通全部小秘书私信接入，100% 实现投诉自动化。"
+    },
+    {
+      "role": "粉丝运营",
+      "desc": "风险信号与处置状态同步可见",
+      "note": "粉丝投诉自动化后，长期协同看清粉丝诉求，更好维护管理粉丝。"
+    },
+    {
+      "role": "内容策划",
+      "desc": "基于历史场景规避同类内容风险",
+      "note": "评论区、大字报、社媒负面爬虫抓取，快速看清内容创意的问题。"
+    },
+    {
+      "role": "主播管理 / 法务",
+      "desc": "责任清单与待核验事项自动分发",
+      "note": "舆情整合系统（建设中），舆情从发酵初期，关键人员全链路提前感知，提升处置时效。"
+    }
   ],
   "closing": {
     "copyLines": [
@@ -83,30 +105,72 @@
       "sourceColumns": [
         {
           "name": "豆瓣讨论",
-          "items": ["异常讨论升温 · 关联主播话题", "黑话与别称需人工识别", "趋势变化依赖人工盯盘"],
+          "items": [
+            "异常讨论升温 · 关联主播话题",
+            "黑话与别称需人工识别",
+            "趋势变化依赖人工盯盘"
+          ],
           "evidence": [
-            { "id": "douban-crawler", "label": "数据爬虫" },
-            { "id": "douban-slang", "label": "黑话解析" },
-            { "id": "douban-monitor-saman", "label": "实时监测" },
-            { "id": "douban-alert-4", "label": "群预警推送" },
-            { "id": "douban-dashboard", "label": "豆瓣看板" }
+            {
+              "id": "douban-crawler",
+              "label": "数据爬虫"
+            },
+            {
+              "id": "douban-slang",
+              "label": "黑话解析"
+            },
+            {
+              "id": "douban-monitor-saman",
+              "label": "实时监测"
+            },
+            {
+              "id": "douban-alert-4",
+              "label": "群预警推送"
+            },
+            {
+              "id": "douban-dashboard",
+              "label": "豆瓣看板"
+            }
           ]
         },
         {
           "name": "大秘书私信 / 投诉",
-          "items": ["用户诉求碎片化", "图片 / 链接需 OCR 解析", "多条会话是否同一事件需人工判断"],
+          "items": [
+            "用户诉求碎片化",
+            "图片 / 链接需 OCR 解析",
+            "多条会话是否同一事件需人工判断"
+          ],
           "evidence": [
-            { "id": "secretary-cookie-import", "label": "私信cookie导入" },
-            { "id": "secretary-ai-1", "label": "AI字段解析" },
-            { "id": "secretary-ocr", "label": "图片OCR解析" }
+            {
+              "id": "secretary-cookie-import",
+              "label": "私信cookie导入"
+            },
+            {
+              "id": "secretary-ai-1",
+              "label": "AI字段解析"
+            },
+            {
+              "id": "secretary-ocr",
+              "label": "图片OCR解析"
+            }
           ]
         },
         {
           "name": "业务反馈 / 社媒发文评论",
-          "items": ["业务上报与社媒评论渠道分散", "海量评论为非结构化文本，人工难以逐条研判", "口径不统一，难以与外部舆情自动关联"],
+          "items": [
+            "业务上报与社媒评论渠道分散",
+            "海量评论为非结构化文本，人工难以逐条研判",
+            "口径不统一，难以与外部舆情自动关联"
+          ],
           "evidence": [
-            { "id": "social-crawler", "label": "社媒发文爬虫" },
-            { "id": "crawler-aggregate", "label": "评论聚合分析" }
+            {
+              "id": "social-crawler",
+              "label": "社媒发文爬虫"
+            },
+            {
+              "id": "crawler-aggregate",
+              "label": "评论聚合分析"
+            }
           ]
         }
       ]
@@ -120,38 +184,64 @@
       "conclusion": "同一件事，从投诉到事件卡、预警，第一次被组织用同一个视角看见。",
       "aiBoundary": {
         "not": "AI 不判断主播是否应对病情负责。",
-        "does": ["事件聚合", "风险识别", "责任建议", "介入触发"]
+        "does": [
+          "事件聚合",
+          "风险识别",
+          "责任建议",
+          "介入触发"
+        ]
       },
       "handleColumns": [
         {
           "name": "原始投诉",
           "kicker": "01 · 信号涌入",
           "evidence": [
-            { "id": "secretary-raw-quote", "label": "原声私信/投诉" }
+            {
+              "id": "secretary-raw-quote",
+              "label": "原声私信/投诉"
+            }
           ]
         },
         {
           "name": "风险标签识别",
           "kicker": "02 · AI结构化",
           "evidence": [
-            { "id": "host-tag-library", "label": "主播标签库" },
-            { "id": "secretary-inbox", "label": "事件入库解析" },
-            { "id": "secretary-multiformat", "label": "图文链接解析" },
-            { "id": "secretary-judgement", "label": "结构性研判" }
+            {
+              "id": "host-tag-library",
+              "label": "主播标签库"
+            },
+            {
+              "id": "secretary-inbox",
+              "label": "事件入库解析"
+            },
+            {
+              "id": "secretary-multiformat",
+              "label": "图文链接解析"
+            },
+            {
+              "id": "secretary-judgement",
+              "label": "结构性研判"
+            }
           ]
         },
         {
           "name": "舆情事件卡",
           "kicker": "03 · 统一事件卡",
           "evidence": [
-            { "id": "event-card-new", "label": "聚合事件卡参考" }
+            {
+              "id": "event-card-new",
+              "label": "聚合事件卡参考"
+            }
           ]
         },
         {
           "name": "预警触发",
           "kicker": "04 · 自动触达",
           "evidence": [
-            { "id": "secretary-bot-alert", "label": "群机器人预警" }
+            {
+              "id": "secretary-bot-alert",
+              "label": "群机器人预警"
+            }
           ]
         }
       ]

@@ -9,9 +9,11 @@
   top: var(--header-height);
   bottom: var(--footer-height);
   overflow: hidden;
+  overscroll-behavior: none;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
+  padding-top: 0;
 }
 
 .scene-stage {
@@ -19,7 +21,7 @@
   flex: 0 0 1920px;
   width: 1920px;
   height: 1080px;
-  transform-origin: center center;
+  transform-origin: top center;
 }
 
 .slide {
@@ -92,6 +94,7 @@
 .slide-body {
   position: absolute;
   inset: 0;
+  overflow: hidden;
 }
 
 /* ═══ 通用结论条 ═══ */
@@ -390,11 +393,11 @@
   flex-direction: column;
   justify-content: center;
   gap: 28px;
-  transition: opacity 0.6s ease, transform 0.6s ease;
+  transition: opacity 0.6s ease, visibility 0.6s ease;
 }
 .loop-flow.is-collapsed {
   opacity: 0;
-  transform: scale(0.92) translateY(-14px);
+  visibility: hidden;
   pointer-events: none;
 }
 .loop-steps {
@@ -440,6 +443,19 @@
   background: #000;
 }
 .sphere-box iframe, .sphere-box .sphere-fb { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; object-fit: cover; }
+.sphere-box iframe { pointer-events: auto; }
+.sphere-box.is-loading::after {
+  content: '场景库加载中…';
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: var(--fs-caption);
+  color: var(--text-tertiary);
+  background: rgba(0, 0, 0, 0.72);
+  z-index: 2;
+  pointer-events: none;
+}
 /* 默认展示可交互的真实 iframe；仅当离线/加载超时判定为 fallback 时才切换为静态截图，
    避免静态图长期覆盖在可点击的 iframe 之上造成"看起来是静态的"问题 */
 .sphere-box .sphere-fb { display: none; }
@@ -597,7 +613,20 @@
   flex-direction: column;
 }
 .lightbox.open { display: flex; }
-.lightbox img { max-width: 90vw; max-height: 80vh; object-fit: contain; border: 1px solid var(--surface-line); }
+.lightbox img { max-width: 90vw; max-height: 80vh; object-fit: contain; border: 1px solid var(--surface-line); transition: opacity 0.25s ease; }
+.lightbox img.is-loading { opacity: 0.15; }
+.lb-spinner {
+  position: absolute;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 2px solid rgba(240, 240, 250, 0.12);
+  border-top-color: var(--ai-primary);
+  animation: lb-spin 0.7s linear infinite;
+  display: none;
+}
+.lightbox.open.is-loading .lb-spinner { display: block; }
+@keyframes lb-spin { to { transform: rotate(360deg); } }
 .lb-close, .lb-nav { background: none; border: none; color: var(--text-primary); cursor: pointer; font-size: 32px; }
 .lb-close { position: absolute; top: 20px; right: 24px; }
 .lb-nav { position: absolute; top: 50%; transform: translateY(-50%); font-size: 48px; padding: 20px; }
