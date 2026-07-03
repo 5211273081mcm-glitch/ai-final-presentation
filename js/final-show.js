@@ -592,13 +592,29 @@
     var canvas = $('slide-canvas');
     if (APP.lastChapter !== APP.chapter) {
       var dir = 0;
-      if (APP.prevChapter === 0 && APP.chapter === 1) dir = 1;
-      else if (APP.prevChapter === 1 && APP.chapter === 0) dir = -1;
+      if (!APP.isPreview) {
+        if (APP.prevChapter === 0 && APP.chapter === 1) dir = 1;
+        else if (APP.prevChapter === 1 && APP.chapter === 0) dir = -1;
+      }
       APP.prevChapter = -1;
       if (dir) {
         slideChapter(canvas, dir);
         APP.lastChapter = APP.chapter;
         updateNav();
+        return;
+      }
+      if (APP.isPreview) {
+        canvas.classList.remove('fading');
+        canvas.innerHTML = PAGES[APP.chapter].build();
+        bindEvButtons(canvas);
+        applyBeat(canvas, APP.beat);
+        resetViewport();
+        stabilizeLayout();
+        preloadChapter(APP.chapter);
+        APP.lastChapter = APP.chapter;
+        APP.busy = false;
+        updateNav();
+        pumpNavQueue();
         return;
       }
       canvas.classList.add('fading');
@@ -611,20 +627,37 @@
         stabilizeLayout();
         preloadChapter(APP.chapter);
         APP.busy = false;
+        updateNav();
+        pumpNavQueue();
       }, APP.lastChapter < 0 ? 0 : 160);
       APP.lastChapter = APP.chapter;
     } else {
       applyBeat(canvas, APP.beat);
       stabilizeLayout();
       APP.busy = false;
+      updateNav();
+      pumpNavQueue();
     }
-    updateNav();
   }
 
   /* 总结构 ⇄ 总纲 链路式转场：旧内容整体左移退出，同时新内容自右滑入，
      用快照层承载旧画面，双层同轨移动，呈现"沿链路推进"的观感 */
   var SLIDE_MS = 620;
   function slideChapter(canvas, dir) {
+    if (APP.isPreview) {
+      canvas.classList.remove('fading');
+      canvas.style.transition = 'none';
+      canvas.style.transform = '';
+      canvas.innerHTML = PAGES[APP.chapter].build();
+      bindEvButtons(canvas);
+      applyBeat(canvas, APP.beat);
+      resetViewport();
+      stabilizeLayout();
+      preloadChapter(APP.chapter);
+      APP.busy = false;
+      pumpNavQueue();
+      return;
+    }
     var slide = canvas.parentNode;
     var ghost = document.createElement('div');
     ghost.className = 'canvas-ghost';
@@ -649,7 +682,58 @@
       canvas.style.transform = '';
       resetViewport();
       APP.busy = false;
+      pumpNavQueue();
     }, SLIDE_MS + 60);
+  }
+
+  /* 快速连按：积压导航增量，busy 结束后继续消化，避免丢键 */
+  var navDelta = 0;
+  var navPumpId = null;
+
+  function pumpNavQueue() {
+    if (navPumpId) return;
+    navPumpId = setTimeout(function () {
+      navPumpId = null;
+      if (APP.busy) {
+        pumpNavQueue();
+        return;
+      }
+      if (APP._pendingGo) {
+        var pg = APP._pendingGo;
+        APP._pendingGo = null;
+        navDelta = 0;
+        goChapter(pg.chapter, pg.beat);
+        return;
+      }
+      if (!navDelta) return;
+      if (navDelta > 0) {
+        navDelta--;
+        advanceOnce();
+      } else {
+        navDelta++;
+        retreatOnce();
+      }
+      if (navDelta || APP._pendingGo) pumpNavQueue();
+    }, APP.busy ? 36 : 0);
+  }
+
+  function advanceOnce() {
+    var pg = PAGES[APP.chapter];
+    if (APP.beat < pg.beats - 1) {
+      APP.beat++;
+      render();
+    } else if (APP.chapter < PAGES.length - 1) {
+      goChapter(APP.chapter + 1, 0);
+    }
+  }
+
+  function retreatOnce() {
+    if (APP.beat > 0) {
+      APP.beat--;
+      render();
+    } else if (APP.chapter > 0) {
+      goChapter(APP.chapter - 1, PAGES[APP.chapter - 1].beats - 1);
+    }
   }
 
   /* 唯一缩放计算：绝对定位 + translateX(-50%) + translateY + scale，避免 flex 子项撑出内部滚动 */
@@ -672,7 +756,15 @@
   }
 
   function goChapter(ch, beat) {
-    if (APP.busy) return;
+    if (APP.busy) {
+      navDelta = 0;
+      APP._pendingGo = {
+        chapter: Math.max(0, Math.min(PAGES.length - 1, ch)),
+        beat: beat || 0
+      };
+      pumpNavQueue();
+      return;
+    }
     var prev = APP.chapter;
     APP.chapter = Math.max(0, Math.min(PAGES.length - 1, ch));
     APP.beat = beat || 0;
@@ -684,24 +776,13 @@
   }
 
   function advance() {
-    if (APP.busy) return;
-    var pg = PAGES[APP.chapter];
-    if (APP.beat < pg.beats - 1) {
-      APP.beat++;
-      render();
-    } else if (APP.chapter < PAGES.length - 1) {
-      goChapter(APP.chapter + 1, 0);
-    }
+    navDelta++;
+    pumpNavQueue();
   }
 
   function retreat() {
-    if (APP.busy) return;
-    if (APP.beat > 0) {
-      APP.beat--;
-      render();
-    } else if (APP.chapter > 0) {
-      goChapter(APP.chapter - 1, PAGES[APP.chapter - 1].beats - 1);
-    }
+    navDelta--;
+    pumpNavQueue();
   }
 
   function resetViewport() {

@@ -60,6 +60,64 @@
     return null;
   }
 
+  function prevState(ch, beat) {
+    if (beat > 0) return { chapter: ch, beat: beat - 1 };
+    if (ch > 0) {
+      var pc = ch - 1;
+      return { chapter: pc, beat: pageBeats(pc) - 1 };
+    }
+    return null;
+  }
+
+  var navLeadUntil = 0;
+
+  function touchNavLead() {
+    navLeadUntil = Date.now() + 700;
+  }
+
+  function advanceLocal() {
+    var ch = state.chapter;
+    var beat = state.beat;
+    if (beat < pageBeats(ch) - 1) {
+      state.beat = beat + 1;
+    } else if (ch < BEATS_PER_PAGE.length - 1) {
+      state.chapter = ch + 1;
+      state.beat = 0;
+      state.pageStartTime = Date.now();
+    } else return;
+    touchNavLead();
+    updateUI();
+    send({ type: 'advance' });
+  }
+
+  function retreatLocal() {
+    var ch = state.chapter;
+    var beat = state.beat;
+    if (beat > 0) {
+      state.beat = beat - 1;
+    } else if (ch > 0) {
+      var pc = ch - 1;
+      state.chapter = pc;
+      state.beat = pageBeats(pc) - 1;
+      state.pageStartTime = Date.now();
+    } else return;
+    touchNavLead();
+    updateUI();
+    send({ type: 'retreat' });
+  }
+
+  function goLocal(ch, beat) {
+    ch = Math.max(0, Math.min(BEATS_PER_PAGE.length - 1, ch));
+    beat = Math.max(0, Math.min(pageBeats(ch) - 1, beat || 0));
+    if (ch === state.chapter && beat === state.beat) return;
+    state.chapter = ch;
+    state.beat = beat;
+    state.pageStartTime = Date.now();
+    touchNavLead();
+    updateUI();
+    send({ type: 'go', chapter: ch, beat: beat });
+  }
+
   function previewUrl(ch, beat) {
     return 'index.html?preview=1&ch=' + ch + '&beat=' + beat;
   }
@@ -248,6 +306,11 @@
 
   function applyRemote(msg) {
     if (!msg || msg.type !== 'state') return;
+    if (Date.now() < navLeadUntil &&
+        (msg.chapter !== state.chapter || msg.beat !== state.beat)) {
+      if (msg.startTime) state.startTime = msg.startTime;
+      return;
+    }
     var chChanged = state.chapter !== msg.chapter;
     state.chapter = msg.chapter;
     state.beat = msg.beat;
@@ -412,17 +475,17 @@
         case 'ArrowRight':
         case 'PageDown':
           e.preventDefault();
-          send({ type: 'advance' });
+          advanceLocal();
           break;
         case 'ArrowLeft':
         case 'PageUp':
           e.preventDefault();
-          send({ type: 'retreat' });
+          retreatLocal();
           break;
         default:
           if (e.key >= '1' && e.key <= '6') {
             e.preventDefault();
-            send({ type: 'go', chapter: +e.key - 1, beat: 0 });
+            goLocal(+e.key - 1, 0);
           }
       }
     });
