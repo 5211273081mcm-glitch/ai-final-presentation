@@ -938,6 +938,7 @@ window.__PRESENTATION_DATA__ = {"config": {"projectTitle": "用AI重构舆情工
   function initPresenterMode() {
     var q = new URLSearchParams(window.location.search);
     APP.isPreview = q.get('preview') === '1';
+    try { presenterChannel = new BroadcastChannel(PRESENTER_CH); } catch (err) { presenterChannel = null; }
     if (APP.isPreview) {
       document.body.classList.add('preview-mode');
       APP.chapter = Math.max(0, Math.min(PAGES.length - 1, +(q.get('ch') || 0)));
@@ -946,7 +947,6 @@ window.__PRESENTATION_DATA__ = {"config": {"projectTitle": "用AI重构舆情工
       APP.lastChapter = -1;
       return;
     }
-    try { presenterChannel = new BroadcastChannel(PRESENTER_CH); } catch (err) { presenterChannel = null; }
   }
 
   function openPresenterWindow() {
@@ -987,6 +987,9 @@ window.__PRESENTATION_DATA__ = {"config": {"projectTitle": "用AI重构舆情工
         case 'go':
           goChapter(msg.chapter || 0, msg.beat || 0);
           break;
+        case 'open-evidence':
+          if (msg.ids && msg.ids.length) openLightbox(msg.ids, msg.idx || 0);
+          break;
         case 'request-sync':
         case 'request-state':
           broadcastPresenterState();
@@ -1015,12 +1018,44 @@ window.__PRESENTATION_DATA__ = {"config": {"projectTitle": "用AI重构舆情工
         previewGoto(e.data.chapter, e.data.beat);
       }
     });
+    bindPreviewInteractions();
     if (presenterChannel) {
       presenterChannel.onmessage = function (ev) {
         var msg = ev.data;
         if (msg && msg.type === 'preview-goto') previewGoto(msg.chapter, msg.beat);
       };
     }
+  }
+
+  function bindPreviewInteractions() {
+    document.addEventListener('click', function (e) {
+      var chip = e.target.closest('.ev-chip[data-ev-id]');
+      if (chip) {
+        if (presenterChannel) {
+          presenterChannel.postMessage({
+            type: 'open-evidence',
+            ids: chip.dataset.evGroup ? chip.dataset.evGroup.split(',') : [chip.dataset.evId],
+            idx: +chip.dataset.evIdx || 0
+          });
+          presenterChannel.postMessage({ type: 'presenter-refocus' });
+        }
+        return;
+      }
+      var btn = e.target.closest('.ev-btn[data-ev-id]');
+      if (btn) {
+        if (presenterChannel) {
+          presenterChannel.postMessage({
+            type: 'open-evidence',
+            ids: [btn.dataset.evId],
+            idx: 0
+          });
+          presenterChannel.postMessage({ type: 'presenter-refocus' });
+        }
+        return;
+      }
+      var nav = e.target.closest('.lb-close, .lb-prev, .lb-next');
+      if (nav && presenterChannel) presenterChannel.postMessage({ type: 'presenter-refocus' });
+    }, true);
   }
 
   document.addEventListener('DOMContentLoaded', init);

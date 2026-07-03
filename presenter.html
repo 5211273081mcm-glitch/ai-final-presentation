@@ -12,9 +12,13 @@
   <section class="pv-panel pv-current">
     <header class="pv-head">
       <span>当前画面 · <b id="pv-cur-label">—</b></span>
+      <div class="pv-head-actions">
+        <button type="button" id="pv-toggle-interact">启用点击</button>
+      </div>
     </header>
     <div class="pv-frame-wrap">
       <iframe id="pv-iframe-cur" title="当前页预览" src="about:blank"></iframe>
+      <div class="pv-frame-hint" id="pv-frame-hint">点击模式关闭：避免误触翻页。需要点 Evidence 时先开启。</div>
     </div>
   </section>
   <section class="pv-panel pv-next">
@@ -49,14 +53,20 @@
   <section class="pv-panel pv-script">
     <header class="pv-head">
       <span>逐字稿 · <b id="pv-script-label">—</b></span>
+      <div class="pv-head-actions">
+        <button type="button" id="pv-save-script">保存</button>
+        <button type="button" id="pv-reset-beat">恢复本步原稿</button>
+        <button type="button" id="pv-export-script">导出编辑稿</button>
+      </div>
     </header>
     <div class="pv-script-body">
-      <p id="pv-script-text">加载中…</p>
+      <label class="pv-script-status" id="pv-script-status">逐字稿加载中…</label>
+      <textarea id="pv-script-text" spellcheck="false"></textarea>
       <div class="pv-script-hint" id="pv-ev-hint" hidden></div>
     </div>
   </section>
 </div>
-<p class="pv-keys">空格/→ 下一幕 · ← 上一幕 · 1–6 跳章 · 在本窗口按键同步投屏</p>
+<p class="pv-keys">空格/→ 下一幕 · ← 上一幕 · 1–6 跳章 · 点击模式仅用于点左上角 Evidence，结束后建议关闭</p>
 <script src="js/presenter.js"></script>
 </body>
 </html>
