@@ -1,29 +1,81 @@
 /* ═══════════════════════════════════════════════════════════
-   投屏增权模式 v2 · 黑底不变
-   策略：JS 整画布等比放大 (~1.45×) + 对比/线宽/字重倍增
-   元素相对位置不变，边缘少量裁切换可读性（LED 珠屏适用）
+   投屏增权 v3 · 黑底 · 零裁切
+   策略：满屏 fit 不放大裁切 + 压缩边距 + 统一 token 提权 + 藏次要文案
    ═══════════════════════════════════════════════════════════ */
 
 body.projection-mode {
-  --pm-zoom: 1.45;
+  /* 收窄安全区，把空间让给内容（仍在 1920×1080 内） */
+  --safe-left: 56px;
+  --safe-right: 56px;
+  --safe-top: 72px;
+  --safe-bottom: 48px;
+  --content-top: 72px;
+
+  /* 统一字号约 +18%，全站 token 同步，避免单点放大重叠 */
+  --fs-hero: 72px;
+  --fs-page-title: 58px;
+  --fs-section-title: 32px;
+  --fs-key-message: 38px;
+  --fs-node-title: 30px;
+  --fs-body-lg: 24px;
+  --fs-body: 21px;
+  --fs-caption: 17px;
+  --fs-micro: 13px;
+
+  --lh-body: 1.48;
+  --lh-conclusion: 1.28;
+
   --text-primary: #FFFFFF;
-  --text-secondary: rgba(255, 255, 255, 0.94);
-  --text-tertiary: rgba(255, 255, 255, 0.82);
-  --text-muted: rgba(255, 255, 255, 0.68);
-  --surface-line: rgba(240, 240, 250, 0.42);
-  --surface-fill: rgba(240, 240, 250, 0.1);
-  --ai-primary: #5CE8FF;
-  --ai-soft: rgba(92, 232, 255, 0.78);
-  --signal-primary: #FF9555;
-  --signal-soft: rgba(255, 149, 85, 0.78);
+  --text-secondary: rgba(255, 255, 255, 0.92);
+  --text-tertiary: rgba(255, 255, 255, 0.78);
+  --text-muted: rgba(255, 255, 255, 0.62);
+  --surface-line: rgba(240, 240, 250, 0.38);
+  --surface-fill: rgba(240, 240, 250, 0.08);
+  --ai-primary: #54E3FF;
+  --ai-soft: rgba(84, 227, 255, 0.72);
+  --signal-primary: #FF9055;
+  --signal-soft: rgba(255, 144, 85, 0.72);
 }
 
-/* 微增对比，模拟 LED 屏更高动态范围 */
+/* 对比度微增（不 blur、不 scale） */
 body.projection-mode .deck-main {
-  filter: contrast(1.14) brightness(1.1) saturate(1.08);
+  filter: contrast(1.12) brightness(1.08);
 }
 
-/* ── 字重 + 轻光晕（珠屏可读） ── */
+/* ── 标题区：藏面包屑、副标题限 1 行，腾出纵向空间 ── */
+body.projection-mode .slide-title-block {
+  top: 64px;
+  max-width: 1320px;
+}
+body.projection-mode .slide-title-block .spx-micro {
+  display: none;
+}
+body.projection-mode .slide-title-block .spx-display {
+  margin-bottom: 6px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+body.projection-mode .slide-title-block .spx-note {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+body.projection-mode .mmap-v8 .mmap-hd {
+  top: 64px;
+}
+body.projection-mode .mmap-v8 .mmap-subtitle {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-weight: 600;
+}
+
+/* ── 字重 + 轻光晕 ── */
 body.projection-mode .spx-display,
 body.projection-mode .open-title,
 body.projection-mode .planet-core-title,
@@ -42,15 +94,9 @@ body.projection-mode .alert-box h4,
 body.projection-mode .event-dims-card h3,
 body.projection-mode .scene-card h3 {
   font-weight: 800;
-  text-shadow:
-    0 0 20px rgba(255, 255, 255, 0.12),
-    0 0 4px rgba(255, 255, 255, 0.35),
-    0 1px 2px rgba(0, 0, 0, 0.65);
+  text-shadow: 0 0 16px rgba(255, 255, 255, 0.1), 0 1px 3px rgba(0, 0, 0, 0.5);
 }
 
-body.projection-mode .open-subtitle,
-body.projection-mode .spx-note,
-body.projection-mode .mmap-v8 .mmap-subtitle,
 body.projection-mode .signal-item,
 body.projection-mode .handle-col-body,
 body.projection-mode .risk-field span,
@@ -58,10 +104,10 @@ body.projection-mode .complaint-line,
 body.projection-mode .alert-box p,
 body.projection-mode .loop-step p,
 body.projection-mode .replicate-grid p,
-body.projection-mode .scene-card p {
+body.projection-mode .scene-card p,
+body.projection-mode .open-subtitle {
   font-weight: 600;
   color: var(--text-secondary);
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.55);
 }
 
 body.projection-mode .signal-col.is-primary .signal-item,
@@ -70,7 +116,49 @@ body.projection-mode .handle-col.is-primary .handle-col-body {
   font-weight: 700;
 }
 
-/* ── 线框加粗（约 2–3×） ── */
+/* ── 内容区：上移/扩高（用省下的标题空间） ── */
+body.projection-mode .signal-grid {
+  top: 228px;
+  bottom: 248px;
+  gap: 18px;
+}
+body.projection-mode .handle-grid {
+  top: 220px;
+  bottom: 96px;
+}
+body.projection-mode .loop-stage {
+  top: 220px;
+  bottom: 200px;
+}
+body.projection-mode .parse-conclusion {
+  bottom: 52px;
+}
+body.projection-mode .handle-conclusion {
+  bottom: 44px;
+}
+body.projection-mode .loop-conclusion {
+  bottom: 48px;
+}
+body.projection-mode .replicate-grid {
+  top: 96px;
+  gap: 14px;
+}
+
+/* ── 藏纯次要信息（不删核心内容） ── */
+body.projection-mode .route-copy .copy-line2 {
+  display: none;
+}
+body.projection-mode .handle-col-note,
+body.projection-mode .handle-kicker {
+  display: none;
+}
+body.projection-mode .mmap-particles,
+body.projection-mode .ai-comet,
+body.projection-mode .ai-comet-tail {
+  display: none !important;
+}
+
+/* ── 线框加粗 ── */
 body.projection-mode .signal-col,
 body.projection-mode .handle-col,
 body.projection-mode .loop-step,
@@ -81,140 +169,128 @@ body.projection-mode .scene-card,
 body.projection-mode .replicate-grid > div {
   border-width: 3px;
 }
-
 body.projection-mode .signal-col.is-primary {
   border-width: 4px;
   border-color: var(--ai-primary);
-  box-shadow: 0 0 0 2px rgba(92, 232, 255, 0.35), 0 0 24px rgba(92, 232, 255, 0.15);
+  box-shadow: 0 0 0 2px rgba(84, 227, 255, 0.28);
 }
-
 body.projection-mode .handle-col.is-primary {
   border-width: 4px;
   border-color: var(--signal-primary);
-  box-shadow: 0 0 0 2px rgba(255, 149, 85, 0.35), 0 0 24px rgba(255, 149, 85, 0.15);
+  box-shadow: 0 0 0 2px rgba(255, 144, 85, 0.28);
 }
-
 body.projection-mode .signal-col.is-secondary,
 body.projection-mode .handle-col.is-secondary {
-  opacity: 0.68;
-  border-width: 2px;
+  opacity: 0.65;
 }
 
-body.projection-mode .signal-col h4,
-body.projection-mode .handle-col h4 {
-  border-bottom-width: 2px;
-  border-bottom-color: var(--surface-line);
+/* ── 总纲：路径加粗，星球微增 ── */
+body.projection-mode .mmap-v8 {
+  --planet-d: 268px;
 }
-
-/* ── 总纲路径（珠屏需粗线） ── */
 body.projection-mode .route-spine {
-  stroke: rgba(240, 240, 250, 0.48);
-  stroke-width: 5;
+  stroke: rgba(240, 240, 250, 0.42);
+  stroke-width: 4;
 }
 body.projection-mode .route-ai {
-  stroke-width: 7;
-  filter: drop-shadow(0 0 10px rgba(92, 232, 255, 0.45));
+  stroke-width: 6;
+  filter: drop-shadow(0 0 8px rgba(84, 227, 255, 0.35));
 }
 body.projection-mode .route-current {
-  stroke-width: 7;
-  filter: drop-shadow(0 0 10px rgba(255, 149, 85, 0.45));
+  stroke-width: 6;
+  filter: drop-shadow(0 0 8px rgba(255, 144, 85, 0.35));
 }
 body.projection-mode .route-link {
-  stroke-width: 3;
-  stroke: rgba(240, 240, 250, 0.38);
+  stroke-width: 2.5;
 }
 body.projection-mode .route-label {
   font-weight: 800;
-  text-shadow: 0 0 12px rgba(0, 0, 0, 0.8);
-}
-body.projection-mode .route-label::before {
-  inset: -10px -20px;
 }
 body.projection-mode .route-copy .copy-line1 {
   font-weight: 800;
-  color: var(--text-primary);
-}
-body.projection-mode .route-copy .copy-line2 {
-  font-weight: 600;
-  color: var(--text-tertiary);
 }
 body.projection-mode .stage-node.is-primary .stage-name {
-  text-shadow:
-    0 0 28px rgba(255, 255, 255, 0.65),
-    0 0 8px rgba(255, 255, 255, 0.85);
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
 }
 body.projection-mode .saturn-ring ellipse {
-  stroke-width: 3;
+  stroke-width: 2.5;
+}
+body.projection-mode .mmap-v8 .mmap-ft {
+  bottom: 48px;
+  padding: 12px 20px;
+  background: rgba(0, 0, 0, 0.55);
+  border: 2px solid var(--surface-line);
+  border-radius: 8px;
 }
 
-/* ── Evidence 按钮 ── */
-body.projection-mode .ev-chip,
+/* ── 硬编码字号 override（deck.css 裸写部分） ── */
+body.projection-mode .ev-chip {
+  font-size: 16px;
+  padding: 9px 14px;
+  font-weight: 700;
+  border-width: 2px;
+}
 body.projection-mode .ev-btn,
 body.projection-mode .ev-link {
-  border-width: 3px;
-  border-color: rgba(240, 240, 250, 0.42);
+  font-size: var(--fs-caption);
   font-weight: 700;
-  color: var(--text-primary);
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
-}
-body.projection-mode .ev-chip.ev-live {
-  border-color: var(--signal-primary);
-  box-shadow: 0 0 16px rgba(255, 149, 85, 0.35);
+  border-width: 2px;
 }
 body.projection-mode .signal-evidence-label,
 body.projection-mode .loop-evidence-label {
-  font-weight: 800;
   font-size: 14px;
-  letter-spacing: 0.06em;
-  text-shadow: 0 0 8px rgba(255, 149, 85, 0.35);
-}
-
-body.projection-mode .handle-arrow {
-  font-size: 32px;
-  color: var(--text-muted);
   font-weight: 800;
 }
-
+body.projection-mode .handle-arrow {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--text-muted);
+}
+body.projection-mode .risk-field label {
+  font-size: 13px;
+  font-weight: 700;
+}
+body.projection-mode .dims-grid label {
+  font-size: 12px;
+  font-weight: 700;
+}
 body.projection-mode .complaint-line.hot {
   font-weight: 800;
   color: var(--signal-primary);
-  text-shadow: 0 0 12px rgba(255, 149, 85, 0.4);
 }
-
 body.projection-mode .risk-field {
-  border-left-width: 5px;
-  border-color: var(--ai-soft);
+  border-left-width: 4px;
 }
 
-/* ── Evidence 弹窗：全屏大图 ── */
+body.projection-mode .ev-chip.ev-live {
+  border-color: var(--signal-primary);
+  box-shadow: 0 0 12px rgba(255, 144, 85, 0.3);
+}
+
+/* ── Evidence 弹窗（满屏 fit，不裁切） ── */
 body.projection-mode .lightbox {
   background: rgba(0, 0, 0, 0.97);
-  filter: contrast(1.1) brightness(1.08);
 }
 body.projection-mode .lightbox img {
-  max-width: 96vw;
-  max-height: 88vh;
-  border-width: 3px;
-  border-color: var(--surface-line);
-  box-shadow: 0 0 40px rgba(0, 0, 0, 0.6);
+  max-width: 90vw;
+  max-height: 80vh;
+  border-width: 2px;
 }
 body.projection-mode .lb-cap {
-  font-size: 18px;
+  font-size: var(--fs-body);
   font-weight: 700;
   color: var(--text-primary);
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
 }
 body.projection-mode .lb-close,
 body.projection-mode .lb-nav {
-  font-size: 52px;
+  font-size: 44px;
   font-weight: 800;
-  text-shadow: 0 0 16px rgba(255, 255, 255, 0.25);
 }
 body.projection-mode .lb-source {
-  border-width: 3px;
+  font-size: var(--fs-caption);
   font-weight: 700;
-  font-size: 16px;
-  padding: 12px 20px;
+  border-width: 2px;
+  padding: 10px 18px;
 }
 
 /* ── chrome ── */
@@ -223,7 +299,7 @@ body.projection-mode .deck-header {
   pointer-events: none;
 }
 body.projection-mode .progress-bar {
-  opacity: 0.35;
+  opacity: 0.3;
 }
 body.projection-mode.preview-mode .deck-header,
 body.projection-mode.preview-mode .progress-bar {
@@ -231,16 +307,16 @@ body.projection-mode.preview-mode .progress-bar {
 }
 
 body.projection-mode::after {
-  content: 'BOOST ×1.45';
+  content: 'BOOST · fit';
   position: fixed;
   bottom: 8px;
   right: 10px;
   z-index: 9999;
-  padding: 4px 10px;
-  font-size: 11px;
+  padding: 3px 8px;
+  font-size: 10px;
   letter-spacing: 0.08em;
-  color: rgba(255, 255, 255, 0.45);
-  border: 1px solid rgba(240, 240, 250, 0.2);
+  color: rgba(255, 255, 255, 0.38);
+  border: 1px solid rgba(240, 240, 250, 0.15);
   border-radius: 4px;
   pointer-events: none;
 }
