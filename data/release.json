@@ -1,19 +1,19 @@
 {
-  "versionId": "final-led-20260706-21beats",
-  "label": "决赛 LED 21幕定稿（移除解析/处置多余 outro 页）",
+  "versionId": "final-led-20260706-21beats-v2",
+  "label": "决赛 LED 21幕（移除解析/处置 outro 页 + JS 缓存刷新）",
   "branch": "main",
-  "commit": "d6037660b7ff7f9a4fb12e1f43eaae4a87cb64ab",
-  "commitShort": "d603766",
-  "gitTag": "final-led-20260706-21beats",
-  "previousVersionId": "final-led-20260706-final",
-  "baselineMain": "e813af3",
-  "builtAt": "2026-07-06T23:24:00+08:00",
+  "commit": "PENDING",
+  "commitShort": "PENDING",
+  "gitTag": "final-led-20260706-21beats-v2",
+  "previousVersionId": "final-led-20260706-21beats",
+  "baselineMain": "7f0aecf",
+  "builtAt": "2026-07-06T23:48:00+08:00",
   "repo": "5211273081mcm-glitch/ai-final-presentation",
   "pagesBase": "https://5211273081mcm-glitch.github.io/ai-final-presentation",
   "entrypoints": {
-    "projection": "index.html?led=1",
+    "projection": "index.html?led=1&v=21beats2",
     "projectionShortcut": "index-led.html",
-    "presenter": "presenter.html?led=1",
+    "presenter": "presenter.html?led=1&v=21beats2",
     "presenterLegacy": "presenter.html",
     "presenterLedFile": "presenter-led.html"
   },
@@ -25,11 +25,8 @@
     "projection-mode-led",
     "presenter-led-via-query-param",
     "speaker-beats-v8-script",
-    "deck-chrome-nav-countdown",
-    "nav-glow-frame-progress",
-    "focus-stage-parse-handle",
-    "ev-orbit-evidence-glow",
-    "loop-page-layout-fix",
-    "21-total-beats"
+    "21-total-beats",
+    "no-parse-handle-outro",
+    "asset-cache-bust"
   ]
 }

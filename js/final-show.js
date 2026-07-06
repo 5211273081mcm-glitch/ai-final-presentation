@@ -291,24 +291,25 @@
     return '<div class="slide-body">' + buildMasterMap({}) + '</div>';
   }
 
-  /* 聚焦舞台：idle 居中灰字 → 逐模块聚焦展开 → 页末回到 idle */
+  /* 聚焦舞台：idle 居中灰字 → 逐模块聚焦展开（无页末 outro 回 idle 页） */
   function applyFocusStageBeat(root, opts) {
     var beat = opts.beat;
+    var outro = opts.outroBeat != null && beat === opts.outroBeat;
     var grid = root.querySelector(opts.gridSel);
     if (grid) {
       grid.setAttribute('data-beat', String(beat));
-      grid.classList.toggle('focus-stage-outro', beat === opts.outroBeat);
+      grid.classList.toggle('focus-stage-outro', outro);
     }
     root.querySelectorAll(opts.colSel).forEach(function (el, i) {
       el.classList.remove('is-idle', 'is-focused', 'is-dimmed', 'is-primary', 'is-secondary');
-      if (beat === 0 || beat === opts.outroBeat) el.classList.add('is-idle');
+      if (beat === 0 || outro) el.classList.add('is-idle');
       else if (i === beat - 1) el.classList.add('is-focused');
       else if (i < beat - 1) el.classList.add('is-dimmed');
       else el.classList.add('is-idle');
     });
     if (opts.arrowSel) {
       root.querySelectorAll(opts.arrowSel).forEach(function (el) {
-        el.classList.toggle('is-visible', beat > 0 && beat !== opts.outroBeat);
+        el.classList.toggle('is-visible', beat > 0 && !outro);
       });
     }
     var conclusion = root.querySelector('[data-conclusion]');

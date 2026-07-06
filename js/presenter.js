@@ -12,6 +12,7 @@
   var ACTION_KEY = 'ai-final-presentation-audience-action';
   var SERVER_POLL_MS = 30000;
   var BEATS_PER_PAGE = [2, 5, 4, 5, 2, 3];
+  var ASSET_V = '21beats2';
   var TARGET_SEC = 600;
 
   var state = {
@@ -119,7 +120,7 @@
   }
 
   function previewUrl(ch, beat) {
-    var url = 'index.html?preview=1&ch=' + ch + '&beat=' + beat;
+    var url = 'index.html?preview=1&ch=' + ch + '&beat=' + beat + '&v=' + ASSET_V;
     if (window.PRESENTER_LED_PREVIEW) url += '&led=1';
     return url;
   }
@@ -421,7 +422,7 @@
   }
 
   function openAudience() {
-    var url = 'index.html' + (window.PRESENTER_LED_PREVIEW ? '?led=1' : '');
+    var url = 'index.html?v=' + ASSET_V + (window.PRESENTER_LED_PREVIEW ? '&led=1' : '');
     var win = getAudienceWindow();
     if (win) {
       audienceWin = win;

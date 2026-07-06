@@ -1,23 +1,20 @@
 # 决赛 LED 投屏 · 线上发布链接
 
-> **版本 ID：** `final-led-20260706-21beats`  
-> **Git Tag：** `final-led-20260706-21beats`  
-> **Commit：** `d603766`（完整：`d6037660b7ff7f9a4fb12e1f43eaae4a87cb64ab`）  
-> **上一版 ID：** `final-led-20260706-final`  
-> **全局进度：** 21 幕（解析 4 + 处置 5）
+> **版本 ID：** `final-led-20260706-21beats-v2`  
+> **Git Tag：** `final-led-20260706-21beats-v2`  
+> **Commit：** `PENDING`  
+> **全局进度：** 21 幕（解析 4 + 处置 5，无 outro 回 idle 页）
 
 ## GitHub Pages
 
-### 投屏（观众大屏）
-
+### 投屏
 ```
-https://5211273081mcm-glitch.github.io/ai-final-presentation/index.html?led=1&v=d603766
+https://5211273081mcm-glitch.github.io/ai-final-presentation/index.html?led=1&v=21beats2
 ```
 
 ### 讲者控制台
-
 ```
-https://5211273081mcm-glitch.github.io/ai-final-presentation/presenter.html?led=1&v=d603766
+https://5211273081mcm-glitch.github.io/ai-final-presentation/presenter.html?led=1&v=21beats2
 ```
 
-> 逐字稿来源：`data/speaker-beats-v8.json`（未改动）
+> 逐字稿 `data/speaker-beats-v8.json` 未改动。请用带 `v=21beats2` 的链接，避免加载旧版 JS。
