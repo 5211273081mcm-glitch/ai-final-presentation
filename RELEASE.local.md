@@ -54,8 +54,8 @@ https://5211273081mcm-glitch.github.io/ai-final-presentation/presenter.html?v=1a
 jsDelivr 按 commit 拉取静态文件（适合核对某一版是否与本地一致）：
 
 ```
-https://cdn.jsdelivr.net/gh/5211273081mcm-glitch/ai-final-presentation@1a42fa2c0a4513339d2bb81147220b03828576f3/index.html?led=1
-https://cdn.jsdelivr.net/gh/5211273081mcm-glitch/ai-final-presentation@1a42fa2c0a4513339d2bb81147220b03828576f3/presenter-led.html
+https://cdn.jsdelivr.net/gh/5211273081mcm-glitch/ai-final-presentation@1a42fa22aec9b6c16d6d2b869f1ced3e674005db/index.html?led=1
+https://cdn.jsdelivr.net/gh/5211273081mcm-glitch/ai-final-presentation@1a42fa22aec9b6c16d6d2b869f1ced3e674005db/presenter-led.html
 ```
 
 ## 上传步骤
