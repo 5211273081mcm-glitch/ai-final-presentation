@@ -2,7 +2,7 @@
 
 > **版本 ID：** `final-led-20260706-21beats-v2`  
 > **Git Tag：** `final-led-20260706-21beats-v2`  
-> **Commit：** `PENDING`  
+> **Commit：** `a3bca1a`  
 > **全局进度：** 21 幕（解析 4 + 处置 5，无 outro 回 idle 页）
 
 ## GitHub Pages
