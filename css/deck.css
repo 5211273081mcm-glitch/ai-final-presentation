@@ -596,12 +596,19 @@ body.preview-mode .deck-main { top: 0; bottom: 0; }
   left: 50%;
   bottom: 110px;
   transform: translateX(-50%);
-  width: 1200px;
+  width: 1400px;
   text-align: center;
   z-index: var(--z-title);
 }
 .final-words p { margin: 0 0 8px; font-size: var(--fs-body-lg); line-height: var(--lh-body); color: var(--text-tertiary); }
-.final-words .final-emphasis { margin-top: 18px; font-size: var(--fs-key-message); font-weight: var(--fw-conclusion); color: var(--text-primary); line-height: var(--lh-conclusion); }
+.final-words .final-emphasis {
+  margin-top: 18px;
+  font-size: var(--fs-key-message);
+  font-weight: var(--fw-conclusion);
+  color: var(--text-primary);
+  line-height: var(--lh-conclusion);
+  white-space: nowrap;
+}
 
 /* ═══ 开场页（Page 1）══ 只有标题 + 核心命题 ═══ */
 .open-slide {

@@ -1,0 +1,20 @@
+{
+  "versionId": "final-local-20260706",
+  "label": "决赛投屏最终本地版",
+  "branch": "feature/led-mode-local",
+  "commit": "4893419c0a4513339d2bb81147220b03828576f3",
+  "commitShort": "4893419",
+  "baselineMain": "3332384",
+  "parentCommit": "efb9659",
+  "builtAt": "2026-07-06T17:58:00+08:00",
+  "repo": "5211273081mcm-glitch/ai-final-presentation",
+  "pagesBase": "https://5211273081mcm-glitch.github.io/ai-final-presentation",
+  "features": [
+    "projection-mode-led",
+    "deck-chrome-nav-countdown",
+    "nav-glow-frame-progress",
+    "page-title-restructure",
+    "event-card-7.6",
+    "closing-planet-halo-tuned"
+  ]
+}

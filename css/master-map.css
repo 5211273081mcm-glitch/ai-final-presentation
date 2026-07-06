@@ -34,8 +34,8 @@
   z-index: var(--z-bg);
   pointer-events: none;
   background:
-    radial-gradient(circle at 19% 52%, rgba(255, 111, 61, 0.06), transparent 22%),
-    radial-gradient(circle at 81% 52%, rgba(72, 215, 255, 0.05), transparent 22%);
+    radial-gradient(circle at 19% 52%, rgba(255, 111, 61, 0.05), transparent 16%),
+    radial-gradient(circle at 81% 52%, rgba(72, 215, 255, 0.04), transparent 16%);
 }
 
 /* ── 标题区（页面唯一标题基准，不与导航冲突） ── */
@@ -79,7 +79,7 @@
   fill: none;
   stroke: var(--ai-primary);
   stroke-width: 3;
-  stroke-linecap: round;
+  stroke-linecap: butt;
   stroke-linejoin: round;
   filter: drop-shadow(0 0 5px rgba(72, 215, 255, 0.22));
   stroke-dasharray: 1000;
@@ -91,7 +91,7 @@
   fill: none;
   stroke: var(--signal-primary);
   stroke-width: 3;
-  stroke-linecap: round;
+  stroke-linecap: butt;
   stroke-linejoin: round;
   filter: drop-shadow(0 0 5px rgba(255, 122, 69, 0.24));
   stroke-dasharray: 1000;
@@ -107,16 +107,20 @@
   transition: opacity 0.5s ease;
 }
 
-/* SVG marker 不受 stroke-dashoffset 影响，需单独用 data-stage 控制箭头随曲线一起显现，
-   避免曲线尚未画出时箭头提前悬浮出现 */
-#arrow-ai path, #arrow-current path { opacity: 0; transition: opacity 0.25s ease; }
-.mmap-v8[data-stage="3"] #arrow-ai path,
-.mmap-v8[data-stage="4"] #arrow-ai path,
-.mmap-complete #arrow-ai path { opacity: 1; }
-.mmap-v8[data-stage="2"] #arrow-current path,
-.mmap-v8[data-stage="3"] #arrow-current path,
-.mmap-v8[data-stage="4"] #arrow-current path,
-.mmap-complete #arrow-current path { opacity: 1; }
+/* 箭头默认隐藏，随阶段通过 marker-end 挂载，避免 marker 内 path opacity 失效 */
+.route-ai,
+.route-current {
+  marker-end: none;
+}
+.mmap-v8[data-stage="2"] .route-current,
+.mmap-v8[data-stage="3"] .route-current,
+.mmap-v8[data-stage="4"] .route-current {
+  marker-end: url(#arrow-current);
+}
+.mmap-v8[data-stage="3"] .route-ai,
+.mmap-v8[data-stage="4"] .route-ai {
+  marker-end: url(#arrow-ai);
+}
 
 /* 阶段可见性由 data-stage 唯一驱动 */
 .mmap-v8[data-stage="1"] .route-spine,
@@ -239,52 +243,71 @@
   z-index: 2;
   display: grid;
   place-items: center;
-  overflow: hidden;
-  background: #000;
-  box-shadow: inset -28px -34px 48px rgba(0, 0, 0, 0.85), 0 0 40px rgba(240, 240, 250, 0.04);
+  overflow: visible;
+  background: transparent;
+  box-shadow: none;
   animation: planet-breathe 9s ease-in-out infinite;
 }
-.planet-node.left .planet-sphere { box-shadow: inset -28px -34px 48px rgba(0, 0, 0, 0.85), 0 0 34px rgba(255, 120, 62, 0.16); }
+.planet-node.left .planet-sphere {
+  box-shadow: 0 0 28px rgba(255, 120, 62, 0.18), 0 0 48px rgba(255, 90, 40, 0.06);
+}
 .planet-node.right .planet-sphere {
   filter: saturate(0.55);
   transition: filter 0.8s ease, box-shadow 0.8s ease;
+  box-shadow: 0 0 24px rgba(72, 215, 255, 0.1);
 }
 .mmap-v8[data-stage="4"] .planet-node.right .planet-sphere {
   filter: saturate(1);
-  box-shadow: inset -28px -34px 48px rgba(0, 0, 0, 0.85), 0 0 52px rgba(72, 215, 255, 0.24);
+  box-shadow: 0 0 36px rgba(72, 215, 255, 0.24), 0 0 56px rgba(72, 215, 255, 0.08);
+}
+/* 收尾页背景：两颗星球保持开场「未点亮」的克制光晕，不做 stage-4 强化 */
+.mmap-complete .planet-node.right .planet-sphere {
+  filter: saturate(0.55);
+  box-shadow: 0 0 24px rgba(72, 215, 255, 0.1);
+}
+.mmap-complete .planet-node.left .planet-sphere {
+  box-shadow: 0 0 28px rgba(255, 120, 62, 0.18), 0 0 48px rgba(255, 90, 40, 0.06);
 }
 
 .planet-texture {
   position: absolute;
-  inset: -6%;
-  width: 112%;
-  height: 112%;
+  inset: -4%;
+  width: 108%;
+  height: 108%;
   object-fit: cover;
-  opacity: 0.9;
+  border-radius: 50%;
+  opacity: 0.92;
   filter: brightness(1.15) contrast(1.1) saturate(1.1);
   animation: planet-texture-drift 120s linear infinite;
+  -webkit-mask-image: radial-gradient(circle at 50% 50%, #000 0%, #000 58%, transparent 80%);
+  mask-image: radial-gradient(circle at 50% 50%, #000 0%, #000 58%, transparent 80%);
 }
 .planet-node.right .planet-texture { animation-direction: reverse; animation-duration: 130s; }
 
 .planet-sphere::before {
   content: '';
   position: absolute;
-  inset: 0;
+  inset: -8%;
   border-radius: 50%;
   z-index: 3;
   pointer-events: none;
-  background: radial-gradient(circle at 26% 20%, rgba(255, 255, 255, 0.3), transparent 18%), radial-gradient(circle at 76% 74%, rgba(0, 0, 0, 0.6), transparent 48%);
+  background: radial-gradient(circle at 28% 22%, rgba(255, 255, 255, 0.28), transparent 22%);
   mix-blend-mode: screen;
-  opacity: 0.55;
+  opacity: 0.42;
 }
 .planet-sphere::after {
   content: '';
   position: absolute;
-  inset: 0;
+  inset: -8%;
   border-radius: 50%;
-  z-index: 4;
+  z-index: 1;
   pointer-events: none;
-  box-shadow: inset -30px -36px 50px rgba(0, 0, 0, 0.5), inset 12px 10px 22px rgba(255, 255, 255, 0.06);
+  background: radial-gradient(circle at 50% 50%,
+    transparent 64%,
+    rgba(0, 0, 0, 0.06) 76%,
+    rgba(0, 0, 0, 0.1) 82%,
+    transparent 92%);
+  opacity: 0.5;
 }
 
 .planet-core-title {
@@ -424,7 +447,7 @@
   background: var(--ai-primary);
   box-shadow: 0 0 14px 4px rgba(72, 215, 255, 0.85), 0 0 30px 10px rgba(72, 215, 255, 0.25);
   opacity: 0;
-  offset-path: path('M 400 505 C 610 270, 1310 270, 1520 505');
+  offset-path: path('M 400 505 C 580 220, 1320 220, 1471 505');
   offset-distance: 0%;
   offset-rotate: 0deg;
 }
@@ -505,16 +528,18 @@
 
 /* ── 紧凑态（用于收尾页复用，作为背景层）── 保留原始亮度，不做整体淡化，
    仅隐藏"当前痛点/AI方向"分析性标签与阶段细节，让两颗星球（含球内文字）
-   与曲线本身作为总纲已完成的实景背景，为前景的居中文案让出空间 ── */
+   与横轴作为总纲已完成的实景背景；蓝/橙弧线在此无需再出现 ── */
 .mmap-compact .mmap-hd { display: none; }
 .mmap-compact .mmap-ft { display: none; }
 .mmap-compact.mmap-complete .stage-node,
 .mmap-compact.mmap-complete .route-copy,
-.mmap-compact.mmap-complete .route-label { display: none; }
+.mmap-compact.mmap-complete .route-label,
+.mmap-compact.mmap-complete .route-ai,
+.mmap-compact.mmap-complete .route-current,
+.mmap-compact.mmap-complete .route-link {
+  display: none;
+}
 .mmap-complete .route-spine,
-.mmap-complete .route-ai,
-.mmap-complete .route-current,
-.mmap-complete .route-link,
 .mmap-complete .route-label,
 .mmap-complete .route-copy,
 .mmap-complete .stage-node,

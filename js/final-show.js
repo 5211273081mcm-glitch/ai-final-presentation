@@ -22,7 +22,8 @@
     lbIdx: 0,
     lbImages: [],
     drawerOpen: false,
-    startTime: Date.now()
+    startTime: Date.now(),
+    targetSec: 600
   };
   window.APP = APP;
 
@@ -142,22 +143,22 @@
 
   /* 当前痛点：单条连续曲线，与 AI_ROUTE 关于中轴线（y=565 主干线）严格镜像对称，
      保证粗细、弧度、箭头细节与上方 AI 曲线完全呼应 */
-  var AI_ROUTE = 'M 400 505 C 610 270, 1310 270, 1520 505';
-  var PAIN_ROUTE = 'M 400 625 C 610 860, 1310 860, 1520 625';
+  var AI_ROUTE = 'M 400 505 C 580 220, 1320 220, 1471 505';
+  var PAIN_ROUTE = 'M 400 625 C 580 910, 1320 910, 1471 625';
 
   function buildMasterMapSvg() {
     return '<svg class="master-map-routes" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid meet" aria-hidden="true">' +
       '<defs>' +
-        '<marker id="arrow-ai" viewBox="0 0 10 10" markerWidth="9" markerHeight="9" refX="8" refY="5" orient="auto" markerUnits="strokeWidth">' +
-          '<path d="M 0 0 L 9 5 L 0 10 L 2.6 5 Z" fill="#48D7FF"></path>' +
+        '<marker id="arrow-ai" viewBox="0 0 10 10" markerWidth="26" markerHeight="26" refX="2.4" refY="5" orient="auto" markerUnits="userSpaceOnUse">' +
+          '<path d="M 0 0 L 9 5 L 0 10 L 2.4 5 Z" fill="#48D7FF"></path>' +
         '</marker>' +
-        '<marker id="arrow-current" viewBox="0 0 10 10" markerWidth="9" markerHeight="9" refX="8" refY="5" orient="auto" markerUnits="strokeWidth">' +
-          '<path d="M 0 0 L 9 5 L 0 10 L 2.6 5 Z" fill="#FF7A45"></path>' +
+        '<marker id="arrow-current" viewBox="0 0 10 10" markerWidth="26" markerHeight="26" refX="2.4" refY="5" orient="auto" markerUnits="userSpaceOnUse">' +
+          '<path d="M 0 0 L 9 5 L 0 10 L 2.4 5 Z" fill="#FF7A45"></path>' +
         '</marker>' +
       '</defs>' +
-      '<path class="route-spine" pathLength="1000" d="M 413 565 L 1507 565"></path>' +
-      '<path class="route-ai" pathLength="1000" marker-end="url(#arrow-ai)" d="' + AI_ROUTE + '"></path>' +
-      '<path class="route-current" pathLength="1000" marker-end="url(#arrow-current)" d="' + PAIN_ROUTE + '"></path>' +
+      '<path class="route-spine" pathLength="1000" d="M 413 565 L 1471 565"></path>' +
+      '<path class="route-ai" pathLength="1000" d="' + AI_ROUTE + '"></path>' +
+      '<path class="route-current" pathLength="1000" d="' + PAIN_ROUTE + '"></path>' +
       '<line class="route-link ai-link" data-qa-id="ai-link-0" x1="720" y1="428" x2="720" y2="532"></line>' +
       '<line class="route-link ai-link" data-qa-id="ai-link-1" x1="960" y1="428" x2="960" y2="532"></line>' +
       '<line class="route-link ai-link" data-qa-id="ai-link-2" x1="1200" y1="428" x2="1200" y2="532"></line>' +
@@ -297,7 +298,6 @@
     var p = C().pages[2];
     return '<div class="slide-body">' +
       '<div class="slide-title-block" data-qa-id="page-title">' +
-        '<span class="spx-micro">从总纲展开 · 舆情解析</span>' +
         '<h1 class="spx-display">' + esc(p.title) + '</h1>' +
         '<p class="spx-note">' + esc(p.subtitle) + '</p>' +
       '</div>' +
@@ -378,7 +378,6 @@
 
     return '<div class="slide-body">' +
       '<div class="slide-title-block" data-qa-id="page-title">' +
-        '<span class="spx-micro">从总纲展开 · 舆情处置</span>' +
         '<h1 class="spx-display">' + esc(p.title) + '</h1>' +
         '<p class="spx-note">' + esc(p.subtitle) + '</p>' +
       '</div>' +
@@ -425,7 +424,6 @@
     }).join('');
     return '<div class="slide-body">' +
       '<div class="slide-title-block" data-qa-id="page-title">' +
-        '<span class="spx-micro">从总纲展开 · 舆情回溯</span>' +
         '<h1 class="spx-display">' + esc(p.title) + '</h1>' +
         '<p class="spx-note">' + esc(p.subtitle) + '</p>' +
       '</div>' +
@@ -482,7 +480,6 @@
     return '<div class="slide-body">' +
       buildMasterMap({ complete: true, compact: true }) +
       '<div class="closing-centerpiece" data-qa-id="page-title">' +
-        '<span class="spx-micro">回到总纲 · 闭环完成</span>' +
         '<h1 class="spx-display">一条已跑通的路径<br>可复制到更多岗位</h1>' +
       '</div>' +
       rv('<div class="replicate-grid" data-qa-id="replicate-grid">' + C().replication.map(function (r) {
@@ -507,9 +504,33 @@
     { beats: 3, build: buildClosingPage }
   ];
 
+  function fmtClock(sec) {
+    var neg = sec < 0;
+    sec = Math.abs(Math.floor(sec));
+    return (neg ? '-' : '') + String(Math.floor(sec / 60)).padStart(2, '0') + ':' + String(sec % 60).padStart(2, '0');
+  }
+
+  function updateDeckClock() {
+    var clock = $('clock');
+    if (!clock || APP.isPreview) return;
+    var remain = APP.targetSec - Math.floor((Date.now() - APP.startTime) / 1000);
+    clock.textContent = fmtClock(remain);
+    clock.classList.toggle('warn', remain <= 60 && remain >= 0);
+    clock.classList.toggle('over', remain < 0);
+  }
+
+  function initDeckChrome() {
+    var brand = $('brand-title');
+    if (brand) {
+      brand.textContent = C().projectTitle || APP.config.projectTitle || '用AI重构舆情工作范式';
+    }
+    APP.targetSec = APP.config.targetTotalSec || 600;
+    updateDeckClock();
+  }
+
   function buildChapterNav() {
     $('chapter-nav').innerHTML = '<div class="cn-track">' + C().pages.map(function (p, i) {
-      return '<div class="cn-seg" data-ch="' + i + '"><span class="cn-code">' + esc(p.code) + '</span><span class="cn-label">' + esc(p.tag) + '</span><span class="cn-beat-bar"></span></div>';
+      return '<div class="cn-seg" data-ch="' + i + '"><span class="cn-label">' + esc(p.tag) + '</span><span class="cn-beat-bar"></span></div>';
     }).join('') + '</div>';
     $('chapter-nav').querySelectorAll('.cn-seg').forEach(function (el) {
       el.onclick = function () { goChapter(+el.dataset.ch, 0); };
@@ -521,10 +542,10 @@
     $('chapter-nav').querySelectorAll('.cn-seg').forEach(function (el, i) {
       el.classList.toggle('active', i === APP.chapter);
       el.classList.toggle('done', i < APP.chapter);
-      var bar = el.querySelector('.cn-beat-bar');
-      if (i === APP.chapter) bar.style.width = ((APP.beat + 1) / pg.beats * 100) + '%';
-      else if (i < APP.chapter) bar.style.width = '100%';
-      else bar.style.width = '0';
+      var pct = 0;
+      if (i === APP.chapter) pct = ((APP.beat + 1) / pg.beats * 100);
+      else if (i < APP.chapter) pct = 100;
+      el.style.setProperty('--beat-pct', pct + '%');
     });
     var total = 0, done = 0;
     PAGES.forEach(function (p, i) {
@@ -991,6 +1012,7 @@
     initProjectionMode();
     initPresenterMode();
     initData();
+    initDeckChrome();
     buildChapterNav();
     if (!APP.isPreview) {
       bindChrome();
@@ -1003,10 +1025,7 @@
     preloadUrl(C().masterMap.leftTexture);
     preloadUrl(C().masterMap.rightTexture);
     if (!APP.isPreview) {
-      setInterval(function () {
-        var sec = Math.floor((Date.now() - APP.startTime) / 1000);
-        $('clock').textContent = String(Math.floor(sec / 60)).padStart(2, '0') + ':' + String(sec % 60).padStart(2, '0');
-      }, 1000);
+      setInterval(updateDeckClock, 1000);
     }
     if (APP.isPreview) {
       goChapter(APP.chapter, APP.beat);
@@ -1108,6 +1127,7 @@
         case 'reset-timer':
           APP.startTime = Date.now();
           APP.pageStartTime = Date.now();
+          updateDeckClock();
           broadcastPresenterState();
           break;
       }

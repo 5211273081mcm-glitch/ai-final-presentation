@@ -1,5 +1,6 @@
 {
   "projectTitle": "用AI重构舆情工作范式",
+  "targetTotalSec": 600,
   "subtitle": "AI重构舆情的本质，是缩短从发现信号到统一行动的距离",
   "useAnonymizedNames": false,
   "names": {
@@ -67,7 +68,7 @@
   "pages": [
     {
       "id": 1,
-      "tag": "总结构",
+      "tag": "引语",
       "durationSec": 50,
       "beats": 5
     },

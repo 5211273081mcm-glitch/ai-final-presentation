@@ -151,8 +151,8 @@ body.projection-mode .handle-col.is-primary .handle-col-body {
 
 /* ── 内容区：上移/扩高（用省下的标题空间） ── */
 body.projection-mode .signal-grid {
-  top: 228px;
-  bottom: 248px;
+  top: 236px;
+  bottom: 240px;
   gap: 18px;
 }
 body.projection-mode .handle-grid {
@@ -178,9 +178,6 @@ body.projection-mode .replicate-grid {
 }
 
 /* ── 藏纯次要信息（不删核心内容） ── */
-body.projection-mode .route-copy .copy-line2 {
-  display: none;
-}
 body.projection-mode .handle-col-note {
   display: none;
 }
@@ -195,10 +192,37 @@ body.projection-mode .handle-col.is-primary .handle-kicker {
   color: var(--signal-primary);
   text-shadow: 0 0 10px rgba(255, 144, 85, 0.35);
 }
-body.projection-mode .mmap-particles,
-body.projection-mode .ai-comet,
+body.projection-mode .mmap-particles {
+  z-index: calc(var(--z-focus) + 4);
+}
+body.projection-mode .ai-comet-core {
+  width: 16px;
+  height: 16px;
+  margin: -8px 0 0 -8px;
+  box-shadow:
+    0 0 22px 7px rgba(72, 215, 255, 0.95),
+    0 0 44px 14px rgba(72, 215, 255, 0.42);
+}
 body.projection-mode .ai-comet-tail {
-  display: none !important;
+  box-shadow: 0 0 14px 4px rgba(72, 215, 255, 0.75);
+}
+body.projection-mode .ai-comet-tail.t1 {
+  width: 12px;
+  height: 12px;
+  margin: -6px 0 0 -6px;
+}
+body.projection-mode .ai-comet-tail.t2 {
+  width: 9px;
+  height: 9px;
+  margin: -4.5px 0 0 -4.5px;
+}
+body.projection-mode .ai-comet-tail.t3 {
+  width: 6px;
+  height: 6px;
+  margin: -3px 0 0 -3px;
+}
+body.projection-mode .impact-ring {
+  border-width: 3px;
 }
 
 /* ── 线框加粗 ── */
@@ -227,24 +251,38 @@ body.projection-mode .handle-col.is-secondary {
   opacity: 0.7;
 }
 
-/* ── 总纲：路径加粗，星球微增 ── */
+/* ── 总纲：路径加粗，星球微增，箭头不被遮挡 ── */
 body.projection-mode .mmap-v8 {
   --planet-d: 282px;
+  --ai-copy-y: 384px;
+  --pain-copy-y: 746px;
+}
+body.projection-mode .master-map-routes {
+  overflow: visible;
 }
 body.projection-mode .route-spine {
-  stroke: rgba(240, 240, 250, 0.48);
-  stroke-width: 5;
+  stroke: rgba(240, 240, 250, 0.55);
+  stroke-width: 4;
 }
 body.projection-mode .route-ai {
-  stroke-width: 7;
-  filter: drop-shadow(0 0 10px rgba(84, 227, 255, 0.42));
+  stroke-width: 5;
+  stroke-linecap: butt;
+  filter: none;
 }
 body.projection-mode .route-current {
-  stroke-width: 7;
-  filter: drop-shadow(0 0 10px rgba(255, 144, 85, 0.42));
+  stroke-width: 5;
+  stroke-linecap: butt;
+  filter: none;
+}
+body.projection-mode .master-map-routes marker {
+  overflow: visible;
 }
 body.projection-mode .route-link {
-  stroke-width: 3;
+  stroke: rgba(240, 240, 250, 0.42);
+  stroke-width: 4;
+}
+body.projection-mode .master-map-routes marker path {
+  stroke: none;
 }
 
 /* 当前痛点 / AI方向：投屏重点标签，显著大于周围文案 */
@@ -284,12 +322,58 @@ body.projection-mode .route-label-pain::before {
 }
 
 body.projection-mode .route-copy .copy-line1 {
-  font-size: 24px;
+  font-size: 26px;
   font-weight: 800;
-  color: var(--text-primary);
+  line-height: 1.2;
+  margin-bottom: 6px;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.55);
+}
+body.projection-mode .ai-copy .copy-line1 {
+  color: #6EEBFF;
+}
+body.projection-mode .pain-copy .copy-line1 {
+  color: #FFAA70;
+}
+body.projection-mode .route-copy .copy-line2 {
+  display: block;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.25;
+  color: var(--text-secondary);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+body.projection-mode .route-copy.is-secondary {
+  opacity: 0.82;
+}
+body.projection-mode .route-link.is-secondary {
+  opacity: 0.72;
 }
 
-/* 星球内：发现信号 / 统一行动 */
+body.projection-mode .stage-node {
+  z-index: calc(var(--z-focus) + 1);
+}
+body.projection-mode .stage-num {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--text-secondary);
+  letter-spacing: 0.12em;
+  margin-bottom: 4px;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
+}
+body.projection-mode .stage-name {
+  font-size: 34px;
+  font-weight: 800;
+}
+body.projection-mode .stage-node.is-primary .stage-name {
+  font-size: 36px;
+  text-shadow:
+    0 0 24px rgba(255, 255, 255, 0.55),
+    0 0 8px rgba(255, 255, 255, 0.65);
+}
+body.projection-mode .stage-name::after {
+  height: 3px;
+  bottom: -10px;
+}
 body.projection-mode .planet-core-title {
   font-size: 42px;
   font-weight: 800;
@@ -312,27 +396,52 @@ body.projection-mode .planet-node.right .planet-core-title {
     0 2px 8px rgba(0, 0, 0, 0.8);
 }
 body.projection-mode .planet-sphere {
-  box-shadow: inset -28px -34px 48px rgba(0, 0, 0, 0.85), 0 0 48px rgba(240, 240, 250, 0.08);
+  background: transparent;
+  box-shadow: none;
+}
+body.projection-mode .planet-sphere::after {
+  inset: -10%;
+  background: radial-gradient(circle at 50% 50%,
+    transparent 66%,
+    rgba(0, 0, 0, 0.05) 78%,
+    rgba(0, 0, 0, 0.08) 84%,
+    transparent 94%);
+  opacity: 0.42;
+}
+body.projection-mode .planet-sphere::before {
+  opacity: 0.36;
+}
+body.projection-mode .planet-texture {
+  -webkit-mask-image: radial-gradient(circle at 50% 50%, #000 0%, #000 56%, transparent 78%);
+  mask-image: radial-gradient(circle at 50% 50%, #000 0%, #000 56%, transparent 78%);
 }
 body.projection-mode .planet-node.left .planet-sphere {
-  box-shadow: inset -28px -34px 48px rgba(0, 0, 0, 0.85), 0 0 42px rgba(255, 144, 85, 0.22);
+  box-shadow: 0 0 32px rgba(255, 144, 85, 0.18), 0 0 52px rgba(255, 90, 40, 0.07);
 }
 body.projection-mode .planet-node.right .planet-sphere {
-  box-shadow: inset -28px -34px 48px rgba(0, 0, 0, 0.85), 0 0 42px rgba(84, 227, 255, 0.22);
+  box-shadow: 0 0 28px rgba(84, 227, 255, 0.13);
+}
+body.projection-mode .mmap-v8[data-stage="4"] .planet-node.right .planet-sphere,
+body.projection-mode .mmap-v8.anim-ai .planet-node.right .planet-sphere {
+  filter: saturate(1);
+  box-shadow: 0 0 40px rgba(84, 227, 255, 0.32), 0 0 64px rgba(84, 227, 255, 0.1);
+}
+/* 收尾页：与开场未点亮态一致，不叠加 stage-4 / 投屏强化光晕 */
+body.projection-mode .mmap-complete .planet-node.left .planet-sphere {
+  box-shadow: 0 0 28px rgba(255, 120, 62, 0.18), 0 0 48px rgba(255, 90, 40, 0.06);
+}
+body.projection-mode .mmap-complete .planet-node.right .planet-sphere {
+  filter: saturate(0.55);
+  box-shadow: 0 0 24px rgba(72, 215, 255, 0.1);
+}
+body.projection-mode .mmap-complete .planet-sphere::before {
+  opacity: 0.32;
+}
+body.projection-mode .mmap-complete .planet-node.left .planet-core-title,
+body.projection-mode .mmap-complete .planet-node.right .planet-core-title {
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.75);
 }
 
-body.projection-mode .stage-num {
-  font-size: 16px;
-  font-weight: 800;
-  color: var(--text-tertiary);
-  letter-spacing: 0.1em;
-}
-body.projection-mode .stage-name {
-  font-size: 30px;
-}
-body.projection-mode .stage-node.is-primary .stage-name {
-  text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
-}
 body.projection-mode .saturn-ring ellipse {
   stroke-width: 2.5;
 }
@@ -359,11 +468,11 @@ body.projection-mode .ev-link {
 }
 body.projection-mode .signal-evidence-label,
 body.projection-mode .loop-evidence-label {
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 800;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   color: var(--signal-primary);
-  text-shadow: 0 0 10px rgba(255, 144, 85, 0.28);
+  text-shadow: 0 0 12px rgba(255, 144, 85, 0.35);
 }
 body.projection-mode .handle-arrow {
   font-size: 32px;
@@ -392,16 +501,79 @@ body.projection-mode .complaint-line {
   font-size: var(--fs-caption);
 }
 body.projection-mode .replicate-grid p {
-  font-size: var(--fs-caption);
+  font-size: var(--fs-body);
   font-weight: 700;
+  color: var(--text-secondary);
 }
 body.projection-mode .replicate-grid b {
-  font-size: var(--fs-node-title);
+  font-size: calc(var(--fs-node-title) * 1.06);
+  font-weight: 800;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.55);
+}
+body.projection-mode .replicate-grid > div {
+  padding: 20px 22px 18px;
+  border-width: 3px;
+  background: rgba(3, 6, 12, 0.88);
+}
+body.projection-mode .replicate-grid .replicate-note {
+  margin-top: 14px;
+  padding: 12px 14px;
+  font-size: 19px;
+  font-weight: 700;
+  line-height: 1.55;
+  color: var(--text-primary);
+  background: rgba(72, 215, 255, 0.1);
+  border-left-width: 3px;
 }
 body.projection-mode .replicate-note-tag {
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 800;
 }
+
+body.projection-mode .final-words p {
+  font-size: calc(var(--fs-body-lg) * 1.08);
+  font-weight: 700;
+  line-height: 1.55;
+  color: var(--text-secondary);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.55);
+}
+body.projection-mode .final-words .final-emphasis {
+  font-size: var(--fs-key-message);
+  font-weight: 800;
+  color: var(--text-primary);
+  white-space: nowrap;
+  letter-spacing: -0.01em;
+  text-shadow: 0 0 18px rgba(255, 255, 255, 0.12), 0 2px 6px rgba(0, 0, 0, 0.65);
+}
+
+body.projection-mode .loop-step {
+  padding: 32px 26px;
+  border-width: 3px;
+}
+body.projection-mode .loop-step h4 {
+  font-size: calc(var(--fs-node-title) * 1.08);
+  font-weight: 800;
+  text-shadow: 0 0 14px rgba(84, 227, 255, 0.28);
+}
+body.projection-mode .loop-step p {
+  font-size: calc(var(--fs-body) * 1.06);
+  font-weight: 700;
+  color: var(--text-secondary);
+  line-height: 1.55;
+}
+body.projection-mode .loop-evidence-label {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  margin-bottom: 14px;
+}
+body.projection-mode .loop-evidence-top .ev-chip {
+  font-size: 20px;
+  padding: 12px 18px;
+  font-weight: 800;
+  border-width: 2px;
+}
+
 body.projection-mode .complaint-line.hot {
   font-weight: 800;
   color: var(--signal-primary);
@@ -441,13 +613,83 @@ body.projection-mode .lb-source {
   padding: 10px 18px;
 }
 
-/* ── chrome ── */
+/* ── chrome：投屏保留顶栏（左上项目名 / 中导航 / 右倒计时） ── */
 body.projection-mode .deck-header {
-  opacity: 0;
-  pointer-events: none;
+  opacity: 0.88;
+  pointer-events: auto;
+  background: rgba(0, 0, 0, 0.84);
+  border-bottom-color: rgba(240, 240, 250, 0.14);
 }
+body.projection-mode .deck-header.chrome-active {
+  opacity: 0.96;
+}
+body.projection-mode .brand-mini {
+  flex: 0 0 auto;
+  min-width: 240px;
+  max-width: 320px;
+}
+body.projection-mode .brand-mini .spx-micro {
+  text-transform: none;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+body.projection-mode .chapter-nav {
+  pointer-events: auto;
+}
+body.projection-mode .cn-track {
+  width: min(920px, 100%);
+  gap: 6px;
+}
+body.projection-mode .cn-seg {
+  min-height: 46px;
+  padding: 0 8px 13px;
+  border-width: 2px;
+}
+body.projection-mode .cn-label {
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+body.projection-mode .cn-seg.active {
+  border-color: rgba(255, 255, 255, 0.82);
+  box-shadow:
+    0 0 0 2px rgba(255, 255, 255, 0.16),
+    0 0 18px rgba(255, 255, 255, 0.52),
+    0 0 32px rgba(255, 255, 255, 0.22);
+}
+body.projection-mode .cn-seg.active .cn-label {
+  color: var(--text-primary);
+}
+body.projection-mode .cn-seg.done {
+  border-color: rgba(240, 240, 250, 0.36);
+}
+body.projection-mode .cn-seg.done .cn-label {
+  color: var(--text-secondary);
+}
+body.projection-mode .cn-beat-bar {
+  height: 4px;
+  left: 7px;
+  right: 7px;
+  bottom: 5px;
+}
+body.projection-mode .cn-beat-bar::before {
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.65);
+}
+body.projection-mode #clock {
+  flex: 0 0 auto;
+  min-width: 76px;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  letter-spacing: 0.1em;
+}
+body.projection-mode #clock.warn { color: #ffb45e; }
+body.projection-mode #clock.over { color: #ff6b5e; }
 body.projection-mode .progress-bar {
-  opacity: 0.3;
+  opacity: 0.45;
 }
 body.projection-mode.preview-mode .deck-header,
 body.projection-mode.preview-mode .progress-bar {
