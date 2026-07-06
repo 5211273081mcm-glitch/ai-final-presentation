@@ -2,7 +2,8 @@
 
 > **版本 ID：** `final-local-20260706`  
 > **分支：** `feature/led-mode-local`  
-> **Commit：** `4893419`（完整：`4893419c0a4513339d2bb81147220b03828576f3`）  
+> **Commit：** `1a42fa2`（完整：`1a42fa22aec9b6c16d6d2b869f1ced3e674005db`）  
+> **Git Tag：** `final-local-20260706`  
 > **线上基线（main）：** `3332384`
 
 ## 本地预览
@@ -25,13 +26,13 @@ cd ai-final-presentation && python3 -m http.server 8080
 ### 投屏（观众屏 · LED）
 
 ```
-https://5211273081mcm-glitch.github.io/ai-final-presentation/index.html?led=1&v=4893419
+https://5211273081mcm-glitch.github.io/ai-final-presentation/index.html?led=1&v=1a42fa2
 ```
 
 快捷入口：
 
 ```
-https://5211273081mcm-glitch.github.io/ai-final-presentation/index-led.html?v=4893419
+https://5211273081mcm-glitch.github.io/ai-final-presentation/index-led.html?v=1a42fa2
 ```
 
 ### 讲者控制台
@@ -39,13 +40,13 @@ https://5211273081mcm-glitch.github.io/ai-final-presentation/index-led.html?v=48
 LED 预览（iframe 同步 `?led=1`）：
 
 ```
-https://5211273081mcm-glitch.github.io/ai-final-presentation/presenter-led.html?v=4893419
+https://5211273081mcm-glitch.github.io/ai-final-presentation/presenter-led.html?v=1a42fa2
 ```
 
 标准控制台：
 
 ```
-https://5211273081mcm-glitch.github.io/ai-final-presentation/presenter.html?v=4893419
+https://5211273081mcm-glitch.github.io/ai-final-presentation/presenter.html?v=1a42fa2
 ```
 
 ## Commit 锁定预览（推送后即时可用 · 无需等 Pages 更新）
@@ -53,8 +54,8 @@ https://5211273081mcm-glitch.github.io/ai-final-presentation/presenter.html?v=48
 jsDelivr 按 commit 拉取静态文件（适合核对某一版是否与本地一致）：
 
 ```
-https://cdn.jsdelivr.net/gh/5211273081mcm-glitch/ai-final-presentation@48934195046f3d293fedcea4bbb5acaaf69e17cf/index.html?led=1
-https://cdn.jsdelivr.net/gh/5211273081mcm-glitch/ai-final-presentation@48934195046f3d293fedcea4bbb5acaaf69e17cf/presenter-led.html
+https://cdn.jsdelivr.net/gh/5211273081mcm-glitch/ai-final-presentation@1a42fa2c0a4513339d2bb81147220b03828576f3/index.html?led=1
+https://cdn.jsdelivr.net/gh/5211273081mcm-glitch/ai-final-presentation@1a42fa2c0a4513339d2bb81147220b03828576f3/presenter-led.html
 ```
 
 ## 上传步骤
