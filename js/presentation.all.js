@@ -738,15 +738,18 @@ window.__PRESENTATION_DATA__ = {"config": {"projectTitle": "用AI重构舆情工
     }
   }
 
+  var PROJECTION_ZOOM = 1.45;
+
   /* 唯一缩放计算：绝对定位 + translateX(-50%) + translateY + scale，避免 flex 子项撑出内部滚动 */
   function scale() {
     var viewport = $('scene-viewport');
     var stage = $('scene-stage');
     if (!viewport || !stage) return;
     resetViewport();
-    var s = Math.min(viewport.clientWidth / 1920, viewport.clientHeight / 1080);
-    var gapY = Math.max(0, (viewport.clientHeight - 1080 * s) / 2);
-    stage.style.transform = 'translateX(-50%) translateY(' + gapY.toFixed(2) + 'px) scale(' + s + ')';
+    var fit = Math.min(viewport.clientWidth / 1920, viewport.clientHeight / 1080);
+    var s = APP.projectionMode ? fit * PROJECTION_ZOOM : fit;
+    var gapY = (viewport.clientHeight - 1080 * s) / 2;
+    stage.style.transform = 'translateX(-50%) translateY(' + gapY.toFixed(2) + 'px) scale(' + s.toFixed(4) + ')';
   }
 
   function stabilizeLayout() {
@@ -1024,13 +1027,18 @@ window.__PRESENTATION_DATA__ = {"config": {"projectTitle": "用AI重构舆情工
     var q = new URLSearchParams(window.location.search);
     var on = q.get('led') === '1' || q.get('led') === 'true';
     if (q.get('led') === '0' || q.get('led') === 'false') on = false;
-    if (on) document.body.classList.add('projection-mode');
+    if (on) {
+      document.body.classList.add('projection-mode');
+      document.body.dataset.pmZoom = String(PROJECTION_ZOOM);
+    }
     APP.projectionMode = on;
   }
 
   function toggleProjectionMode() {
     APP.projectionMode = !APP.projectionMode;
     document.body.classList.toggle('projection-mode', APP.projectionMode);
+    if (APP.projectionMode) document.body.dataset.pmZoom = String(PROJECTION_ZOOM);
+    else delete document.body.dataset.pmZoom;
     stabilizeLayout();
   }
 
