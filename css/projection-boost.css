@@ -231,7 +231,7 @@ body.projection-mode.preview-mode .progress-bar {
 }
 
 body.projection-mode::after {
-  content: 'BOOST ×' attr(data-pm-zoom);
+  content: 'BOOST ×1.45';
   position: fixed;
   bottom: 8px;
   right: 10px;
