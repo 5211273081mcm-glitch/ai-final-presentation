@@ -11,16 +11,16 @@ body.projection-mode {
   --safe-bottom: 48px;
   --content-top: 72px;
 
-  /* 统一字号约 +18%，全站 token 同步，避免单点放大重叠 */
-  --fs-hero: 72px;
-  --fs-page-title: 58px;
-  --fs-section-title: 32px;
-  --fs-key-message: 38px;
-  --fs-node-title: 30px;
-  --fs-body-lg: 24px;
-  --fs-body: 21px;
-  --fs-caption: 17px;
-  --fs-micro: 13px;
+  /* 统一字号约 +26%，全站 token 同步 */
+  --fs-hero: 76px;
+  --fs-page-title: 62px;
+  --fs-section-title: 34px;
+  --fs-key-message: 42px;
+  --fs-node-title: 32px;
+  --fs-body-lg: 26px;
+  --fs-body: 22px;
+  --fs-caption: 18px;
+  --fs-micro: 14px;
 
   --lh-body: 1.48;
   --lh-conclusion: 1.28;
@@ -37,9 +37,9 @@ body.projection-mode {
   --signal-soft: rgba(255, 144, 85, 0.72);
 }
 
-/* 对比度微增（不 blur、不 scale） */
+/* 对比度增强（不 blur、不 scale） */
 body.projection-mode .deck-main {
-  filter: contrast(1.12) brightness(1.08);
+  filter: contrast(1.16) brightness(1.1) saturate(1.06);
 }
 
 /* ── 标题区：藏面包屑、副标题限 1 行，腾出纵向空间 ── */
@@ -170,44 +170,85 @@ body.projection-mode .replicate-grid > div {
   border-width: 3px;
 }
 body.projection-mode .signal-col.is-primary {
-  border-width: 4px;
+  border-width: 5px;
   border-color: var(--ai-primary);
-  box-shadow: 0 0 0 2px rgba(84, 227, 255, 0.28);
+  box-shadow: 0 0 0 2px rgba(84, 227, 255, 0.32), 0 0 20px rgba(84, 227, 255, 0.12);
 }
 body.projection-mode .handle-col.is-primary {
-  border-width: 4px;
+  border-width: 5px;
   border-color: var(--signal-primary);
-  box-shadow: 0 0 0 2px rgba(255, 144, 85, 0.28);
+  box-shadow: 0 0 0 2px rgba(255, 144, 85, 0.32), 0 0 20px rgba(255, 144, 85, 0.12);
 }
 body.projection-mode .signal-col.is-secondary,
 body.projection-mode .handle-col.is-secondary {
-  opacity: 0.65;
+  opacity: 0.7;
 }
 
 /* ── 总纲：路径加粗，星球微增 ── */
 body.projection-mode .mmap-v8 {
-  --planet-d: 268px;
+  --planet-d: 272px;
 }
 body.projection-mode .route-spine {
-  stroke: rgba(240, 240, 250, 0.42);
-  stroke-width: 4;
+  stroke: rgba(240, 240, 250, 0.48);
+  stroke-width: 5;
 }
 body.projection-mode .route-ai {
-  stroke-width: 6;
-  filter: drop-shadow(0 0 8px rgba(84, 227, 255, 0.35));
+  stroke-width: 7;
+  filter: drop-shadow(0 0 10px rgba(84, 227, 255, 0.42));
 }
 body.projection-mode .route-current {
-  stroke-width: 6;
-  filter: drop-shadow(0 0 8px rgba(255, 144, 85, 0.35));
+  stroke-width: 7;
+  filter: drop-shadow(0 0 10px rgba(255, 144, 85, 0.42));
 }
 body.projection-mode .route-link {
-  stroke-width: 2.5;
+  stroke-width: 3;
 }
+
+/* 当前痛点 / AI方向：投屏重点标签，显著大于周围文案 */
 body.projection-mode .route-label {
+  font-size: 36px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  z-index: calc(var(--z-copy) + 2);
+}
+body.projection-mode .route-label::before {
+  inset: -12px -28px;
+  border-radius: 10px;
+  border: 3px solid transparent;
+}
+body.projection-mode .route-label-ai {
+  left: 448px;
+  top: 332px;
+  color: #6EEBFF;
+  text-shadow: 0 0 20px rgba(84, 227, 255, 0.55), 0 2px 6px rgba(0, 0, 0, 0.65);
+}
+body.projection-mode .route-label-ai::before {
+  background: rgba(0, 24, 48, 0.92);
+  border-color: var(--ai-primary);
+  box-shadow: 0 0 18px rgba(84, 227, 255, 0.28);
+}
+body.projection-mode .route-label-pain {
+  left: 430px;
+  top: 772px;
+  color: #FFAA70;
+  text-shadow: 0 0 20px rgba(255, 144, 85, 0.55), 0 2px 6px rgba(0, 0, 0, 0.65);
+}
+body.projection-mode .route-label-pain::before {
+  background: rgba(48, 18, 0, 0.92);
+  border-color: var(--signal-primary);
+  box-shadow: 0 0 18px rgba(255, 144, 85, 0.28);
+}
+
+body.projection-mode .route-copy .copy-line1 {
+  font-size: 22px;
   font-weight: 800;
 }
-body.projection-mode .route-copy .copy-line1 {
-  font-weight: 800;
+body.projection-mode .planet-core-title {
+  font-size: 32px;
+}
+body.projection-mode .stage-name {
+  font-size: 28px;
 }
 body.projection-mode .stage-node.is-primary .stage-name {
   text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
@@ -225,9 +266,9 @@ body.projection-mode .mmap-v8 .mmap-ft {
 
 /* ── 硬编码字号 override（deck.css 裸写部分） ── */
 body.projection-mode .ev-chip {
-  font-size: 16px;
-  padding: 9px 14px;
-  font-weight: 700;
+  font-size: 17px;
+  padding: 10px 15px;
+  font-weight: 800;
   border-width: 2px;
 }
 body.projection-mode .ev-btn,
@@ -238,11 +279,11 @@ body.projection-mode .ev-link {
 }
 body.projection-mode .signal-evidence-label,
 body.projection-mode .loop-evidence-label {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 800;
 }
 body.projection-mode .handle-arrow {
-  font-size: 28px;
+  font-size: 30px;
   font-weight: 800;
   color: var(--text-muted);
 }
@@ -259,7 +300,7 @@ body.projection-mode .complaint-line.hot {
   color: var(--signal-primary);
 }
 body.projection-mode .risk-field {
-  border-left-width: 4px;
+  border-left-width: 5px;
 }
 
 body.projection-mode .ev-chip.ev-live {
@@ -277,7 +318,7 @@ body.projection-mode .lightbox img {
   border-width: 2px;
 }
 body.projection-mode .lb-cap {
-  font-size: var(--fs-body);
+  font-size: 22px;
   font-weight: 700;
   color: var(--text-primary);
 }
@@ -307,7 +348,7 @@ body.projection-mode.preview-mode .progress-bar {
 }
 
 body.projection-mode::after {
-  content: 'BOOST · fit';
+  content: 'BOOST · fit+';
   position: fixed;
   bottom: 8px;
   right: 10px;
