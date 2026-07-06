@@ -1,0 +1,545 @@
+/* ═══════════════════════════════════════════════════════════
+   LED 大屏高可读演示模式 — 仅 body.led-mode 生效
+   不影响默认投屏视觉；通过 ?led=1 或 L 键切换
+   ═══════════════════════════════════════════════════════════ */
+
+body.led-mode {
+  /* ── LED 专用字号 ── */
+  --led-title-size: clamp(58px, 4.8vw, 78px);
+  --led-section-title-size: clamp(44px, 3.2vw, 58px);
+  --led-subtitle-size: clamp(34px, 2.6vw, 46px);
+  --led-body-size: clamp(29px, 2.1vw, 36px);
+  --led-small-size: clamp(25px, 1.7vw, 30px);
+  --led-label-size: clamp(27px, 1.8vw, 34px);
+  --led-button-size: clamp(26px, 1.8vw, 32px);
+  --led-conclusion-size: clamp(36px, 2.4vw, 44px);
+
+  /* ── 映射到现有 token（原模式不变） ── */
+  --fs-hero: var(--led-title-size);
+  --fs-page-title: var(--led-title-size);
+  --fs-section-title: var(--led-section-title-size);
+  --fs-key-message: var(--led-conclusion-size);
+  --fs-node-title: var(--led-section-title-size);
+  --fs-body-lg: var(--led-subtitle-size);
+  --fs-body: var(--led-body-size);
+  --fs-caption: var(--led-small-size);
+  --fs-micro: var(--led-label-size);
+
+  --text-primary: #FFFFFF;
+  --text-secondary: #CBD5E1;
+  --text-tertiary: #94A3B8;
+  --text-muted: #94A3B8;
+  --ai-primary: #22D3EE;
+  --ai-soft: rgba(34, 211, 238, 0.72);
+  --signal-primary: #FB923C;
+  --signal-soft: rgba(251, 146, 60, 0.72);
+  --surface-line: rgba(148, 163, 184, 0.35);
+  --surface-fill: rgba(15, 23, 42, 0.82);
+
+  --safe-left: 72px;
+  --safe-right: 72px;
+  --content-top: 88px;
+}
+
+/* ── 背景与空间 ── */
+body.led-mode,
+body.led-mode html {
+  background: #07111F;
+}
+body.led-mode .deck {
+  background: linear-gradient(165deg, #07111F 0%, #081624 48%, #0B1220 100%);
+}
+body.led-mode .master-map-canvas::before {
+  opacity: 0.35;
+  background:
+    radial-gradient(circle at 19% 52%, rgba(251, 146, 60, 0.08), transparent 24%),
+    radial-gradient(circle at 81% 52%, rgba(34, 211, 238, 0.07), transparent 24%);
+}
+body.led-mode .mmap-particles,
+body.led-mode .particle,
+body.led-mode .ai-comet,
+body.led-mode .ai-comet-tail {
+  display: none !important;
+}
+
+/* ── 投屏 chrome 弱化 ── */
+body.led-mode .deck-header {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+body.led-mode .deck-header.chrome-active {
+  opacity: 0.22;
+}
+body.led-mode .progress-bar {
+  height: 3px;
+  opacity: 0.35;
+}
+body.led-mode .qa-debug-layer {
+  display: none !important;
+}
+body.led-mode.preview-mode .deck-header,
+body.led-mode.preview-mode .progress-bar {
+  display: none !important;
+}
+
+/* ── LED 模式指示（本地测试用） ── */
+body.led-mode::after {
+  content: 'LED';
+  position: fixed;
+  bottom: 10px;
+  right: 12px;
+  z-index: 9999;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  color: #22D3EE;
+  border: 1px solid rgba(34, 211, 238, 0.45);
+  background: rgba(7, 17, 31, 0.88);
+  pointer-events: none;
+  opacity: 0.55;
+}
+
+/* ── 通用卡片实体化 ── */
+body.led-mode .signal-col,
+body.led-mode .handle-col,
+body.led-mode .loop-step,
+body.led-mode .replicate-grid > div,
+body.led-mode .scene-card,
+body.led-mode .alert-box,
+body.led-mode .event-dims-card,
+body.led-mode .risk-field {
+  background: rgba(15, 23, 42, 0.82);
+  border: 2px solid rgba(148, 163, 184, 0.35);
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.35);
+}
+body.led-mode .signal-col.is-primary,
+body.led-mode .handle-col.is-primary,
+body.led-mode .loop-step.is-primary {
+  border: 3px solid rgba(34, 211, 238, 0.95);
+  box-shadow: 0 0 0 1px rgba(34, 211, 238, 0.25), 0 22px 56px rgba(0, 0, 0, 0.42);
+}
+body.led-mode .signal-col.is-secondary,
+body.led-mode .handle-col.is-secondary {
+  opacity: 0.45;
+  filter: saturate(0.75);
+}
+body.led-mode .handle-col.is-primary {
+  border-color: rgba(251, 146, 60, 0.92);
+  box-shadow: 0 0 0 1px rgba(251, 146, 60, 0.22), 0 22px 56px rgba(0, 0, 0, 0.42);
+}
+
+/* ── 标题与正文 ── */
+body.led-mode .spx-display,
+body.led-mode .open-title {
+  font-size: var(--led-title-size);
+  color: #FFFFFF;
+  text-shadow: 0 2px 24px rgba(0, 0, 0, 0.45);
+}
+body.led-mode .spx-note,
+body.led-mode .open-subtitle {
+  font-size: var(--led-subtitle-size);
+  color: #CBD5E1;
+  max-width: 72ch;
+}
+body.led-mode .spx-micro {
+  font-size: var(--led-label-size);
+  color: #94A3B8;
+}
+body.led-mode .one-liner,
+body.led-mode .parse-conclusion,
+body.led-mode .handle-conclusion,
+body.led-mode .loop-conclusion p,
+body.led-mode .final-emphasis,
+body.led-mode .replicate-note {
+  font-size: var(--led-conclusion-size);
+  color: #FFFFFF;
+  line-height: 1.35;
+}
+body.led-mode .parse-conclusion,
+body.led-mode .handle-conclusion {
+  bottom: 72px;
+  padding: 18px 28px;
+  background: rgba(15, 23, 42, 0.88);
+  border: 2px solid rgba(148, 163, 184, 0.3);
+  border-radius: 6px;
+}
+
+/* ── Evidence 按钮 ── */
+body.led-mode .ev-chip,
+body.led-mode .ev-btn,
+body.led-mode .ev-link {
+  font-size: var(--led-button-size);
+  min-height: 52px;
+  padding: 12px 18px;
+  border: 2px solid rgba(148, 163, 184, 0.4);
+  background: rgba(15, 23, 42, 0.9);
+  color: #F8FAFC;
+  gap: 8px;
+}
+body.led-mode .ev-chip::before {
+  font-size: 14px;
+}
+body.led-mode .signal-evidence-label,
+body.led-mode .loop-evidence-label {
+  font-size: var(--led-label-size);
+  margin-bottom: 14px;
+}
+body.led-mode .ev-chip.ev-live {
+  animation: ledEvPulse 1.8s ease-in-out infinite;
+}
+@keyframes ledEvPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(251, 146, 60, 0), 0 0 8px rgba(251, 146, 60, 0.2); }
+  50% { box-shadow: 0 0 0 4px rgba(251, 146, 60, 0.15), 0 0 20px rgba(251, 146, 60, 0.45); }
+}
+
+/* ═══ PAGE 1 开场 ═══ */
+body.led-mode .open-slide {
+  justify-content: center;
+  padding-top: 48px;
+  padding-bottom: 48px;
+}
+
+/* ═══ PAGE 2 总纲 ═══ */
+body.led-mode .mmap-v8 {
+  --planet-d: 320px;
+  --planet-left-x: 270px;
+  --planet-right-x: 1650px;
+  --stage-y: 560px;
+}
+body.led-mode .mmap-v8 .mmap-hd .spx-display {
+  font-size: var(--led-title-size);
+}
+body.led-mode .mmap-v8 .mmap-subtitle {
+  font-size: var(--led-subtitle-size);
+  color: #CBD5E1;
+}
+body.led-mode .planet-core-title {
+  font-size: clamp(36px, 2.8vw, 48px);
+  font-weight: 700;
+  text-shadow: 0 0 28px rgba(0, 0, 0, 0.65), 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+body.led-mode .stage-name {
+  font-size: clamp(40px, 2.9vw, 52px);
+  font-weight: 700;
+}
+body.led-mode .stage-num {
+  font-size: var(--led-label-size);
+  color: #94A3B8;
+}
+body.led-mode .route-spine {
+  stroke: rgba(203, 213, 225, 0.45);
+  stroke-width: 3;
+}
+body.led-mode .route-ai {
+  stroke: #22D3EE;
+  stroke-width: 5.5;
+  filter: drop-shadow(0 0 8px rgba(34, 211, 238, 0.35));
+}
+body.led-mode .route-current {
+  stroke: #FB923C;
+  stroke-width: 5.5;
+  filter: drop-shadow(0 0 8px rgba(251, 146, 60, 0.35));
+}
+body.led-mode .route-link {
+  stroke-width: 2.5;
+}
+body.led-mode .route-label {
+  font-size: var(--led-label-size);
+}
+body.led-mode .route-label::before {
+  background: #07111F;
+  inset: -8px -18px;
+}
+body.led-mode .route-copy .copy-line1 {
+  font-size: clamp(28px, 2vw, 34px);
+  font-weight: 700;
+}
+body.led-mode .route-copy .copy-line2 {
+  display: none;
+}
+body.led-mode .mmap-v8 .mmap-ft {
+  bottom: 72px;
+  padding: 16px 32px;
+  background: rgba(15, 23, 42, 0.88);
+  border: 2px solid rgba(148, 163, 184, 0.32);
+  border-radius: 8px;
+}
+body.led-mode .mmap-v8 .mmap-ft p {
+  font-size: var(--led-conclusion-size);
+}
+body.led-mode .planet-sphere {
+  animation: none;
+}
+body.led-mode .planet-texture {
+  animation: none;
+  filter: brightness(1.25) contrast(1.15) saturate(1.15);
+}
+body.led-mode .saturn-ring ellipse {
+  stroke-width: 2.5;
+}
+
+/* ═══ PAGE 3 舆情解析 ═══ */
+body.led-mode .signal-grid {
+  top: 248px;
+  bottom: 280px;
+  gap: 28px;
+}
+body.led-mode .signal-col h4 {
+  font-size: clamp(38px, 2.6vw, 46px);
+  padding: 22px 26px;
+}
+body.led-mode .signal-item {
+  font-size: clamp(28px, 2vw, 34px);
+  color: #E2E8F0;
+  line-height: 1.45;
+}
+body.led-mode .signal-stream {
+  padding: 18px 26px 12px;
+  gap: 16px;
+}
+body.led-mode .signal-evidence {
+  padding: 16px 26px 22px;
+  margin-top: auto;
+}
+body.led-mode .ev-chip-row {
+  gap: 12px;
+}
+
+/* ═══ PAGE 4 舆情处置 — 焦点式四列 ═══ */
+body.led-mode .handle-grid {
+  display: flex;
+  align-items: stretch;
+  gap: 20px;
+  top: 236px;
+  bottom: 120px;
+}
+body.led-mode .handle-arrow {
+  flex: 0 0 36px;
+  font-size: 36px;
+  color: #94A3B8;
+  align-self: center;
+}
+body.led-mode .handle-col {
+  flex: 0 1 17%;
+  min-width: 0;
+  max-width: 22%;
+  overflow: hidden;
+}
+body.led-mode .handle-col.is-primary {
+  flex: 1 1 38%;
+  max-width: 42%;
+  opacity: 1;
+  filter: none;
+}
+body.led-mode .handle-col.is-secondary {
+  flex: 0 1 15%;
+  max-width: 18%;
+}
+body.led-mode .handle-col h4 {
+  font-size: clamp(38px, 2.5vw, 44px);
+  padding: 18px 22px;
+}
+body.led-mode .handle-kicker {
+  font-size: var(--led-label-size);
+  color: #94A3B8;
+}
+body.led-mode .handle-col-body {
+  font-size: clamp(28px, 1.9vw, 32px);
+  padding: 16px 20px 20px;
+  overflow: auto;
+}
+body.led-mode .handle-col-note {
+  font-size: var(--led-small-size);
+  color: #94A3B8;
+}
+body.led-mode .complaint-item,
+body.led-mode .complaint-cloud span {
+  font-size: clamp(26px, 1.8vw, 30px);
+}
+body.led-mode .risk-field {
+  padding: 14px 16px;
+  border-left-width: 4px;
+  gap: 8px;
+}
+body.led-mode .risk-field label {
+  font-size: var(--led-label-size);
+}
+body.led-mode .risk-field span {
+  font-size: clamp(27px, 1.85vw, 32px);
+  color: #E2E8F0;
+  line-height: 1.4;
+}
+body.led-mode .led-risk-kw,
+body.led-mode .alert-box.hot p {
+  color: #FB923C;
+  font-weight: 700;
+}
+body.led-mode mark.led-risk-kw {
+  background: rgba(251, 146, 60, 0.18);
+  color: #FDBA74;
+  padding: 0 4px;
+  border-radius: 3px;
+}
+body.led-mode .alert-box h4 {
+  font-size: var(--led-section-title-size);
+}
+body.led-mode .alert-box p {
+  font-size: clamp(28px, 1.9vw, 32px);
+  line-height: 1.45;
+}
+body.led-mode .event-dims-card h3 {
+  font-size: clamp(34px, 2.4vw, 40px);
+}
+body.led-mode .event-dims-card .dims-top,
+body.led-mode .event-dims-card .dims-grid label,
+body.led-mode .event-dims-card .dims-grid span {
+  font-size: clamp(26px, 1.75vw, 30px);
+}
+body.led-mode .event-dims-card .dims-score {
+  display: none;
+}
+body.led-mode .event-dims-card .dims-grid > div:first-child,
+body.led-mode .event-dims-card .dims-grid > .dims-span2:first-of-type,
+body.led-mode .event-dims-card .dims-grid > div:nth-child(4) {
+  display: none;
+}
+body.led-mode .dims-stage-track {
+  font-size: clamp(24px, 1.6vw, 28px);
+}
+body.led-mode .handle-conclusion {
+  bottom: 56px;
+}
+
+/* ═══ PAGE 5 舆情回溯 ═══ */
+body.led-mode .loop-stage {
+  top: 240px;
+  bottom: 200px;
+}
+body.led-mode .loop-step {
+  padding: 32px 28px;
+}
+body.led-mode .loop-step h4 {
+  font-size: clamp(40px, 2.8vw, 48px);
+  margin-bottom: 14px;
+}
+body.led-mode .loop-step p {
+  font-size: clamp(28px, 2vw, 34px);
+  color: #CBD5E1;
+}
+body.led-mode .sphere-panel {
+  grid-template-columns: 1.35fr 0.65fr;
+  gap: 28px;
+}
+body.led-mode .sphere-box {
+  border-width: 2px;
+  min-height: 420px;
+}
+body.led-mode .scene-card {
+  padding: 28px 26px;
+}
+body.led-mode .scene-card .mono {
+  font-size: clamp(30px, 2.2vw, 38px);
+  color: #22D3EE;
+}
+body.led-mode .scene-card h3 {
+  font-size: clamp(34px, 2.5vw, 42px);
+  line-height: 1.3;
+  margin: 12px 0;
+}
+body.led-mode .scene-card p {
+  font-size: clamp(28px, 2vw, 34px);
+  color: #CBD5E1;
+}
+body.led-mode .loop-conclusion {
+  bottom: 48px;
+}
+
+/* ═══ PAGE 6 统一行动 ═══ */
+body.led-mode .replicate-grid {
+  gap: 28px;
+  top: 280px;
+}
+body.led-mode .replicate-grid b {
+  font-size: clamp(36px, 2.6vw, 44px);
+  margin-bottom: 12px;
+}
+body.led-mode .replicate-grid p {
+  font-size: clamp(28px, 2vw, 34px);
+  color: #CBD5E1;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: unset;
+  line-height: 1.45;
+}
+body.led-mode .replicate-grid .replicate-note {
+  font-size: var(--led-conclusion-size);
+  padding: 20px 28px;
+  background: rgba(15, 23, 42, 0.88);
+  border: 2px solid rgba(34, 211, 238, 0.45);
+  border-radius: 8px;
+  text-align: center;
+  margin-top: 32px;
+}
+body.led-mode .replicate-note-tag {
+  font-size: var(--led-label-size);
+}
+
+/* ═══ Evidence 全屏弹窗 ═══ */
+body.led-mode .lightbox {
+  background: rgba(3, 7, 18, 0.96);
+  padding: 24px 32px 32px;
+}
+body.led-mode .lightbox img {
+  max-width: 92vw;
+  max-height: 82vh;
+  border: 2px solid rgba(148, 163, 184, 0.35);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.55);
+}
+body.led-mode .lb-cap {
+  font-size: clamp(28px, 2vw, 36px);
+  color: #F8FAFC;
+  line-height: 1.4;
+  max-width: 90vw;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+body.led-mode .lb-footer {
+  margin-top: 20px;
+  max-width: 92vw;
+  gap: 16px;
+}
+body.led-mode .lb-close,
+body.led-mode .lb-nav {
+  font-size: clamp(40px, 3vw, 56px);
+  color: #FFFFFF;
+  text-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
+  padding: 24px;
+  min-width: 64px;
+  min-height: 64px;
+}
+body.led-mode .lb-source {
+  font-size: var(--led-button-size);
+  min-height: 52px;
+  padding: 12px 22px;
+  border-width: 2px;
+}
+body.led-mode .lb-source.has-link::before {
+  content: '打开原系统 · ';
+}
+
+/* ── 动效收敛 ── */
+body.led-mode .stage-item,
+body.led-mode .reveal {
+  transition: opacity 0.45s ease, transform 0.45s ease;
+}
+body.led-mode .reveal.is-on {
+  transform: translateY(0);
+}
+body.led-mode * {
+  backdrop-filter: none !important;
+}

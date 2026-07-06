@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+<meta http-equiv="Pragma" content="no-cache"/>
+<meta http-equiv="Expires" content="0"/>
+<title>讲者控制台 · 用AI重构舆情范式</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="css/presenter.css"/>
+</head>
+<body>
+<div class="presenter-shell">
+  <section class="pv-panel pv-current">
+    <header class="pv-head">
+      <span>当前画面 · <b id="pv-cur-label">—</b></span>
+      <div class="pv-head-actions">
+        <button type="button" id="pv-toggle-interact">启用点击</button>
+        <button type="button" id="pv-close-evidence">关闭图片</button>
+      </div>
+    </header>
+    <div class="pv-frame-wrap">
+      <iframe id="pv-iframe-cur" title="当前页预览" src="about:blank"></iframe>
+      <div class="pv-frame-hint" id="pv-frame-hint">点击模式关闭：避免误触翻页。需要点 Evidence 时先开启。</div>
+      <div class="pv-evidence-overlay" id="pv-evidence-overlay" hidden>
+        <button type="button" class="pv-evidence-close" id="pv-evidence-close">×</button>
+        <button type="button" class="pv-evidence-nav prev" id="pv-evidence-prev">‹</button>
+        <img id="pv-evidence-img" alt=""/>
+        <button type="button" class="pv-evidence-nav next" id="pv-evidence-next">›</button>
+        <div class="pv-evidence-footer">
+          <p id="pv-evidence-cap"></p>
+          <a id="pv-evidence-source" target="_blank" rel="noopener">打开来源 ↗</a>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="pv-panel pv-next">
+    <header class="pv-head">
+      <span>下一页预览 · <b id="pv-next-label">—</b></span>
+    </header>
+    <div class="pv-frame-wrap">
+      <iframe id="pv-iframe-next" title="下一页预览" src="about:blank"></iframe>
+    </div>
+  </section>
+  <section class="pv-panel pv-timer">
+    <header class="pv-head">
+      <span>时间把控 · 目标 <b>10:00</b></span>
+      <div class="pv-head-actions">
+        <button type="button" id="pv-open-audience">打开投屏窗</button>
+        <button type="button" id="pv-reset-timer">重置计时</button>
+      </div>
+    </header>
+    <div class="pv-timer-body">
+      <div class="pv-clock-row">
+        <span class="pv-clock" id="pv-total">00:00</span>
+        <span class="pv-clock sub" id="pv-remain-total">剩余 10:00</span>
+      </div>
+      <div class="pv-clock-row">
+        <span class="pv-clock sub" id="pv-page-elapsed">本页 00:00</span>
+        <span class="pv-clock sub" id="pv-page-remain">本页剩余 —</span>
+      </div>
+      <div class="pv-progress"><span id="pv-progress-fill"></span></div>
+      <p class="pv-timer-meta" id="pv-beat-meta">Beat — / —</p>
+    </div>
+  </section>
+  <section class="pv-panel pv-script">
+    <header class="pv-head">
+      <span>逐字稿 · <b id="pv-script-label">—</b></span>
+      <div class="pv-head-actions">
+        <button type="button" id="pv-save-script">保存</button>
+        <button type="button" id="pv-reset-beat">恢复本步原稿</button>
+        <button type="button" id="pv-export-script">导出编辑稿</button>
+      </div>
+    </header>
+    <div class="pv-script-body">
+      <label class="pv-script-status" id="pv-script-status">逐字稿加载中…</label>
+      <textarea id="pv-script-text" spellcheck="false"></textarea>
+      <div class="pv-script-hint" id="pv-ev-hint" hidden></div>
+    </div>
+  </section>
+</div>
+<p class="pv-keys">空格/→ 下一幕 · ← 上一幕 · 1–6 跳章 · 点击模式仅用于点左上角 Evidence，结束后建议关闭</p>
+<script src="js/presenter.js"></script>
+</body>
+</html>

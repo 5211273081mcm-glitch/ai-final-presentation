@@ -119,9 +119,7 @@
   }
 
   function previewUrl(ch, beat) {
-    var url = 'index.html?preview=1&ch=' + ch + '&beat=' + beat;
-    if (window.PRESENTER_LED_PREVIEW) url += '&led=1';
-    return url;
+    return 'index.html?preview=1&ch=' + ch + '&beat=' + beat;
   }
 
   function postGoto(iframe, ch, beat) {
@@ -421,7 +419,7 @@
   }
 
   function openAudience() {
-    var url = 'index.html' + (window.PRESENTER_LED_PREVIEW ? '?led=1' : '');
+    var url = 'index.html';
     var win = getAudienceWindow();
     if (win) {
       audienceWin = win;

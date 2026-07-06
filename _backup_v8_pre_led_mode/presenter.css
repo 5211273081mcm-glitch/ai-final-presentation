@@ -1,0 +1,266 @@
+/* 讲者控制台 — 四宫格双屏模式（不影响投屏 index.html） */
+*, *::before, *::after { box-sizing: border-box; }
+html, body {
+  margin: 0;
+  height: 100%;
+  background: #0a0c10;
+  color: #e8eaef;
+  font-family: "Noto Sans SC", "PingFang SC", sans-serif;
+  overflow: hidden;
+}
+
+.presenter-shell {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 8px;
+  height: 100vh;
+  padding: 8px;
+}
+
+.pv-panel {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  border: 1px solid rgba(240, 240, 250, 0.12);
+  background: #0f1218;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.pv-head {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 12px;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(240, 240, 250, 0.5);
+  border-bottom: 1px solid rgba(240, 240, 250, 0.08);
+  background: rgba(0, 0, 0, 0.35);
+}
+.pv-head b { color: #48d7ff; font-weight: 600; }
+.pv-head-actions { display: flex; gap: 8px; }
+.pv-head-actions button {
+  padding: 4px 10px;
+  border: 1px solid rgba(72, 215, 255, 0.35);
+  background: rgba(72, 215, 255, 0.08);
+  color: #48d7ff;
+  font-size: 11px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.pv-head-actions button:hover { background: rgba(72, 215, 255, 0.16); }
+.pv-head-actions button.is-on {
+  background: rgba(255, 122, 69, 0.16);
+  border-color: rgba(255, 122, 69, 0.45);
+  color: #ffb08e;
+}
+
+.pv-frame-wrap {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+  background: #000;
+}
+.pv-frame-wrap iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  pointer-events: none;
+  transform-origin: var(--zoom-x, 50%) var(--zoom-y, 50%);
+  transition: transform 0.12s ease;
+}
+.pv-frame-wrap iframe.is-interactive {
+  pointer-events: auto;
+  transform: scale(0.94);
+  transform-origin: center 90%;
+}
+.pv-frame-wrap.zoom-on iframe { transform: scale(var(--zoom-scale, 1.12)); }
+.pv-frame-hint {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  padding: 5px 8px;
+  background: rgba(0, 0, 0, 0.62);
+  border: 1px solid rgba(240, 240, 250, 0.1);
+  color: rgba(240, 240, 250, 0.58);
+  font-size: 11px;
+  line-height: 1.3;
+  border-radius: 999px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.18s ease;
+}
+.pv-frame-hint.is-visible { opacity: 1; }
+
+.pv-evidence-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  background: rgba(0, 0, 0, 0.88);
+  display: grid;
+  grid-template-columns: 48px 1fr 48px;
+  grid-template-rows: minmax(0, 1fr) auto;
+  align-items: center;
+}
+.pv-evidence-overlay[hidden] { display: none; }
+.pv-evidence-overlay img {
+  grid-column: 2;
+  grid-row: 1;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 100%;
+  min-height: 0;
+  margin: 0 auto;
+  object-fit: contain;
+}
+.pv-evidence-close,
+.pv-evidence-nav {
+  border: 0;
+  background: transparent;
+  color: #fff;
+  font-size: 32px;
+  cursor: pointer;
+}
+.pv-evidence-close {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  z-index: 2;
+}
+.pv-evidence-nav.prev { grid-column: 1; grid-row: 1; }
+.pv-evidence-nav.next { grid-column: 3; grid-row: 1; }
+.pv-evidence-footer {
+  grid-column: 1 / span 3;
+  grid-row: 2;
+  padding: 10px 14px 12px;
+  border-top: 1px solid rgba(240, 240, 250, 0.12);
+  background: rgba(0, 0, 0, 0.55);
+}
+.pv-evidence-footer p {
+  margin: 0 0 6px;
+  font-size: 13px;
+  line-height: 1.45;
+  color: rgba(240, 240, 250, 0.88);
+}
+.pv-evidence-footer a {
+  color: #48d7ff;
+  font-size: 12px;
+  text-decoration: none;
+}
+.pv-evidence-footer a:hover { text-decoration: underline; }
+
+/* 左下：计时 */
+.pv-timer-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 20px 24px;
+  gap: 16px;
+}
+.pv-clock-row {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.pv-clock {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 42px;
+  font-weight: 500;
+  color: #f0f0fa;
+  letter-spacing: 0.04em;
+}
+.pv-clock.sub { font-size: 22px; color: rgba(240, 240, 250, 0.55); }
+.pv-clock.warn { color: #ffb45e; }
+.pv-clock.over { color: #ff6c72; }
+.pv-timer-meta {
+  font-size: 13px;
+  line-height: 1.6;
+  color: rgba(240, 240, 250, 0.45);
+}
+.pv-progress {
+  height: 4px;
+  background: rgba(240, 240, 250, 0.08);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.pv-progress span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, #48d7ff, #7c6cff);
+  width: 0%;
+  transition: width 0.4s ease;
+}
+
+/* 右下：逐字稿 */
+.pv-script-body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 16px 20px 20px;
+}
+.pv-script-status {
+  margin: 0 0 10px;
+  font-size: 12px;
+  color: rgba(240, 240, 250, 0.55);
+}
+#pv-script-text {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid rgba(240, 240, 250, 0.12);
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.26);
+  color: rgba(240, 240, 250, 0.96);
+  font-family: "Noto Sans SC", "PingFang SC", sans-serif;
+  font-size: 17px;
+  line-height: 1.72;
+  resize: none;
+  outline: none;
+}
+#pv-script-text:focus {
+  border-color: rgba(72, 215, 255, 0.48);
+  box-shadow: 0 0 0 1px rgba(72, 215, 255, 0.16);
+}
+.pv-script-hint {
+  margin-top: 14px;
+  padding: 10px 12px;
+  border-left: 2px solid #ff7a45;
+  background: rgba(255, 122, 69, 0.08);
+  font-size: 13px;
+  line-height: 1.55;
+  color: rgba(255, 180, 140, 0.95);
+}
+
+.pv-keys {
+  position: fixed;
+  bottom: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 11px;
+  color: rgba(240, 240, 250, 0.28);
+  pointer-events: none;
+  white-space: nowrap;
+}
+.pv-script-status.is-dirty { color: #ffb45e; }
+.pv-script-status.is-saved { color: #7fd8b2; }
+
+/* 投屏预览模式：隐藏讲者无关 chrome */
+body.preview-mode .deck-header,
+body.preview-mode .progress-bar,
+body.preview-mode .qa-debug-layer { display: none !important; }
+body.preview-mode .deck-main {
+  top: 0;
+  bottom: 0;
+}

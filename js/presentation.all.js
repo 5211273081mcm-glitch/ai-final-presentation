@@ -549,6 +549,7 @@ window.__PRESENTATION_DATA__ = {"config": {"projectTitle": "用AI重构舆情工
     if (pg.apply) pg.apply(root, beat);
     markLiveEvidence(root, beat);
     document.body.classList.toggle('on-master-map', APP.chapter === 1);
+    if (APP.ledMode) applyLedEnhancements(root);
   }
 
   /* Evidence 引导高亮：进度聚焦到含 Evidence 的内容时，按钮加光晕闪烁提示可点击；
@@ -887,7 +888,7 @@ window.__PRESENTATION_DATA__ = {"config": {"projectTitle": "用AI重构舆情工
     if (src) {
       if (a.sourceUrl) {
         src.href = a.sourceUrl;
-        src.textContent = (a.sourceLabel || '打开来源网站') + ' ↗';
+        src.textContent = APP.ledMode ? '打开原系统 ↗' : ((a.sourceLabel || '打开来源网站') + ' ↗');
         src.classList.add('has-link');
       } else {
         src.removeAttribute('href');
@@ -959,6 +960,12 @@ window.__PRESENTATION_DATA__ = {"config": {"projectTitle": "用AI重构舆情工
           e.preventDefault();
           openPresenterWindow();
           break;
+        case 'l':
+        case 'L':
+          if (APP.lbOpen) break;
+          e.preventDefault();
+          toggleLedMode();
+          break;
         default:
           if (e.key >= '1' && e.key <= '6') {
             e.preventDefault();
@@ -984,6 +991,7 @@ window.__PRESENTATION_DATA__ = {"config": {"projectTitle": "用AI重构舆情工
   }
 
   function init() {
+    initLedMode();
     initPresenterMode();
     initData();
     buildChapterNav();
@@ -1010,6 +1018,54 @@ window.__PRESENTATION_DATA__ = {"config": {"projectTitle": "用AI重构舆情工
     }
     window.addEventListener('resize', stabilizeLayout);
     if (!APP.isPreview) broadcastPresenterState();
+  }
+
+  /* ═══ LED 大屏高可读模式（本地验证，?led=1 或 L 键，不影响默认视觉） ═══ */
+  var LED_RISK_WORDS = ['ICU', '昏迷', '药物中毒', '隐私', '法律责任', '未成年人', '诈骗', '涉政'];
+
+  function initLedMode() {
+    var q = new URLSearchParams(window.location.search);
+    var on = q.get('led') === '1' || q.get('led') === 'true';
+    if (q.get('led') === '0' || q.get('led') === 'false') on = false;
+    if (on) document.body.classList.add('led-mode');
+    APP.ledMode = on;
+  }
+
+  function toggleLedMode() {
+    APP.ledMode = !APP.ledMode;
+    document.body.classList.toggle('led-mode', APP.ledMode);
+    try {
+      localStorage.setItem('ai-final-presentation-led-mode', APP.ledMode ? '1' : '0');
+    } catch (err) {}
+    var canvas = $('slide-canvas');
+    if (canvas && canvas.innerHTML) {
+      canvas.querySelectorAll('[data-led-hl]').forEach(function (el) {
+        delete el.dataset.ledHl;
+      });
+      applyLedEnhancements(canvas);
+    }
+    stabilizeLayout();
+  }
+
+  function applyLedEnhancements(root) {
+    if (!APP.ledMode || !root) return;
+    root.querySelectorAll('.handle-col-body, .alert-box p, .risk-field span, .complaint-item').forEach(function (el) {
+      if (el.dataset.ledHl === '1') return;
+      var text = el.textContent;
+      if (!text) return;
+      var html = el.innerHTML;
+      var changed = false;
+      LED_RISK_WORDS.forEach(function (w) {
+        if (text.indexOf(w) >= 0 && html.indexOf(w) >= 0) {
+          html = html.split(w).join('<mark class="led-risk-kw">' + w + '</mark>');
+          changed = true;
+        }
+      });
+      if (changed) {
+        el.innerHTML = html;
+        el.dataset.ledHl = '1';
+      }
+    });
   }
 
   /* ═══ 讲者双屏：preview iframe + BroadcastChannel（不改变投屏默认行为） ═══ */
