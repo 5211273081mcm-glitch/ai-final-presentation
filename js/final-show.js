@@ -1017,7 +1017,7 @@
     if (!APP.isPreview) broadcastPresenterState();
   }
 
-  /* ═══ 投屏清晰模式（Apple 文档风，?led=1 / L 键，不影响默认视觉） ═══ */
+  /* ═══ 投屏增权：黑底不变，?led=1 / L 键，不改布局字号 ═══ */
   function initProjectionMode() {
     var q = new URLSearchParams(window.location.search);
     var on = q.get('led') === '1' || q.get('led') === 'true';
