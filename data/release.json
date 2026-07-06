@@ -1,13 +1,13 @@
 {
-  "versionId": "final-led-20260706",
-  "label": "决赛 LED 投屏线上版（index.html?led=1）",
+  "versionId": "final-led-20260706-final",
+  "label": "决赛 LED 投屏定稿（focus-stage · ev-orbit · 回溯页布局）",
   "branch": "main",
-  "commit": "644a21610aee923ade647edeff6601c7da9d9772",
-  "commitShort": "644a216",
-  "gitTag": "final-led-20260706",
-  "previousVersionId": "final-local-20260706",
-  "baselineMain": "3332384",
-  "builtAt": "2026-07-06T18:12:00+08:00",
+  "commit": "PENDING",
+  "commitShort": "PENDING",
+  "gitTag": "final-led-20260706-final",
+  "previousVersionId": "final-led-20260706",
+  "baselineMain": "54a60f8",
+  "builtAt": "2026-07-06T21:58:00+08:00",
   "repo": "5211273081mcm-glitch/ai-final-presentation",
   "pagesBase": "https://5211273081mcm-glitch.github.io/ai-final-presentation",
   "entrypoints": {
@@ -26,6 +26,9 @@
     "presenter-led-via-query-param",
     "speaker-beats-v8-script",
     "deck-chrome-nav-countdown",
-    "nav-glow-frame-progress"
+    "nav-glow-frame-progress",
+    "focus-stage-parse-handle",
+    "ev-orbit-evidence-glow",
+    "loop-page-layout-fix"
   ]
 }

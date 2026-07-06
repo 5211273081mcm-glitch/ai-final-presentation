@@ -1,8 +1,8 @@
 # 投屏增权模式（本地 · 黑底 · 零裁切）
 
-> **最终 LED 线上版 ID：** `final-led-20260706` · 详见 **`RELEASE.local.md`**  
-> **上一版本地 ID：** `final-local-20260706`  
-> **未 push 线上** · 基线 `3332384`
+> **最终 LED 线上版 ID：** `final-led-20260706-final` · 详见 **`RELEASE.local.md`**  
+> **上一版 ID：** `final-led-20260706`  
+> **基线 commit：** `54a60f8`
 
 ## v3 策略（当前）
 

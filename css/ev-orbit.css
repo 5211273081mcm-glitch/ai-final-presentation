@@ -1,0 +1,243 @@
+/* ═══ Evidence · 丝滑轨道粒子 + 呼吸光晕 ═══
+   双彗星 conic-gradient 沿边框顺时针匀速绕行（次粒子半圈落后）
+   呼吸：4.4s 多段缓变曲线，避免对称机械脉冲
+   ═══════════════════════════════════════════════════════════ */
+
+@property --ev-orbit {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes evOrbitCW {
+  to { --ev-orbit: 360deg; }
+}
+
+@keyframes evOrbitSpin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes evBreatheWarm {
+  0%, 100% {
+    border-color: rgba(255, 144, 85, 0.52);
+    box-shadow:
+      0 0 0 1px rgba(255, 130, 80, 0.28),
+      0 0 16px rgba(255, 122, 69, 0.22),
+      0 0 32px rgba(255, 122, 69, 0.1),
+      inset 0 0 14px rgba(255, 122, 69, 0.08);
+  }
+  38% {
+    border-color: rgba(255, 162, 102, 0.72);
+    box-shadow:
+      0 0 0 2px rgba(255, 140, 85, 0.38),
+      0 0 24px rgba(255, 130, 80, 0.38),
+      0 0 48px rgba(255, 122, 69, 0.16),
+      inset 0 0 18px rgba(255, 130, 80, 0.12);
+  }
+  64% {
+    border-color: rgba(255, 178, 118, 0.88);
+    box-shadow:
+      0 0 0 2px rgba(255, 150, 95, 0.48),
+      0 0 30px rgba(255, 140, 90, 0.52),
+      0 0 56px rgba(255, 122, 69, 0.22),
+      inset 0 0 22px rgba(255, 140, 90, 0.14);
+  }
+  84% {
+    border-color: rgba(255, 152, 96, 0.62);
+    box-shadow:
+      0 0 0 1px rgba(255, 135, 82, 0.32),
+      0 0 20px rgba(255, 122, 69, 0.3),
+      0 0 40px rgba(255, 122, 69, 0.12),
+      inset 0 0 16px rgba(255, 122, 69, 0.1);
+  }
+}
+
+@keyframes evBreatheCyan {
+  0%, 100% {
+    border-color: rgba(84, 227, 255, 0.52);
+    box-shadow:
+      0 0 0 1px rgba(72, 215, 255, 0.28),
+      0 0 16px rgba(72, 215, 255, 0.22),
+      0 0 32px rgba(72, 215, 255, 0.1),
+      inset 0 0 14px rgba(72, 215, 255, 0.08);
+  }
+  38% {
+    border-color: rgba(98, 232, 255, 0.72);
+    box-shadow:
+      0 0 0 2px rgba(84, 227, 255, 0.38),
+      0 0 24px rgba(80, 220, 255, 0.38),
+      0 0 48px rgba(72, 215, 255, 0.16),
+      inset 0 0 18px rgba(80, 220, 255, 0.12);
+  }
+  64% {
+    border-color: rgba(112, 238, 255, 0.88);
+    box-shadow:
+      0 0 0 2px rgba(95, 225, 255, 0.48),
+      0 0 30px rgba(90, 225, 255, 0.52),
+      0 0 56px rgba(72, 215, 255, 0.22),
+      inset 0 0 22px rgba(90, 225, 255, 0.14);
+  }
+  84% {
+    border-color: rgba(92, 222, 255, 0.62);
+    box-shadow:
+      0 0 0 1px rgba(78, 218, 255, 0.32),
+      0 0 20px rgba(72, 215, 255, 0.3),
+      0 0 40px rgba(72, 215, 255, 0.12),
+      inset 0 0 16px rgba(72, 215, 255, 0.1);
+  }
+}
+
+/* ── 激活态 ── */
+.ev-chip.ev-live,
+.ev-btn.ev-live,
+.ev-link.ev-live {
+  position: relative;
+  isolation: isolate;
+  overflow: visible;
+  z-index: 0;
+  color: var(--text-primary);
+  --ev-orbit-dur: 2.85s;
+  --ev-orbit-track: 2px;
+  border-width: 1px;
+  font-weight: 800;
+}
+
+.ev-chip.ev-live {
+  animation: evBreatheWarm 4.4s cubic-bezier(0.42, 0.08, 0.24, 0.98) infinite;
+}
+
+.ev-btn.ev-live,
+.ev-link.ev-live {
+  animation: evBreatheCyan 4.4s cubic-bezier(0.42, 0.08, 0.24, 0.98) infinite;
+}
+
+/* ── 轨道环（mask 只显示边框带） ── */
+.ev-chip.ev-live::after,
+.ev-link.ev-live::before,
+.ev-btn.ev-live::after {
+  content: '';
+  position: absolute;
+  inset: calc(-1 * var(--ev-orbit-track) - 1px);
+  border-radius: 5px;
+  padding: var(--ev-orbit-track);
+  pointer-events: none;
+  z-index: 1;
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  animation: evOrbitCW var(--ev-orbit-dur) linear infinite;
+  will-change: --ev-orbit;
+}
+
+.ev-chip.ev-live::after {
+  filter:
+    drop-shadow(0 0 4px rgba(255, 150, 90, 0.5))
+    drop-shadow(0 0 10px rgba(255, 130, 80, 0.28));
+  background:
+    conic-gradient(
+      from calc(var(--ev-orbit, 0deg) + 198deg),
+      transparent 0deg 312deg,
+      rgba(255, 175, 115, 0.32) 322deg,
+      rgba(255, 205, 155, 0.72) 332deg,
+      rgba(255, 225, 185, 0.95) 338deg,
+      rgba(255, 190, 130, 0.42) 346deg,
+      transparent 360deg
+    ),
+    conic-gradient(
+      from var(--ev-orbit, 0deg),
+      transparent 0deg 278deg,
+      rgba(255, 130, 75, 0.12) 292deg,
+      rgba(255, 160, 105, 0.48) 312deg,
+      rgba(255, 190, 140, 0.95) 328deg,
+      rgba(255, 225, 190, 1) 338deg,
+      rgba(255, 255, 235, 1) 343deg,
+      rgba(255, 170, 110, 0.55) 352deg,
+      transparent 360deg
+    );
+}
+
+.ev-link.ev-live::before,
+.ev-btn.ev-live::after {
+  filter:
+    drop-shadow(0 0 4px rgba(84, 227, 255, 0.5))
+    drop-shadow(0 0 10px rgba(72, 215, 255, 0.28));
+  background:
+    conic-gradient(
+      from calc(var(--ev-orbit, 0deg) + 198deg),
+      transparent 0deg 312deg,
+      rgba(100, 215, 255, 0.32) 322deg,
+      rgba(150, 235, 255, 0.72) 332deg,
+      rgba(195, 248, 255, 0.95) 338deg,
+      rgba(115, 225, 255, 0.42) 346deg,
+      transparent 360deg
+    ),
+    conic-gradient(
+      from var(--ev-orbit, 0deg),
+      transparent 0deg 278deg,
+      rgba(70, 190, 255, 0.12) 292deg,
+      rgba(95, 215, 255, 0.48) 312deg,
+      rgba(140, 235, 255, 0.95) 328deg,
+      rgba(180, 248, 255, 1) 338deg,
+      rgba(230, 255, 255, 1) 343deg,
+      rgba(100, 220, 255, 0.55) 352deg,
+      transparent 360deg
+    );
+}
+
+/* chip ▸ / link ↗ 保持可读层级 */
+.ev-chip.ev-live::before {
+  position: relative;
+  z-index: 1;
+}
+
+.ev-link.ev-live span {
+  position: relative;
+  z-index: 2;
+}
+
+.ev-link.ev-live::after {
+  content: '↗';
+  position: relative;
+  z-index: 1;
+  margin-left: 2px;
+  font-size: 12px;
+  animation: none;
+  background: none;
+  mask: none;
+  -webkit-mask: none;
+  filter: none;
+  inset: auto;
+  padding: 0;
+  border: none;
+}
+
+@supports not (background: conic-gradient(from var(--ev-orbit), red, blue)) {
+  .ev-chip.ev-live::after,
+  .ev-link.ev-live::before,
+  .ev-btn.ev-live::after {
+    animation: evOrbitSpin var(--ev-orbit-dur) linear infinite;
+    will-change: transform;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ev-chip.ev-live,
+  .ev-btn.ev-live,
+  .ev-link.ev-live {
+    animation: none;
+  }
+  .ev-chip.ev-live { box-shadow: 0 0 14px rgba(255, 122, 69, 0.25); }
+  .ev-btn.ev-live,
+  .ev-link.ev-live { box-shadow: 0 0 14px rgba(72, 215, 255, 0.25); }
+  .ev-chip.ev-live::after,
+  .ev-link.ev-live::before,
+  .ev-btn.ev-live::after {
+    animation: none;
+    opacity: 0.75;
+  }
+}

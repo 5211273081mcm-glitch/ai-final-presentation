@@ -200,26 +200,7 @@ body.preview-mode .deck-main { top: 0; bottom: 0; }
 .ev-chip::before { content: '▸'; color: var(--signal-primary); font-size: 10px; }
 .ev-chip:hover { background: rgba(255, 122, 69, 0.12); border-color: var(--signal-soft); color: var(--text-primary); }
 
-/* ═══ Evidence 引导高亮：进度到达时光晕闪烁，提示可点击查看 ═══ */
-@keyframes evGlowWarm {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 122, 69, 0), 0 0 6px rgba(255, 122, 69, 0.18); }
-  50% { box-shadow: 0 0 0 4px rgba(255, 122, 69, 0.13), 0 0 18px rgba(255, 122, 69, 0.55); }
-}
-@keyframes evGlowCyan {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(72, 215, 255, 0), 0 0 6px rgba(72, 215, 255, 0.18); }
-  50% { box-shadow: 0 0 0 4px rgba(72, 215, 255, 0.13), 0 0 18px rgba(72, 215, 255, 0.6); }
-}
-.ev-chip.ev-live {
-  animation: evGlowWarm 1.6s ease-in-out infinite;
-  border-color: var(--signal-soft);
-  color: var(--text-primary);
-}
-.ev-btn.ev-live,
-.ev-link.ev-live {
-  animation: evGlowCyan 1.6s ease-in-out infinite;
-  border-color: var(--ai-primary);
-  color: var(--text-primary);
-}
+/* Evidence 引导高亮 → 见 css/ev-orbit.css（轨道粒子 + 呼吸光晕） */
 
 .parse-conclusion {
   position: absolute;
@@ -312,13 +293,15 @@ body.preview-mode .deck-main { top: 0; bottom: 0; }
 
 /* ── 舆情事件卡：呈现事件卡的信息维度罗列（非具体事件叙述） ── */
 .event-dims-card {
-  margin: auto 0;
-  padding: 22px 24px 20px;
+  margin: 0;
+  padding: 16px 18px 14px;
   border: 1px solid var(--ai-soft);
   background: linear-gradient(180deg, rgba(13, 23, 44, 0.7), rgba(3, 7, 14, 0.85));
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
+  flex: 0 1 auto;
+  min-height: 0;
 }
 .dims-top { display: flex; justify-content: space-between; align-items: center; color: var(--text-muted); font-size: var(--fs-caption); }
 .dims-priority { padding: 3px 10px; border: 1px solid rgba(255, 108, 114, 0.42); color: var(--danger); font-size: 12px; font-weight: var(--fw-body-strong); }
@@ -327,11 +310,11 @@ body.preview-mode .deck-main { top: 0; bottom: 0; }
 .dims-stage { padding: 4px 8px; }
 .dims-stage.is-current { color: var(--ai-primary); font-weight: var(--fw-body-strong); border: 1px solid var(--ai-soft); border-radius: 2px; background: rgba(72, 215, 255, 0.08); }
 .dims-arrow { font-style: normal; color: var(--text-muted); font-size: 12px; }
-.dims-score { display: flex; align-items: baseline; gap: 10px; padding: 10px 12px; border: 1px solid rgba(240, 240, 250, 0.12); background: rgba(240, 240, 250, 0.04); }
+.dims-score { display: flex; align-items: baseline; gap: 10px; padding: 8px 10px; border: 1px solid rgba(240, 240, 250, 0.12); background: rgba(240, 240, 250, 0.04); }
 .dims-score-label { font-size: 12px; color: var(--text-muted); }
 .dims-score-value { font-family: var(--font-mono); font-size: var(--fs-section-title); font-weight: 700; color: var(--danger); }
 .dims-score-tag { margin-left: auto; font-size: 12px; color: var(--danger); }
-.dims-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 14px; }
+.dims-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 12px; }
 .dims-grid .dims-span2 { grid-column: 1 / -1; }
 .dims-grid label { display: block; font-family: var(--font-display); font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px; }
 .dims-grid span { display: block; font-size: 13px; line-height: 1.4; color: var(--text-secondary); }
@@ -348,8 +331,9 @@ body.preview-mode .deck-main { top: 0; bottom: 0; }
 
 .col-evidence {
   flex: 0 0 auto;
-  margin-top: 14px;
-  padding-top: 14px;
+  margin-top: auto;
+  padding-top: 10px;
+  padding-bottom: 2px;
   border-top: 1px solid rgba(240, 240, 250, 0.08);
 }
 .col-evidence-label {
@@ -426,6 +410,10 @@ body.preview-mode .deck-main { top: 0; bottom: 0; }
   bottom: 260px;
   overflow: hidden;
 }
+.slide-body:has(.loop-conclusion:not(.is-dormant)) .loop-stage {
+  bottom: calc(var(--loop-conclusion-bottom, 64px) + var(--loop-conclusion-block, 128px) + var(--loop-stage-gap, 22px));
+  overflow: hidden;
+}
 .loop-flow {
   position: absolute;
   inset: 0;
@@ -472,32 +460,41 @@ body.preview-mode .deck-main { top: 0; bottom: 0; }
   pointer-events: none;
   transition: opacity 0.6s ease;
   display: grid;
-  grid-template-columns: 1.2fr 0.8fr;
-  gap: 24px;
+  grid-template-columns: 1.15fr 0.85fr;
+  grid-template-rows: 1fr;
+  gap: 18px;
+  align-items: stretch;
+  align-content: stretch;
   min-height: 0;
-  overflow: hidden;
+  overflow: visible;
 }
 .sphere-panel.is-on { opacity: 1; visibility: visible; pointer-events: auto; }
 .sphere-box {
   position: relative;
-  min-height: 0;
   height: 100%;
+  min-height: 0;
+  min-width: 0;
   border: 1px solid var(--surface-line);
   overflow: hidden;
   background: #000;
-  contain: strict;
 }
-.sphere-box iframe, .sphere-box .sphere-fb {
+.sphere-box iframe,
+.sphere-box .sphere-fb {
   position: absolute;
+  border: 0;
+  display: block;
+  pointer-events: auto;
+}
+.sphere-box .sphere-fb {
   inset: 0;
   width: 100%;
   height: 100%;
-  max-height: 100%;
-  border: 0;
-  object-fit: cover;
-  display: block;
+  object-fit: contain;
+  object-position: center center;
 }
-.sphere-box iframe { pointer-events: auto; }
+.sphere-box iframe {
+  transform-origin: top left;
+}
 .sphere-box.is-loading::after {
   content: '场景库加载中…';
   position: absolute;
@@ -515,7 +512,26 @@ body.preview-mode .deck-main { top: 0; bottom: 0; }
 .sphere-box .sphere-fb { display: none; }
 .sphere-box.fallback iframe { display: none; }
 .sphere-box.fallback .sphere-fb { display: block; }
-.scene-card { padding: 28px; border: 1px solid var(--ai-soft); background: rgba(12, 20, 38, 0.5); display: flex; flex-direction: column; justify-content: center; gap: 10px; min-height: 0; overflow: hidden; }
+.scene-card {
+  padding: 22px 24px;
+  height: 100%;
+  min-height: 0;
+  border: 2px solid rgba(255, 255, 255, 0.55);
+  background: rgba(12, 20, 38, 0.5);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 10px;
+  min-width: 0;
+  overflow: visible;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+.scene-card .ev-link {
+  margin-top: 12px;
+  align-self: flex-start;
+  flex-shrink: 0;
+}
 .scene-card .mono { color: var(--ai-primary); font-size: var(--fs-caption); }
 .scene-card h3 { margin: 0; font-size: var(--fs-section-title); color: var(--text-primary); }
 .scene-card p { margin: 0; font-size: var(--fs-body); line-height: var(--lh-body); color: var(--text-tertiary); }
@@ -524,13 +540,28 @@ body.preview-mode .deck-main { top: 0; bottom: 0; }
   position: absolute;
   left: var(--safe-left);
   right: var(--safe-right);
-  bottom: 150px;
-  font-size: var(--fs-key-message);
+  bottom: var(--loop-conclusion-bottom, 64px);
+  font-size: var(--fs-body-lg);
   font-weight: var(--fw-conclusion);
   color: var(--text-primary);
-  line-height: var(--lh-conclusion);
+  line-height: 1.38;
+  padding: 12px 18px 10px;
+  background: rgba(0, 0, 0, 0.55);
+  border: 2px solid rgba(240, 240, 250, 0.28);
+  border-radius: 6px;
+  z-index: var(--z-focus);
+  overflow: visible;
 }
-.loop-conclusion p { margin: 0 0 14px; }
+.loop-conclusion .ev-link {
+  position: relative;
+  z-index: 1;
+}
+.loop-conclusion p {
+  margin: 0 0 10px;
+  font-size: var(--fs-body-lg);
+  font-weight: var(--fw-conclusion);
+  line-height: 1.38;
+}
 
 /* ═══ 收尾页（Page 6）══ 总纲实景背景 + 居中核心文案 + 4个复制方向 ═══ */
 .closing-centerpiece {

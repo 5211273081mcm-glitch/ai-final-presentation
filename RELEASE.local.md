@@ -1,8 +1,9 @@
 # 决赛 LED 投屏 · 线上发布链接
 
-> **版本 ID：** `final-led-20260706`  
-> **Git Tag：** `final-led-20260706`  
-> **Commit：** `644a216`（完整：`644a21610aee923ade647edeff6601c7da9d9772`）  
+> **版本 ID：** `final-led-20260706-final`  
+> **Git Tag：** `final-led-20260706-final`  
+> **Commit：** `PENDING`（完整：`PENDING`）  
+> **上一版 ID：** `final-led-20260706`  
 > **与本地 file:// 一一对应**
 
 ## 本地（与线上同路径）
@@ -16,18 +17,18 @@
 
 ## GitHub Pages（上传 main 后）
 
-将 `1154ad4` 替换为 `data/release.json` 中的 `commitShort`。
+将 `PENDING` 替换为 `data/release.json` 中的 `commitShort`。
 
 ### 投屏（观众大屏）
 
 ```
-https://5211273081mcm-glitch.github.io/ai-final-presentation/index.html?led=1&v=1154ad4
+https://5211273081mcm-glitch.github.io/ai-final-presentation/index.html?led=1&v=PENDING
 ```
 
 ### 讲者控制台（右下角逐字稿 · 与原版 presenter.html 相同）
 
 ```
-https://5211273081mcm-glitch.github.io/ai-final-presentation/presenter.html?led=1&v=1154ad4
+https://5211273081mcm-glitch.github.io/ai-final-presentation/presenter.html?led=1&v=PENDING
 ```
 
 > 逐字稿来源：`data/speaker-beats-v8.json`（与线上一致，支持本地编辑后导出同步）。
@@ -44,5 +45,5 @@ https://5211273081mcm-glitch.github.io/ai-final-presentation/presenter.html?led=
 
 ```bash
 git push origin main
-git push origin final-led-20260706
+git push origin final-led-20260706-final
 ```

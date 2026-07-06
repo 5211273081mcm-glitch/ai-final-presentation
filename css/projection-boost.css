@@ -121,6 +121,7 @@ body.projection-mode .loop-conclusion p,
 body.projection-mode .replicate-note,
 body.projection-mode .signal-col h4,
 body.projection-mode .handle-col h4,
+body.projection-mode .focus-col-title,
 body.projection-mode .loop-step h4,
 body.projection-mode .alert-box h4,
 body.projection-mode .event-dims-card h3,
@@ -143,8 +144,8 @@ body.projection-mode .scene-card p {
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
 }
 
-body.projection-mode .signal-col.is-primary .signal-item,
-body.projection-mode .handle-col.is-primary .handle-col-body {
+body.projection-mode .signal-col.is-focused .signal-item,
+body.projection-mode .handle-col.is-focused .handle-col-body {
   color: var(--text-primary);
   font-weight: 700;
 }
@@ -163,6 +164,18 @@ body.projection-mode .loop-stage {
   top: 220px;
   bottom: 200px;
 }
+body.projection-mode {
+  --loop-conclusion-bottom: 40px;
+  --loop-conclusion-block: 118px;
+  --loop-stage-gap: 24px;
+}
+body.projection-mode .slide-body:has(.loop-conclusion:not(.is-dormant)) .loop-stage {
+  bottom: calc(var(--loop-conclusion-bottom) + var(--loop-conclusion-block) + var(--loop-stage-gap));
+  overflow: hidden;
+}
+body.projection-mode .sphere-panel.is-on {
+  gap: 16px;
+}
 body.projection-mode .parse-conclusion {
   bottom: 52px;
 }
@@ -170,7 +183,31 @@ body.projection-mode .handle-conclusion {
   bottom: 44px;
 }
 body.projection-mode .loop-conclusion {
-  bottom: 48px;
+  bottom: var(--loop-conclusion-bottom);
+  padding: 10px 18px 10px;
+  background: rgba(0, 0, 0, 0.72);
+  border: 2px solid rgba(240, 240, 250, 0.38);
+  border-radius: 8px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.42);
+  overflow: visible;
+}
+body.projection-mode .scene-card {
+  overflow: hidden;
+  justify-content: center;
+}
+body.projection-mode .loop-conclusion p {
+  font-size: calc(var(--fs-body-lg) * 0.88);
+  font-weight: 700;
+  line-height: 1.34;
+  color: var(--text-secondary);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+  margin-bottom: 8px;
+}
+body.projection-mode .loop-conclusion .ev-link {
+  font-size: calc(var(--fs-caption) * 0.96);
+  font-weight: 800;
+  border-width: 2px;
+  padding: 8px 14px;
 }
 body.projection-mode .replicate-grid {
   top: 96px;
@@ -184,7 +221,7 @@ body.projection-mode .handle-col-note {
 body.projection-mode .handle-kicker {
   display: none;
 }
-body.projection-mode .handle-col.is-primary .handle-kicker {
+body.projection-mode .handle-col.is-focused .handle-kicker {
   display: block;
   font-size: 15px;
   font-weight: 800;
@@ -236,19 +273,22 @@ body.projection-mode .scene-card,
 body.projection-mode .replicate-grid > div {
   border-width: 3px;
 }
-body.projection-mode .signal-col.is-primary {
+body.projection-mode .signal-col.is-focused {
   border-width: 5px;
   border-color: var(--ai-primary);
   box-shadow: 0 0 0 2px rgba(84, 227, 255, 0.32), 0 0 20px rgba(84, 227, 255, 0.12);
 }
-body.projection-mode .handle-col.is-primary {
+body.projection-mode .handle-col.is-focused {
   border-width: 5px;
   border-color: var(--signal-primary);
   box-shadow: 0 0 0 2px rgba(255, 144, 85, 0.32), 0 0 20px rgba(255, 144, 85, 0.12);
 }
-body.projection-mode .signal-col.is-secondary,
-body.projection-mode .handle-col.is-secondary {
-  opacity: 0.7;
+body.projection-mode .signal-col.is-idle,
+body.projection-mode .signal-col.is-dimmed,
+body.projection-mode .handle-col.is-idle,
+body.projection-mode .handle-col.is-dimmed {
+  opacity: 1;
+  border-width: 3px;
 }
 
 /* ── 总纲：路径加粗，星球微增，箭头不被遮挡 ── */
@@ -461,10 +501,24 @@ body.projection-mode .ev-chip {
   border-width: 2px;
 }
 body.projection-mode .ev-btn,
+body.projection-mode .scene-card {
+  border: 4px solid rgba(255, 255, 255, 0.82);
+  box-shadow:
+    0 0 0 2px rgba(255, 255, 255, 0.18),
+    0 0 24px rgba(255, 255, 255, 0.08),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+  background: rgba(8, 14, 28, 0.78);
+}
+body.projection-mode .scene-card h3 {
+  font-size: calc(var(--fs-section-title) * 1.06);
+  font-weight: 800;
+  text-shadow: 0 0 14px rgba(255, 255, 255, 0.12), 0 2px 6px rgba(0, 0, 0, 0.65);
+}
 body.projection-mode .ev-link {
   font-size: var(--fs-caption);
   font-weight: 800;
   border-width: 2px;
+  padding: 10px 14px;
 }
 body.projection-mode .signal-evidence-label,
 body.projection-mode .loop-evidence-label {
@@ -506,14 +560,15 @@ body.projection-mode .replicate-grid p {
   color: var(--text-secondary);
 }
 body.projection-mode .replicate-grid b {
-  font-size: calc(var(--fs-node-title) * 1.06);
+  font-size: calc(var(--fs-node-title) * 1.12);
   font-weight: 800;
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.55);
+  text-shadow: 0 0 14px rgba(255, 255, 255, 0.12), 0 2px 6px rgba(0, 0, 0, 0.65);
 }
 body.projection-mode .replicate-grid > div {
-  padding: 20px 22px 18px;
-  border-width: 3px;
-  background: rgba(3, 6, 12, 0.88);
+  padding: 22px 24px 20px;
+  border-width: 4px;
+  background: rgba(3, 6, 12, 0.92);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
 }
 body.projection-mode .replicate-grid .replicate-note {
   margin-top: 14px;
@@ -582,9 +637,200 @@ body.projection-mode .risk-field {
   border-left-width: 5px;
 }
 
+/* ── Evidence 轨道 · 投屏大幅增权 ── */
+@keyframes evBreatheWarmProj {
+  0%, 100% {
+    border-color: rgba(255, 155, 95, 0.78);
+    box-shadow:
+      0 0 0 2px rgba(255, 140, 80, 0.45),
+      0 0 22px rgba(255, 122, 69, 0.42),
+      0 0 48px rgba(255, 122, 69, 0.22),
+      0 0 72px rgba(255, 100, 50, 0.1),
+      inset 0 0 20px rgba(255, 122, 69, 0.14);
+  }
+  38% {
+    border-color: rgba(255, 175, 115, 0.92);
+    box-shadow:
+      0 0 0 3px rgba(255, 150, 90, 0.58),
+      0 0 32px rgba(255, 130, 80, 0.58),
+      0 0 64px rgba(255, 122, 69, 0.28),
+      0 0 96px rgba(255, 100, 50, 0.14),
+      inset 0 0 26px rgba(255, 130, 80, 0.18);
+  }
+  64% {
+    border-color: rgba(255, 190, 130, 1);
+    box-shadow:
+      0 0 0 2px rgba(255, 160, 100, 0.52),
+      0 0 28px rgba(255, 140, 90, 0.55),
+      0 0 52px rgba(255, 122, 69, 0.22),
+      inset 0 0 24px rgba(255, 140, 90, 0.16);
+  }
+  84% {
+    border-color: rgba(255, 165, 105, 0.85);
+    box-shadow:
+      0 0 0 2px rgba(255, 145, 88, 0.52),
+      0 0 28px rgba(255, 122, 69, 0.52),
+      0 0 56px rgba(255, 122, 69, 0.26),
+      0 0 84px rgba(255, 100, 50, 0.12),
+      inset 0 0 22px rgba(255, 122, 69, 0.16);
+  }
+}
+
+@keyframes evBreatheCyanProj {
+  0%, 100% {
+    border-color: rgba(100, 232, 255, 0.78);
+    box-shadow:
+      0 0 0 2px rgba(84, 227, 255, 0.45),
+      0 0 22px rgba(72, 215, 255, 0.42),
+      0 0 48px rgba(72, 215, 255, 0.22),
+      0 0 72px rgba(50, 190, 255, 0.1),
+      inset 0 0 20px rgba(72, 215, 255, 0.14);
+  }
+  38% {
+    border-color: rgba(120, 238, 255, 0.92);
+    box-shadow:
+      0 0 0 3px rgba(95, 225, 255, 0.58),
+      0 0 32px rgba(80, 220, 255, 0.58),
+      0 0 64px rgba(72, 215, 255, 0.28),
+      0 0 96px rgba(50, 190, 255, 0.14),
+      inset 0 0 26px rgba(80, 220, 255, 0.18);
+  }
+  64% {
+    border-color: rgba(140, 245, 255, 1);
+    box-shadow:
+      0 0 0 2px rgba(110, 235, 255, 0.52),
+      0 0 28px rgba(90, 225, 255, 0.55),
+      0 0 52px rgba(72, 215, 255, 0.22),
+      inset 0 0 24px rgba(90, 225, 255, 0.16);
+  }
+  84% {
+    border-color: rgba(105, 228, 255, 0.85);
+    box-shadow:
+      0 0 0 2px rgba(88, 222, 255, 0.52),
+      0 0 28px rgba(72, 215, 255, 0.52),
+      0 0 56px rgba(72, 215, 255, 0.26),
+      0 0 84px rgba(50, 190, 255, 0.12),
+      inset 0 0 22px rgba(72, 215, 255, 0.16);
+  }
+}
+
+body.projection-mode .ev-chip.ev-live,
+body.projection-mode .ev-btn.ev-live,
+body.projection-mode .ev-link.ev-live {
+  --ev-orbit-track: 2px;
+  --ev-orbit-dur: 2.65s;
+  border-width: 2px;
+  font-weight: 800;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.12), 0 1px 3px rgba(0, 0, 0, 0.5);
+  background: rgba(8, 10, 16, 0.9);
+}
+
 body.projection-mode .ev-chip.ev-live {
-  border-color: var(--signal-primary);
-  box-shadow: 0 0 12px rgba(255, 144, 85, 0.3);
+  padding: 12px 20px;
+  font-size: 19px;
+  animation: evBreatheWarmProj 4s cubic-bezier(0.42, 0.08, 0.24, 0.98) infinite;
+}
+
+body.projection-mode .ev-btn.ev-live,
+body.projection-mode .ev-link.ev-live {
+  padding: 12px 20px;
+  animation: evBreatheCyanProj 4s cubic-bezier(0.42, 0.08, 0.24, 0.98) infinite;
+}
+
+body.projection-mode .ev-link.ev-live span {
+  text-shadow: 0 0 14px rgba(84, 227, 255, 0.55);
+}
+
+body.projection-mode .ev-chip.ev-live::after,
+body.projection-mode .ev-link.ev-live::before,
+body.projection-mode .ev-btn.ev-live::after {
+  inset: calc(-1 * var(--ev-orbit-track) - 2px);
+  border-radius: 6px;
+  padding: var(--ev-orbit-track);
+  filter:
+    drop-shadow(0 0 5px rgba(255, 150, 90, 0.62))
+    drop-shadow(0 0 12px rgba(255, 130, 80, 0.35));
+}
+
+body.projection-mode .ev-chip.ev-live::after {
+  background:
+    conic-gradient(
+      from calc(var(--ev-orbit, 0deg) + 198deg),
+      transparent 0deg 308deg,
+      rgba(255, 180, 120, 0.45) 318deg,
+      rgba(255, 210, 160, 0.88) 328deg,
+      rgba(255, 235, 200, 1) 334deg,
+      rgba(255, 195, 135, 0.55) 342deg,
+      transparent 360deg
+    ),
+    conic-gradient(
+      from var(--ev-orbit, 0deg),
+      transparent 0deg 272deg,
+      rgba(255, 140, 80, 0.18) 286deg,
+      rgba(255, 170, 110, 0.62) 306deg,
+      rgba(255, 200, 150, 1) 322deg,
+      rgba(255, 235, 200, 1) 332deg,
+      rgba(255, 255, 245, 1) 338deg,
+      rgba(255, 175, 115, 0.68) 348deg,
+      transparent 360deg
+    );
+}
+
+body.projection-mode .ev-link.ev-live::before,
+body.projection-mode .ev-btn.ev-live::after {
+  filter:
+    drop-shadow(0 0 5px rgba(84, 227, 255, 0.62))
+    drop-shadow(0 0 12px rgba(72, 215, 255, 0.35));
+  background:
+    conic-gradient(
+      from calc(var(--ev-orbit, 0deg) + 198deg),
+      transparent 0deg 308deg,
+      rgba(110, 225, 255, 0.45) 318deg,
+      rgba(160, 240, 255, 0.88) 328deg,
+      rgba(210, 252, 255, 1) 334deg,
+      rgba(120, 230, 255, 0.55) 342deg,
+      transparent 360deg
+    ),
+    conic-gradient(
+      from var(--ev-orbit, 0deg),
+      transparent 0deg 272deg,
+      rgba(75, 200, 255, 0.18) 286deg,
+      rgba(100, 220, 255, 0.62) 306deg,
+      rgba(150, 240, 255, 1) 322deg,
+      rgba(195, 252, 255, 1) 332deg,
+      rgba(245, 255, 255, 1) 338deg,
+      rgba(110, 225, 255, 0.68) 348deg,
+      transparent 360deg
+    );
+}
+
+body.projection-mode .handle-col.is-focused .ev-chip {
+  padding: 12px 18px;
+}
+body.projection-mode .handle-col.is-focused .event-dims-card {
+  padding: 12px 14px 10px;
+  gap: 6px;
+}
+body.projection-mode .handle-col.is-focused .event-dims-card h3 {
+  font-size: calc(var(--fs-body-lg) * 0.94);
+  line-height: 1.24;
+}
+body.projection-mode .handle-col.is-focused .dims-score {
+  padding: 6px 8px;
+}
+body.projection-mode .handle-col.is-focused .dims-score-value {
+  font-size: calc(var(--fs-section-title) * 0.9);
+}
+body.projection-mode .handle-col.is-focused .dims-grid {
+  gap: 6px 10px;
+}
+body.projection-mode .handle-col.is-focused .dims-grid span {
+  font-size: calc(var(--fs-caption) * 0.92);
+  line-height: 1.32;
+}
+body.projection-mode .handle-col.is-focused .col-evidence {
+  padding-top: 8px;
+  padding-bottom: 4px;
 }
 
 /* ── Evidence 弹窗（满屏 fit，不裁切） ── */
@@ -615,14 +861,48 @@ body.projection-mode .lb-source {
 
 /* ── chrome：投屏保留顶栏（左上项目名 / 中导航 / 右倒计时） ── */
 body.projection-mode .deck-header {
-  opacity: 0.88;
+  opacity: 0.94;
   pointer-events: auto;
-  background: rgba(0, 0, 0, 0.84);
-  border-bottom-color: rgba(240, 240, 250, 0.14);
+  background: rgba(0, 0, 0, 0.9);
+  border-bottom: 3px solid rgba(240, 240, 250, 0.22);
 }
 body.projection-mode .deck-header.chrome-active {
-  opacity: 0.96;
+  opacity: 1;
 }
+
+/* ── 聚焦舞台 · 投屏增权 ── */
+body.projection-mode .signal-col.is-idle .focus-col-title,
+body.projection-mode .signal-col.is-dimmed .focus-col-title {
+  font-size: clamp(32px, 3.4vw, 48px);
+  font-weight: 800;
+  color: rgba(255, 255, 255, 0.42);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.55);
+}
+body.projection-mode .handle-col.is-idle .focus-col-title,
+body.projection-mode .handle-col.is-dimmed .focus-col-title {
+  font-size: clamp(26px, 2.6vw, 38px);
+  font-weight: 800;
+  color: rgba(255, 255, 255, 0.42);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.55);
+}
+body.projection-mode .signal-col.is-focused .focus-col-title {
+  font-size: calc(var(--fs-node-title) * 1.06);
+  font-weight: 800;
+  text-shadow: 0 0 14px rgba(84, 227, 255, 0.35), 0 2px 6px rgba(0, 0, 0, 0.65);
+}
+body.projection-mode .handle-col.is-focused .focus-col-title .handle-name {
+  font-size: calc(var(--fs-node-title) * 1.06);
+  font-weight: 800;
+  text-shadow: 0 0 14px rgba(255, 144, 85, 0.35), 0 2px 6px rgba(0, 0, 0, 0.65);
+}
+body.projection-mode .parse-conclusion,
+body.projection-mode .handle-conclusion {
+  font-size: calc(var(--fs-body-lg) * 1.04);
+  font-weight: 700;
+  color: var(--text-primary);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.55);
+}
+
 body.projection-mode .brand-mini {
   flex: 0 0 auto;
   min-width: 240px;
@@ -630,11 +910,12 @@ body.projection-mode .brand-mini {
 }
 body.projection-mode .brand-mini .spx-micro {
   text-transform: none;
-  font-size: 18px;
-  font-weight: 700;
+  font-size: 22px;
+  font-weight: 800;
   letter-spacing: 0.04em;
-  color: var(--text-secondary);
+  color: var(--text-primary);
   white-space: nowrap;
+  text-shadow: 0 0 14px rgba(255, 255, 255, 0.12), 0 1px 4px rgba(0, 0, 0, 0.55);
 }
 body.projection-mode .chapter-nav {
   pointer-events: auto;
@@ -644,14 +925,15 @@ body.projection-mode .cn-track {
   gap: 6px;
 }
 body.projection-mode .cn-seg {
-  min-height: 46px;
-  padding: 0 8px 13px;
-  border-width: 2px;
+  min-height: 50px;
+  padding: 0 10px 14px;
+  border-width: 3px;
 }
 body.projection-mode .cn-label {
-  font-size: 15px;
-  font-weight: 700;
-  letter-spacing: 0.02em;
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
 }
 body.projection-mode .cn-seg.active {
   border-color: rgba(255, 255, 255, 0.82);
@@ -680,11 +962,12 @@ body.projection-mode .cn-beat-bar::before {
 }
 body.projection-mode #clock {
   flex: 0 0 auto;
-  min-width: 76px;
-  font-size: 20px;
-  font-weight: 700;
-  color: var(--text-secondary);
+  min-width: 88px;
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--text-primary);
   letter-spacing: 0.1em;
+  text-shadow: 0 0 12px rgba(255, 255, 255, 0.15), 0 1px 4px rgba(0, 0, 0, 0.55);
 }
 body.projection-mode #clock.warn { color: #ffb45e; }
 body.projection-mode #clock.over { color: #ff6b5e; }

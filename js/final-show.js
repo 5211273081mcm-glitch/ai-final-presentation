@@ -291,6 +291,32 @@
     return '<div class="slide-body">' + buildMasterMap({}) + '</div>';
   }
 
+  /* 聚焦舞台：idle 居中灰字 → 逐模块聚焦展开 → 页末回到 idle */
+  function applyFocusStageBeat(root, opts) {
+    var beat = opts.beat;
+    var grid = root.querySelector(opts.gridSel);
+    if (grid) {
+      grid.setAttribute('data-beat', String(beat));
+      grid.classList.toggle('focus-stage-outro', beat === opts.outroBeat);
+    }
+    root.querySelectorAll(opts.colSel).forEach(function (el, i) {
+      el.classList.remove('is-idle', 'is-focused', 'is-dimmed', 'is-primary', 'is-secondary');
+      if (beat === 0 || beat === opts.outroBeat) el.classList.add('is-idle');
+      else if (i === beat - 1) el.classList.add('is-focused');
+      else if (i < beat - 1) el.classList.add('is-dimmed');
+      else el.classList.add('is-idle');
+    });
+    if (opts.arrowSel) {
+      root.querySelectorAll(opts.arrowSel).forEach(function (el) {
+        el.classList.toggle('is-visible', beat > 0 && beat !== opts.outroBeat);
+      });
+    }
+    var conclusion = root.querySelector('[data-conclusion]');
+    if (conclusion && opts.conclusionBeat != null) {
+      conclusion.classList.toggle('is-dormant', beat < opts.conclusionBeat);
+    }
+  }
+
   /* ═══════════════════════════════════════════════════════════
      Page 3 — 舆情解析：三类信号来源，逐一聚焦
      ═══════════════════════════════════════════════════════════ */
@@ -301,16 +327,21 @@
         '<h1 class="spx-display">' + esc(p.title) + '</h1>' +
         '<p class="spx-note">' + esc(p.subtitle) + '</p>' +
       '</div>' +
-      '<div class="signal-grid">' +
+      '<div class="signal-grid focus-stage-grid" data-beat="0">' +
         p.sourceColumns.map(function (col, i) {
           var evList = (col.evidence || []).filter(function (e) { return asset(e.id); });
           var groupAttr = evList.map(function (e) { return e.id; }).join(',');
           var chips = evList.map(function (e, idx) {
             return '<button class="ev-chip" data-ev-id="' + esc(e.id) + '" data-ev-group="' + esc(groupAttr) + '" data-ev-idx="' + idx + '">' + esc(e.label) + '</button>';
           }).join('');
-          return '<div class="signal-col" data-focus="' + i + '"><h4>' + esc(col.name) + '</h4>' +
-            '<div class="signal-stream">' + col.items.slice(0, 3).map(function (it) { return '<p class="signal-item">' + esc(it) + '</p>'; }).join('') + '</div>' +
-            (chips ? '<div class="signal-evidence"><span class="signal-evidence-label">如何解决 · 已接入证据</span><div class="ev-chip-row">' + chips + '</div></div>' : '') +
+          return '<div class="signal-col is-idle" data-focus="' + i + '">' +
+            '<div class="focus-col-inner">' +
+              '<header class="focus-col-head"><h4 class="focus-col-title">' + esc(col.name) + '</h4></header>' +
+              '<div class="focus-col-body">' +
+                '<div class="signal-stream">' + col.items.slice(0, 3).map(function (it) { return '<p class="signal-item">' + esc(it) + '</p>'; }).join('') + '</div>' +
+                (chips ? '<div class="signal-evidence"><span class="signal-evidence-label">如何解决 · 已接入证据</span><div class="ev-chip-row">' + chips + '</div></div>' : '') +
+              '</div>' +
+            '</div>' +
           '</div>';
         }).join('') +
       '</div>' +
@@ -319,14 +350,13 @@
   }
 
   function applyParseBeat(root, beat) {
-    var cols = root.querySelectorAll('.signal-col');
-    cols.forEach(function (el, i) {
-      el.classList.remove('is-primary', 'is-secondary');
-      if (beat === 0) el.classList.add('is-secondary');
-      else el.classList.add(i === beat - 1 ? 'is-primary' : 'is-secondary');
+    applyFocusStageBeat(root, {
+      beat: beat,
+      gridSel: '.signal-grid',
+      colSel: '.signal-col',
+      outroBeat: 4,
+      conclusionBeat: 4
     });
-    var conclusion = root.querySelector('[data-conclusion]');
-    if (conclusion) conclusion.classList.toggle('is-dormant', beat < 3);
   }
 
   /* ═══════════════════════════════════════════════════════════
@@ -381,12 +411,19 @@
         '<h1 class="spx-display">' + esc(p.title) + '</h1>' +
         '<p class="spx-note">' + esc(p.subtitle) + '</p>' +
       '</div>' +
-      '<div class="handle-grid">' +
+      '<div class="handle-grid focus-stage-grid" data-beat="0">' +
         cols.map(function (col, i) {
           return (i > 0 ? '<div class="handle-arrow" aria-hidden="true">→</div>' : '') +
-            '<div class="handle-col" data-focus="' + i + '">' +
-              '<h4><span class="handle-kicker">' + esc(col.kicker) + '</span>' + esc(col.name) + '</h4>' +
-              '<div class="handle-col-body">' + bodies[i] + '</div>' +
+            '<div class="handle-col is-idle" data-focus="' + i + '">' +
+              '<div class="focus-col-inner">' +
+                '<header class="focus-col-head">' +
+                  '<h4 class="focus-col-title">' +
+                    '<span class="handle-kicker">' + esc(col.kicker) + '</span>' +
+                    '<span class="handle-name">' + esc(col.name) + '</span>' +
+                  '</h4>' +
+                '</header>' +
+                '<div class="focus-col-body handle-col-body">' + bodies[i] + '</div>' +
+              '</div>' +
             '</div>';
         }).join('') +
       '</div>' +
@@ -395,14 +432,14 @@
   }
 
   function applyHandleBeat(root, beat) {
-    var cols = root.querySelectorAll('.handle-col');
-    cols.forEach(function (el, i) {
-      el.classList.remove('is-primary', 'is-secondary');
-      if (beat === 0) el.classList.add('is-secondary');
-      else el.classList.add(i === beat - 1 ? 'is-primary' : 'is-secondary');
+    applyFocusStageBeat(root, {
+      beat: beat,
+      gridSel: '.handle-grid',
+      colSel: '.handle-col',
+      arrowSel: '.handle-arrow',
+      outroBeat: 5,
+      conclusionBeat: 5
     });
-    var conclusion = root.querySelector('[data-conclusion]');
-    if (conclusion) conclusion.classList.toggle('is-dormant', beat < 4);
   }
 
   /* ═══════════════════════════════════════════════════════════
@@ -447,6 +484,42 @@
     '</div>';
   }
 
+  var SPHERE_EMBED_W = 1440;
+  var SPHERE_EMBED_H = 900;
+
+  function fitSphereBox() {
+    var box = $('sphere-box');
+    if (!box) return;
+    var iframe = box.querySelector('iframe');
+    var fb = box.querySelector('.sphere-fb');
+    var bw = box.clientWidth;
+    var bh = box.clientHeight;
+    if (bw < 4 || bh < 4) return;
+    if (iframe) {
+      var s = Math.min(bw / SPHERE_EMBED_W, bh / SPHERE_EMBED_H);
+      var x = Math.round((bw - SPHERE_EMBED_W * s) / 2);
+      var y = Math.round((bh - SPHERE_EMBED_H * s) / 2);
+      iframe.style.position = 'absolute';
+      iframe.style.left = x + 'px';
+      iframe.style.top = y + 'px';
+      iframe.style.width = SPHERE_EMBED_W + 'px';
+      iframe.style.height = SPHERE_EMBED_H + 'px';
+      iframe.style.transform = 'scale(' + s + ')';
+      iframe.style.transformOrigin = 'top left';
+      iframe.style.border = '0';
+      iframe.style.pointerEvents = 'auto';
+    }
+    if (fb) {
+      fb.style.position = 'absolute';
+      fb.style.inset = '0';
+      fb.style.width = '100%';
+      fb.style.height = '100%';
+      fb.style.objectFit = 'contain';
+      fb.style.objectPosition = 'center center';
+      fb.style.border = '0';
+    }
+  }
+
   function applyLoopBeat(root, beat) {
     var flow = root.querySelector('[data-loop-flow]');
     var sphere = root.querySelector('[data-sphere-panel]');
@@ -454,8 +527,14 @@
     if (sphere) sphere.classList.toggle('is-on', beat >= 1);
     var conclusion = root.querySelector('[data-conclusion]');
     if (conclusion) conclusion.classList.toggle('is-dormant', beat < 1);
-    if (beat >= 1) initSphere();
-    else destroySphere();
+    if (beat >= 1) {
+      initSphere();
+      requestAnimationFrame(function () {
+        fitSphereBox();
+        requestAnimationFrame(fitSphereBox);
+      });
+      setTimeout(fitSphereBox, 150);
+    } else destroySphere();
     stabilizeLayout();
   }
 
@@ -468,6 +547,7 @@
       if (!navigator.onLine) {
         box.classList.add('fallback');
         box.classList.remove('is-loading');
+        fitSphereBox();
       }
     }, APP.config.sphere.loadTimeoutMs || 8000);
   }
@@ -498,8 +578,8 @@
   var PAGES = [
     { beats: 2, build: buildOpening },
     { beats: 5, build: buildMasterTotalMap },
-    { beats: 4, build: buildParsePage, evidence: parseEvidenceIds, apply: applyParseBeat },
-    { beats: 5, build: buildHandlePage, evidence: handleEvidenceIds, apply: applyHandleBeat },
+    { beats: 5, build: buildParsePage, evidence: parseEvidenceIds, apply: applyParseBeat },
+    { beats: 6, build: buildHandlePage, evidence: handleEvidenceIds, apply: applyHandleBeat },
     { beats: 2, build: buildLoopPage, evidence: EVIDENCE.loop, apply: applyLoopBeat },
     { beats: 3, build: buildClosingPage }
   ];
@@ -575,8 +655,8 @@
   function markLiveEvidence(root, beat) {
     root.querySelectorAll('.ev-live').forEach(function (el) { el.classList.remove('ev-live'); });
     var sel = [
-      '.signal-col.is-primary',
-      '.handle-col.is-primary',
+      '.signal-col.is-focused',
+      '.handle-col.is-focused',
       '.reveal.is-on[data-step="' + beat + '"]',
       '[data-conclusion]:not(.is-dormant)',
       '[data-loop-flow]:not(.is-collapsed)',
@@ -770,9 +850,11 @@
 
   function stabilizeLayout() {
     scale();
+    if (APP.chapter === 4) fitSphereBox();
     requestAnimationFrame(function () {
       resetViewport();
       scale();
+      if (APP.chapter === 4) fitSphereBox();
     });
   }
 
@@ -860,6 +942,7 @@
     iframe.setAttribute('referrerpolicy', 'no-referrer-when-downgrade');
     iframe.onload = function () {
       box.classList.remove('is-loading');
+      fitSphereBox();
       stabilizeLayout();
     };
     iframe.onerror = function () { box.classList.add('fallback'); box.classList.remove('is-loading'); };

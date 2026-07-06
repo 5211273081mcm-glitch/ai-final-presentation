@@ -1,0 +1,258 @@
+/* ═══ 舆情解析 / 舆情处置 · 聚焦舞台交互 ═══
+   默认：三/四暗色模块 + 居中大灰字标题
+   聚焦：标题丝滑左上移 + 灰→蓝/橙 + 下方内容/Evidence 同步展开
+   退出：已讲模块回到居中灰字；页末回到全员 idle
+   ═══════════════════════════════════════════════════════════ */
+
+.focus-stage-grid {
+  --focus-ease: cubic-bezier(0.33, 1, 0.38, 1);
+  --focus-dur: 0.68s;
+}
+
+.focus-col-inner {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* ── 标题区：idle 居中占满，focused 收缩至顶栏 ── */
+.focus-col-head {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 28px 24px;
+  border-bottom: 1px solid transparent;
+  transition:
+    flex var(--focus-dur) var(--focus-ease),
+    padding var(--focus-dur) var(--focus-ease),
+    border-color 0.42s ease;
+}
+
+.is-focused .focus-col-head {
+  flex: 0 0 auto;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 18px 22px 14px;
+  border-bottom-color: rgba(240, 240, 250, 0.1);
+}
+
+.focus-col-title {
+  margin: 0;
+  width: 100%;
+  padding: 0;
+  border-bottom: none;
+  text-align: center;
+  font-family: var(--font-display);
+  font-weight: var(--fw-module);
+  line-height: 1.22;
+  transition:
+    font-size var(--focus-dur) var(--focus-ease),
+    color 0.52s ease,
+    text-align var(--focus-dur) var(--focus-ease),
+    transform var(--focus-dur) var(--focus-ease);
+}
+
+/* idle / dimmed：居中大灰字 */
+.signal-col.is-idle .focus-col-title,
+.signal-col.is-dimmed .focus-col-title {
+  font-size: clamp(26px, 2.8vw, 40px);
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.34);
+  text-align: center;
+  transform: translateY(0);
+}
+
+.handle-col.is-idle .focus-col-title,
+.handle-col.is-dimmed .focus-col-title {
+  font-size: clamp(22px, 2.2vw, 34px);
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.34);
+  text-align: center;
+  transform: translateY(0);
+}
+
+/* focused：左上 + 主题色 */
+.signal-col.is-focused .focus-col-title {
+  font-size: var(--fs-node-title);
+  font-weight: var(--fw-module);
+  color: var(--ai-primary);
+  text-align: left;
+  transform: translateY(0);
+}
+
+.handle-col.is-focused .focus-col-title {
+  font-size: var(--fs-node-title);
+  font-weight: var(--fw-module);
+  color: var(--signal-primary);
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  transform: translateY(0);
+}
+
+/* ── 内容区：focused 才展开 ── */
+.focus-col-body {
+  flex: 0 0 auto;
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transform: translateY(14px);
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    max-height var(--focus-dur) var(--focus-ease),
+    opacity 0.42s ease 0.06s,
+    transform var(--focus-dur) var(--focus-ease),
+    visibility 0s linear var(--focus-dur);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.is-focused .focus-col-body {
+  flex: 1 1 auto;
+  max-height: 960px;
+  opacity: 1;
+  transform: translateY(0);
+  visibility: visible;
+  pointer-events: auto;
+  transition:
+    max-height var(--focus-dur) var(--focus-ease),
+    opacity 0.48s ease 0.08s,
+    transform var(--focus-dur) var(--focus-ease),
+    visibility 0s linear 0s;
+}
+
+.is-focused .handle-col-body {
+  padding: 12px 20px 18px;
+}
+
+.is-focused .signal-stream {
+  flex: 1;
+  padding: 12px 22px 8px;
+}
+
+/* ── 模块容器底色 / 边框 ── */
+.signal-col,
+.handle-col {
+  transition:
+    border-color 0.52s ease,
+    background 0.52s ease,
+    box-shadow 0.52s ease;
+}
+
+.signal-col.is-idle,
+.signal-col.is-dimmed,
+.handle-col.is-idle,
+.handle-col.is-dimmed {
+  opacity: 1;
+  background: rgba(3, 6, 12, 0.76);
+  border-color: rgba(240, 240, 250, 0.14);
+  box-shadow: none;
+}
+
+.signal-col.is-focused {
+  background: rgba(3, 8, 18, 0.92);
+  border-color: var(--ai-soft);
+  box-shadow: inset 0 0 0 1px rgba(84, 227, 255, 0.14);
+}
+
+.handle-col.is-focused {
+  background: rgba(12, 8, 4, 0.92);
+  border-color: var(--signal-soft);
+  box-shadow: inset 0 0 0 1px rgba(255, 144, 85, 0.14);
+}
+
+/* 旧 primary/secondary 逻辑停用，避免叠层 */
+.signal-col.is-primary,
+.signal-col.is-secondary,
+.handle-col.is-primary,
+.handle-col.is-secondary {
+  opacity: 1;
+}
+
+/* handle：idle 只显示模块名，kicker 聚焦后再出现 */
+.handle-col .handle-kicker {
+  display: none;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.handle-col.is-focused .handle-kicker {
+  display: block;
+  color: var(--signal-primary);
+}
+
+.handle-col.is-idle .handle-name,
+.handle-col.is-dimmed .handle-name {
+  display: block;
+}
+
+.handle-col.is-focused .handle-name {
+  display: block;
+}
+
+/* 箭头：默认隐藏，聚焦链启动后显示 */
+.handle-arrow {
+  opacity: 0;
+  transform: scale(0.82);
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    opacity 0.45s ease,
+    transform 0.45s var(--focus-ease),
+    visibility 0s linear 0.45s;
+}
+
+.handle-arrow.is-visible {
+  opacity: 1;
+  transform: scale(1);
+  visibility: visible;
+  pointer-events: none;
+  transition:
+    opacity 0.45s ease 0.06s,
+    transform 0.45s var(--focus-ease) 0.06s,
+    visibility 0s linear 0s;
+}
+
+.focus-stage-outro .handle-arrow {
+  opacity: 0;
+  transform: scale(0.82);
+  visibility: hidden;
+}
+
+/* 页末 outro：网格略收，给结论让位 */
+.focus-stage-outro.signal-grid {
+  bottom: 280px;
+}
+
+.focus-stage-outro.handle-grid {
+  bottom: 120px;
+}
+
+/* ── 舆情处置 · 事件卡列：内容上移，Evidence 完整露出 ── */
+.handle-col.is-focused .handle-col-body {
+  justify-content: flex-start;
+  gap: 8px;
+  padding-top: 6px;
+  padding-bottom: 10px;
+  overflow: hidden;
+}
+
+.handle-col.is-focused .event-dims-card {
+  margin: 0;
+  flex: 0 1 auto;
+  min-height: 0;
+}
+
+.handle-col.is-focused .col-evidence {
+  flex: 0 0 auto;
+  margin-top: auto;
+}
