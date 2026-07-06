@@ -1,49 +1,23 @@
 # 决赛 LED 投屏 · 线上发布链接
 
-> **版本 ID：** `final-led-20260706-final`  
-> **Git Tag：** `final-led-20260706-final`  
-> **Commit：** `12b4a72`（完整：`12b4a72613f0126b3d3b40050ed70c08bbabded7`）  
-> **上一版 ID：** `final-led-20260706`  
-> **与本地 file:// 一一对应**
+> **版本 ID：** `final-led-20260706-21beats`  
+> **Git Tag：** `final-led-20260706-21beats`  
+> **Commit：** `d603766`（完整：`d6037660b7ff7f9a4fb12e1f43eaae4a87cb64ab`）  
+> **上一版 ID：** `final-led-20260706-final`  
+> **全局进度：** 21 幕（解析 4 + 处置 5）
 
-## 本地（与线上同路径）
-
-| 用途 | 链接 |
-|------|------|
-| **投屏（LED）** | `file:///Users/Lin/Desktop/Codex/AI比赛/AI/ai-final-presentation/index.html?led=1` |
-| **讲者控制台（逐字稿右下角 · 原版布局）** | `file:///Users/Lin/Desktop/Codex/AI比赛/AI/ai-final-presentation/presenter.html?led=1` |
-
-控制台点「打开 LED 投屏窗」→ 自动打开 `index.html?led=1`，与投屏页同步。
-
-## GitHub Pages（上传 main 后）
-
-将 `12b4a72` 替换为 `data/release.json` 中的 `commitShort`。
+## GitHub Pages
 
 ### 投屏（观众大屏）
 
 ```
-https://5211273081mcm-glitch.github.io/ai-final-presentation/index.html?led=1&v=12b4a72
+https://5211273081mcm-glitch.github.io/ai-final-presentation/index.html?led=1&v=d603766
 ```
 
-### 讲者控制台（右下角逐字稿 · 与原版 presenter.html 相同）
+### 讲者控制台
 
 ```
-https://5211273081mcm-glitch.github.io/ai-final-presentation/presenter.html?led=1&v=12b4a72
+https://5211273081mcm-glitch.github.io/ai-final-presentation/presenter.html?led=1&v=d603766
 ```
 
-> 逐字稿来源：`data/speaker-beats-v8.json`（与线上一致，支持本地编辑后导出同步）。
-
-## 备用入口
-
-| 入口 | 说明 |
-|------|------|
-| `index-led.html` | 自动跳转到 `index.html?led=1` |
-| `presenter-led.html` | 与 `presenter.html?led=1` 等效（旧快捷文件） |
-| `presenter.html` | 标准控制台（投屏窗不带 `?led=1`） |
-
-## 上传
-
-```bash
-git push origin main
-git push origin final-led-20260706-final
-```
+> 逐字稿来源：`data/speaker-beats-v8.json`（未改动）
