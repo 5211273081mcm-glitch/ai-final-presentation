@@ -356,8 +356,7 @@ window.__PRESENTATION_DATA__ = {"config": {"projectTitle": "用AI重构舆情工
       beat: beat,
       gridSel: '.signal-grid',
       colSel: '.signal-col',
-      outroBeat: 4,
-      conclusionBeat: 4
+      conclusionBeat: 3
     });
   }
 
@@ -439,8 +438,7 @@ window.__PRESENTATION_DATA__ = {"config": {"projectTitle": "用AI重构舆情工
       gridSel: '.handle-grid',
       colSel: '.handle-col',
       arrowSel: '.handle-arrow',
-      outroBeat: 5,
-      conclusionBeat: 5
+      conclusionBeat: 4
     });
   }
 
@@ -580,8 +578,8 @@ window.__PRESENTATION_DATA__ = {"config": {"projectTitle": "用AI重构舆情工
   var PAGES = [
     { beats: 2, build: buildOpening },
     { beats: 5, build: buildMasterTotalMap },
-    { beats: 5, build: buildParsePage, evidence: parseEvidenceIds, apply: applyParseBeat },
-    { beats: 6, build: buildHandlePage, evidence: handleEvidenceIds, apply: applyHandleBeat },
+    { beats: 4, build: buildParsePage, evidence: parseEvidenceIds, apply: applyParseBeat },
+    { beats: 5, build: buildHandlePage, evidence: handleEvidenceIds, apply: applyHandleBeat },
     { beats: 2, build: buildLoopPage, evidence: EVIDENCE.loop, apply: applyLoopBeat },
     { beats: 3, build: buildClosingPage }
   ];
