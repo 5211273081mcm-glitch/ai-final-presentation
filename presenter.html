@@ -81,6 +81,17 @@
   </section>
 </div>
 <p class="pv-keys">空格/→ 下一幕 · ← 上一幕 · 1–6 跳章 · 点击模式仅用于点左上角 Evidence，结束后建议关闭</p>
+<script>
+(function () {
+  var q = new URLSearchParams(window.location.search);
+  if (q.get('led') === '1' || q.get('led') === 'true') {
+    window.PRESENTER_LED_PREVIEW = true;
+    document.title = '讲者控制台 · LED 投屏 · 用AI重构舆情范式';
+    var btn = document.getElementById('pv-open-audience');
+    if (btn) btn.textContent = '打开 LED 投屏窗';
+  }
+})();
+</script>
 <script src="js/presenter.js"></script>
 </body>
 </html>

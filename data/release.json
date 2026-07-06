@@ -1,21 +1,31 @@
 {
-  "versionId": "final-local-20260706",
-  "label": "决赛投屏最终本地版",
-  "branch": "feature/led-mode-local",
-  "commit": "1a42fa22aec9b6c16d6d2b869f1ced3e674005db",
-  "commitShort": "1a42fa2",
-  "gitTag": "final-local-20260706",
+  "versionId": "final-led-20260706",
+  "label": "决赛 LED 投屏线上版（index.html?led=1）",
+  "branch": "main",
+  "commit": "1154ad4bb22166aaba3928cfcab168a9cff3eb66",
+  "commitShort": "1154ad4",
+  "gitTag": "final-led-20260706",
+  "previousVersionId": "final-local-20260706",
   "baselineMain": "3332384",
-  "parentCommit": "efb9659",
-  "builtAt": "2026-07-06T17:58:00+08:00",
+  "builtAt": "2026-07-06T18:12:00+08:00",
   "repo": "5211273081mcm-glitch/ai-final-presentation",
   "pagesBase": "https://5211273081mcm-glitch.github.io/ai-final-presentation",
+  "entrypoints": {
+    "projection": "index.html?led=1",
+    "projectionShortcut": "index-led.html",
+    "presenter": "presenter.html?led=1",
+    "presenterLegacy": "presenter.html",
+    "presenterLedFile": "presenter-led.html"
+  },
+  "local": {
+    "projection": "file:///Users/Lin/Desktop/Codex/AI比赛/AI/ai-final-presentation/index.html?led=1",
+    "presenter": "file:///Users/Lin/Desktop/Codex/AI比赛/AI/ai-final-presentation/presenter.html?led=1"
+  },
   "features": [
     "projection-mode-led",
+    "presenter-led-via-query-param",
+    "speaker-beats-v8-script",
     "deck-chrome-nav-countdown",
-    "nav-glow-frame-progress",
-    "page-title-restructure",
-    "event-card-7.6",
-    "closing-planet-halo-tuned"
+    "nav-glow-frame-progress"
   ]
 }
