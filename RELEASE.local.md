@@ -2,7 +2,7 @@
 
 > **版本 ID：** `final-led-20260706`  
 > **Git Tag：** `final-led-20260706`  
-> **Commit：** 见 `data/release.json`  
+> **Commit：** `644a216`（完整：`644a21610aee923ade647edeff6601c7da9d9772`）  
 > **与本地 file:// 一一对应**
 
 ## 本地（与线上同路径）
