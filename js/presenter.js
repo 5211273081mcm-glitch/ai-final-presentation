@@ -421,7 +421,7 @@
   }
 
   function openAudience() {
-    var url = 'index.html';
+    var url = 'index.html' + (window.PRESENTER_LED_PREVIEW ? '?led=1' : '');
     var win = getAudienceWindow();
     if (win) {
       audienceWin = win;
