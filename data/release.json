@@ -1,23 +1,16 @@
 {
-  "versionId": "final-led-20260707-syncfix2",
-  "label": "讲者台→投屏三重同步（Channel + localStorage + postMessage）",
+  "versionId": "final-led-20260707-syncfix3",
+  "label": "投屏可点击翻页 + 倒计时刷新重置10:00",
   "branch": "main",
-  "commit": "9b5ff095011b5ef1df5b4a6abbc28ecc4cc74bf7",
-  "commitShort": "9b5ff09",
-  "gitTag": "final-led-20260707-syncfix2",
-  "previousVersionId": "final-led-20260707-syncfix",
-  "baselineMain": "9f21f56",
-  "builtAt": "2026-07-07T13:27:00+08:00",
+  "commit": "PENDING",
+  "commitShort": "PENDING",
+  "gitTag": "final-led-20260707-syncfix3",
+  "previousVersionId": "final-led-20260707-syncfix2",
+  "builtAt": "2026-07-07T13:35:00+08:00",
   "repo": "5211273081mcm-glitch/ai-final-presentation",
   "pagesBase": "https://5211273081mcm-glitch.github.io/ai-final-presentation",
   "entrypoints": {
-    "projection": "index.html?led=1&v=syncfix2",
-    "presenter": "presenter.html?led=1&v=syncfix2"
-  },
-  "features": [
-    "presenter-master-nav",
-    "nav-localStorage-bridge",
-    "audience-ready-resync",
-    "timer-sync-on-refresh"
-  ]
+    "projection": "index.html?led=1&v=syncfix3",
+    "presenter": "presenter.html?led=1&v=syncfix3"
+  }
 }

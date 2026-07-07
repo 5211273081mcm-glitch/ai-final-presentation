@@ -13,7 +13,7 @@
   var NAV_KEY = 'ai-final-presentation-nav-state';
   var SERVER_POLL_MS = 30000;
   var BEATS_PER_PAGE = [2, 5, 4, 5, 2, 3];
-  var ASSET_V = 'syncfix2';
+  var ASSET_V = 'syncfix3';
   var TARGET_SEC = 600;
 
   var state = {
@@ -162,6 +162,18 @@
     touchNavLead();
     updateUI();
     pushNav();
+  }
+
+  function syncFromAudience(ch, beat) {
+    ch = Math.max(0, Math.min(BEATS_PER_PAGE.length - 1, ch));
+    beat = Math.max(0, Math.min(pageBeats(ch) - 1, typeof beat === 'number' ? beat : 0));
+    if (ch === state.chapter && beat === state.beat) return;
+    state.chapter = ch;
+    state.beat = beat;
+    state.pageStartTime = Date.now();
+    touchNavLead();
+    updateUI();
+    persistNav();
   }
 
   function previewUrl(ch, beat) {
@@ -541,6 +553,7 @@
       var msg = ev.data;
       if (!msg) return;
       if (msg.type === 'state') applyRemote(msg);
+      if (msg.type === 'audience-nav') syncFromAudience(msg.chapter, msg.beat);
       if (msg.type === 'audience-ready') pushNav();
       if (msg.type === 'presenter-refocus') window.focus();
     };
@@ -570,6 +583,7 @@
   document.getElementById('pv-reset-timer').onclick = function () {
     state.startTime = Date.now();
     state.pageStartTime = Date.now();
+    send({ type: 'reset-timer' });
     pushNav();
   };
   document.getElementById('pv-save-script').onclick = function () {

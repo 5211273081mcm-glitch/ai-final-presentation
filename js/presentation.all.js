@@ -615,8 +615,7 @@ window.__PRESENTATION_DATA__ = {"config": {"projectTitle": "用AI重构舆情工
     }).join('') + '</div>';
     $('chapter-nav').querySelectorAll('.cn-seg').forEach(function (el) {
       el.onclick = function () {
-        if (APP.navLocked) return;
-        goChapter(+el.dataset.ch, 0);
+        userNavGo(+el.dataset.ch, 0);
       };
     });
   }
@@ -807,6 +806,14 @@ window.__PRESENTATION_DATA__ = {"config": {"projectTitle": "用AI重构舆情工
         APP._pendingGo = null;
         navDelta = 0;
         goChapter(pg.chapter, pg.beat);
+        return;
+      }
+      if (!navDelta && !APP._pendingGo) {
+        if (APP._userNavPending && !APP._syncFromPresenter && !APP.isPreview) {
+          APP._userNavPending = false;
+          broadcastAudienceNav();
+        }
+        APP._syncFromPresenter = false;
         return;
       }
       if (!navDelta) return;
@@ -1014,8 +1021,9 @@ window.__PRESENTATION_DATA__ = {"config": {"projectTitle": "用AI重构舆情工
   }
 
   function bindKeys() {
-    if (APP.isPreview || APP.navLocked) return;
+    if (APP.isPreview) return;
     document.addEventListener('keydown', function (e) {
+      if (e.repeat) return;
       if (APP.lbOpen) {
         if (e.key === 'Escape') { e.preventDefault(); closeLightbox(); return; }
         if (e.key === 'ArrowLeft') { e.preventDefault(); moveLightbox(-1); return; }
@@ -1026,12 +1034,12 @@ window.__PRESENTATION_DATA__ = {"config": {"projectTitle": "用AI重构舆情工
         case 'PageDown':
         case ' ':
           e.preventDefault();
-          advance();
+          userNavAdvance();
           break;
         case 'ArrowLeft':
         case 'PageUp':
           e.preventDefault();
-          retreat();
+          userNavRetreat();
           break;
         case 'e':
         case 'E':
@@ -1074,13 +1082,28 @@ window.__PRESENTATION_DATA__ = {"config": {"projectTitle": "用AI重构舆情工
         default:
           if (e.key >= '1' && e.key <= '6') {
             e.preventDefault();
-            goChapter(+e.key - 1, 0);
+            userNavGo(+e.key - 1, 0);
           }
       }
     });
     $('lb-close').onclick = closeLightbox;
     $('lb-prev').onclick = function () { moveLightbox(-1); };
     $('lb-next').onclick = function () { moveLightbox(1); };
+  }
+
+  function bindAudienceClickNav() {
+    if (APP.isPreview) return;
+    var vp = $('scene-viewport');
+    if (!vp || vp.dataset.navClick) return;
+    vp.dataset.navClick = '1';
+    vp.addEventListener('click', function (e) {
+      if (APP.lbOpen) return;
+      if (e.target.closest('.ev-chip, .ev-btn, .ev-link, .cn-seg, .chapter-nav, .lightbox, a, button, iframe')) return;
+      var rect = vp.getBoundingClientRect();
+      var x = (e.clientX - rect.left) / rect.width;
+      if (x < 0.38) userNavRetreat();
+      else if (x > 0.62) userNavAdvance();
+    });
   }
 
   function bindChrome() {
@@ -1101,10 +1124,10 @@ window.__PRESENTATION_DATA__ = {"config": {"projectTitle": "用AI重构舆情工
     initData();
     initDeckChrome();
     buildChapterNav();
-    APP.navLocked = !APP.isPreview;
     if (!APP.isPreview) {
       bindChrome();
       bindKeys();
+      bindAudienceClickNav();
       bindViewportLock();
       bindPresenterChannel();
       bindPresenterNavBridge();
@@ -1118,10 +1141,11 @@ window.__PRESENTATION_DATA__ = {"config": {"projectTitle": "用AI重构舆情工
       var bootNav = loadPersistedNav() || readNavFromQuery();
       if (bootNav) {
         if (bootNav.at) lastNavAt = bootNav.at;
-        applyPresenterGo(bootNav);
+        applyPresenterNav(bootNav);
       } else {
         render();
       }
+      resetProjectionTimer();
       setTimeout(announceAudienceReady, 150);
       setTimeout(announceAudienceReady, 900);
     } else {
@@ -1160,30 +1184,67 @@ window.__PRESENTATION_DATA__ = {"config": {"projectTitle": "用AI重构舆情工
     return { chapter: ch, beat: Math.max(0, Math.min(pg.beats - 1, b)) };
   }
 
-  function applyPresenterGo(msg) {
+  function applyPresenterNav(msg) {
     if (!msg || msg.type !== 'go') return;
     var nav = normalizeBeat(msg.chapter, msg.beat);
-    var timeChanged = msg.startTime != null && msg.startTime !== APP.startTime;
-    var pageTimeChanged = msg.pageStartTime != null && msg.pageStartTime !== APP.pageStartTime;
-    var navChanged = nav.chapter !== APP.chapter || nav.beat !== APP.beat;
-    if (!navChanged && !timeChanged && !pageTimeChanged) return;
-    if (msg.startTime != null) APP.startTime = msg.startTime;
-    if (msg.pageStartTime != null) APP.pageStartTime = msg.pageStartTime;
-    if (msg.targetSec != null) APP.targetSec = msg.targetSec;
+    if (nav.chapter === APP.chapter && nav.beat === APP.beat) return;
+    APP._syncFromPresenter = true;
     goChapter(nav.chapter, nav.beat);
+    APP._syncFromPresenter = false;
+  }
+
+  function resetProjectionTimer() {
+    APP.startTime = Date.now();
+    APP.pageStartTime = Date.now();
+    APP.targetSec = APP.config.targetTotalSec || 600;
     updateDeckClock();
+  }
+
+  function broadcastAudienceNav() {
+    if (APP.isPreview) return;
+    var payload = {
+      type: 'go',
+      chapter: APP.chapter,
+      beat: APP.beat,
+      at: Date.now()
+    };
+    try {
+      localStorage.setItem(PRESENTER_NAV_KEY, JSON.stringify(payload));
+    } catch (err) {}
+    if (presenterChannel) {
+      presenterChannel.postMessage({
+        type: 'audience-nav',
+        chapter: APP.chapter,
+        beat: APP.beat
+      });
+    }
+  }
+
+  function userNavAdvance() {
+    if (APP.isPreview) return;
+    APP._userNavPending = true;
+    advance();
+  }
+
+  function userNavRetreat() {
+    if (APP.isPreview) return;
+    APP._userNavPending = true;
+    retreat();
+  }
+
+  function userNavGo(ch, beat) {
+    if (APP.isPreview) return;
+    APP._userNavPending = true;
+    goChapter(ch, typeof beat === 'number' ? beat : 0);
   }
 
   function readNavFromQuery() {
     var q = new URLSearchParams(window.location.search);
-    if (!q.has('ch') && !q.has('st')) return null;
+    if (!q.has('ch')) return null;
     return {
       type: 'go',
       chapter: +(q.get('ch') || 0),
       beat: +(q.get('beat') || 0),
-      startTime: +(q.get('st') || Date.now()),
-      pageStartTime: +(q.get('pst') || q.get('st') || Date.now()),
-      targetSec: APP.targetSec,
       at: +(q.get('at') || 0)
     };
   }
@@ -1215,7 +1276,7 @@ window.__PRESENTATION_DATA__ = {"config": {"projectTitle": "用AI重构舆情工
         var msg = JSON.parse(raw);
         if (!msg || !msg.at || msg.at === lastNavAt) return;
         lastNavAt = msg.at;
-        applyPresenterGo(msg);
+        applyPresenterNav(msg);
       } catch (err) {}
     }
 
@@ -1225,7 +1286,7 @@ window.__PRESENTATION_DATA__ = {"config": {"projectTitle": "用AI重构舆情工
 
     window.addEventListener('message', function (e) {
       if (e.origin !== window.location.origin) return;
-      if (e.data && e.data.type === 'go') applyPresenterGo(e.data);
+      if (e.data && e.data.type === 'go') applyPresenterNav(e.data);
     });
 
     setInterval(function () {
@@ -1285,13 +1346,22 @@ window.__PRESENTATION_DATA__ = {"config": {"projectTitle": "用AI重构舆情工
       if (!msg) return;
       switch (msg.type) {
         case 'advance':
-          if (!APP.isPreview) advance();
+          if (!APP.isPreview) {
+            APP._syncFromPresenter = true;
+            APP._userNavPending = false;
+            advance();
+          }
           break;
         case 'retreat':
-          if (!APP.isPreview) retreat();
+          if (!APP.isPreview) {
+            APP._syncFromPresenter = true;
+            APP._userNavPending = false;
+            retreat();
+          }
           break;
         case 'go':
-          applyPresenterGo(msg);
+          APP._userNavPending = false;
+          applyPresenterNav(msg);
           break;
         case 'open-evidence':
           if (msg.ids && msg.ids.length) openLightbox(msg.ids, msg.idx || 0);
@@ -1308,9 +1378,7 @@ window.__PRESENTATION_DATA__ = {"config": {"projectTitle": "用AI重构舆情工
           announceAudienceReady();
           break;
         case 'reset-timer':
-          APP.startTime = Date.now();
-          APP.pageStartTime = Date.now();
-          updateDeckClock();
+          resetProjectionTimer();
           break;
       }
     };
