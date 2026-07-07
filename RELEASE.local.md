@@ -1,20 +1,19 @@
 # 决赛 LED 投屏 · 线上发布链接
 
-> **版本 ID：** `final-led-20260706-21beats-v2`  
-> **Git Tag：** `final-led-20260706-21beats-v2`  
-> **Commit：** `a3bca1a`  
-> **全局进度：** 21 幕（解析 4 + 处置 5，无 outro 回 idle 页）
+> **版本 ID：** `final-led-20260707-syncfix`  
+> **Commit：** `4424b2e`  
+> **修复：** 讲者台主控导航，禁止自动跳页；投屏仅跟随讲者台
 
 ## GitHub Pages
 
 ### 投屏
 ```
-https://5211273081mcm-glitch.github.io/ai-final-presentation/index.html?led=1&v=21beats2
+https://5211273081mcm-glitch.github.io/ai-final-presentation/index.html?led=1&v=syncfix1
 ```
 
 ### 讲者控制台
 ```
-https://5211273081mcm-glitch.github.io/ai-final-presentation/presenter.html?led=1&v=21beats2
+https://5211273081mcm-glitch.github.io/ai-final-presentation/presenter.html?led=1&v=syncfix1
 ```
 
-> 逐字稿 `data/speaker-beats-v8.json` 未改动。请用带 `v=21beats2` 的链接，避免加载旧版 JS。
+> 先打开讲者台 → 点「打开 LED 投屏窗」。翻页仅在讲者台操作（空格/方向键），投屏不会自行前进。
