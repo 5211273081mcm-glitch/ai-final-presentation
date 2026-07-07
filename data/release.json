@@ -1,16 +1,16 @@
 {
-  "versionId": "final-led-20260707-syncfix4",
-  "label": "修复投屏刷新黑屏（chapter0 beat0 未 render）",
+  "versionId": "final-led-20260707-syncfix5",
+  "label": "讲者台 10 分钟倒计时与投屏计时同步",
   "branch": "main",
-  "commit": "2fafd724417c25e89d43debe3e81cb30d450a523",
-  "commitShort": "2fafd72",
-  "gitTag": "final-led-20260707-syncfix4",
-  "previousVersionId": "final-led-20260707-syncfix3",
-  "builtAt": "2026-07-07T13:42:00+08:00",
+  "commit": "PENDING",
+  "commitShort": "PENDING",
+  "gitTag": "final-led-20260707-syncfix5",
+  "previousVersionId": "final-led-20260707-syncfix4",
+  "builtAt": "2026-07-07T13:48:00+08:00",
   "repo": "5211273081mcm-glitch/ai-final-presentation",
   "pagesBase": "https://5211273081mcm-glitch.github.io/ai-final-presentation",
   "entrypoints": {
-    "projection": "index.html?led=1&v=syncfix4",
-    "presenter": "presenter.html?led=1&v=syncfix4"
+    "projection": "index.html?led=1&v=syncfix5",
+    "presenter": "presenter.html?led=1&v=syncfix5"
   }
 }

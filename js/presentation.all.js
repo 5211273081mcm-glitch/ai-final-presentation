@@ -1178,9 +1178,28 @@ window.__PRESENTATION_DATA__ = {"config": {"projectTitle": "用AI重构舆情工
     return { chapter: ch, beat: Math.max(0, Math.min(pg.beats - 1, b)) };
   }
 
+  function syncTimerFromPresenter(msg) {
+    if (!msg || APP.isPreview) return;
+    var changed = false;
+    if (msg.targetSec) {
+      APP.targetSec = msg.targetSec;
+      changed = true;
+    }
+    if (typeof msg.startTime === 'number' && msg.startTime > 0) {
+      APP.startTime = msg.startTime;
+      changed = true;
+    }
+    if (typeof msg.pageStartTime === 'number' && msg.pageStartTime > 0) {
+      APP.pageStartTime = msg.pageStartTime;
+      changed = true;
+    }
+    if (changed) updateDeckClock();
+  }
+
   function applyPresenterNav(msg, opts) {
     opts = opts || {};
     if (!msg || msg.type !== 'go') return;
+    syncTimerFromPresenter(msg);
     var nav = normalizeBeat(msg.chapter, msg.beat);
     var canvas = $('slide-canvas');
     var needsPaint = opts.forcePaint || !canvas || !canvas.innerHTML.trim();

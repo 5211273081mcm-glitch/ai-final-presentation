@@ -13,7 +13,7 @@
   var NAV_KEY = 'ai-final-presentation-nav-state';
   var SERVER_POLL_MS = 30000;
   var BEATS_PER_PAGE = [2, 5, 4, 5, 2, 3];
-  var ASSET_V = 'syncfix4';
+  var ASSET_V = 'syncfix5';
   var TARGET_SEC = 600;
 
   var state = {
@@ -22,6 +22,11 @@
     startTime: Date.now(),
     pageStartTime: Date.now()
   };
+
+  function resetPresenterTimer() {
+    state.startTime = Date.now();
+    state.pageStartTime = Date.now();
+  }
   var notes = null;
   var baseNotes = null;
   var manifestMap = {};
@@ -353,10 +358,13 @@
     var totalRemain = TARGET_SEC - totalElapsed;
     var pageRemain = pageBudget - pageElapsed;
 
-    document.getElementById('pv-total').textContent = fmt(totalElapsed);
-    var remainTotal = document.getElementById('pv-remain-total');
-    remainTotal.textContent = '剩余 ' + fmt(totalRemain);
-    remainTotal.className = 'pv-clock sub' + (totalRemain < 60 ? ' warn' : '') + (totalRemain < 0 ? ' over' : '');
+    var totalEl = document.getElementById('pv-total');
+    totalEl.textContent = fmt(totalRemain);
+    totalEl.className = 'pv-clock' + (totalRemain <= 60 && totalRemain >= 0 ? ' warn' : '') + (totalRemain < 0 ? ' over' : '');
+
+    var elapsedTotal = document.getElementById('pv-remain-total');
+    elapsedTotal.textContent = '已用 ' + fmt(totalElapsed);
+    elapsedTotal.className = 'pv-clock sub';
 
     document.getElementById('pv-page-elapsed').textContent = '本页 ' + fmt(pageElapsed);
     var pageRemainEl = document.getElementById('pv-page-remain');
@@ -366,8 +374,7 @@
 
   function applyRemote(msg) {
     if (!msg || msg.type !== 'state') return;
-    /* 讲者台为导航主控：绝不接受投屏回传的 chapter/beat，避免自动跳页 */
-    if (msg.startTime) state.startTime = msg.startTime;
+    /* 讲者台为导航与计时主控：不接受投屏回传 chapter/beat/startTime */
   }
 
   function send(cmd) {
@@ -554,7 +561,10 @@
       if (!msg) return;
       if (msg.type === 'state') applyRemote(msg);
       if (msg.type === 'audience-nav') syncFromAudience(msg.chapter, msg.beat);
-      if (msg.type === 'audience-ready') pushNav();
+      if (msg.type === 'audience-ready') {
+        resetPresenterTimer();
+        pushNav();
+      }
       if (msg.type === 'presenter-refocus') window.focus();
     };
   }
@@ -581,8 +591,7 @@
 
   document.getElementById('pv-open-audience').onclick = openAudience;
   document.getElementById('pv-reset-timer').onclick = function () {
-    state.startTime = Date.now();
-    state.pageStartTime = Date.now();
+    resetPresenterTimer();
     send({ type: 'reset-timer' });
     pushNav();
   };
@@ -641,6 +650,7 @@
       try { localStorage.setItem(STORAGE_KEY, JSON.stringify(notes)); } catch (err) {}
       if (notes.targetTotalSec) TARGET_SEC = notes.targetTotalSec;
       (manifest.assets || []).forEach(function (a) { manifestMap[a.id] = a; });
+      resetPresenterTimer();
       ensureIframes();
       updateUI();
       persistNav();
