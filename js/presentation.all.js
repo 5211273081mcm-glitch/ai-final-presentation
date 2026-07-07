@@ -1138,13 +1138,7 @@ window.__PRESENTATION_DATA__ = {"config": {"projectTitle": "用AI重构舆情工
     preloadUrl(C().masterMap.rightTexture);
     if (!APP.isPreview) {
       setInterval(updateDeckClock, 1000);
-      var bootNav = loadPersistedNav() || readNavFromQuery();
-      if (bootNav) {
-        if (bootNav.at) lastNavAt = bootNav.at;
-        applyPresenterNav(bootNav);
-      } else {
-        render();
-      }
+      bootAudienceSlide();
       resetProjectionTimer();
       setTimeout(announceAudienceReady, 150);
       setTimeout(announceAudienceReady, 900);
@@ -1184,13 +1178,30 @@ window.__PRESENTATION_DATA__ = {"config": {"projectTitle": "用AI重构舆情工
     return { chapter: ch, beat: Math.max(0, Math.min(pg.beats - 1, b)) };
   }
 
-  function applyPresenterNav(msg) {
+  function applyPresenterNav(msg, opts) {
+    opts = opts || {};
     if (!msg || msg.type !== 'go') return;
     var nav = normalizeBeat(msg.chapter, msg.beat);
-    if (nav.chapter === APP.chapter && nav.beat === APP.beat) return;
+    var canvas = $('slide-canvas');
+    var needsPaint = opts.forcePaint || !canvas || !canvas.innerHTML.trim();
+    if (!needsPaint && nav.chapter === APP.chapter && nav.beat === APP.beat) return;
     APP._syncFromPresenter = true;
     goChapter(nav.chapter, nav.beat);
     APP._syncFromPresenter = false;
+  }
+
+  function bootAudienceSlide() {
+    var bootNav = loadPersistedNav() || readNavFromQuery();
+    if (bootNav) {
+      if (bootNav.at) lastNavAt = bootNav.at;
+      var nav = normalizeBeat(bootNav.chapter, bootNav.beat);
+      APP.chapter = nav.chapter;
+      APP.beat = nav.beat;
+    }
+    APP.lastChapter = -1;
+    APP.prevChapter = -1;
+    APP.busy = false;
+    render();
   }
 
   function resetProjectionTimer() {

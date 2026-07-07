@@ -13,7 +13,7 @@
   var NAV_KEY = 'ai-final-presentation-nav-state';
   var SERVER_POLL_MS = 30000;
   var BEATS_PER_PAGE = [2, 5, 4, 5, 2, 3];
-  var ASSET_V = 'syncfix3';
+  var ASSET_V = 'syncfix4';
   var TARGET_SEC = 600;
 
   var state = {
