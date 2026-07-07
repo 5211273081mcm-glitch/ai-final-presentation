@@ -10,9 +10,10 @@
   var STORAGE_KEY = 'ai-final-presentation-speaker-notes-v8';
   var EDITED_URL = 'data/speaker-beats-v8-edited.json';
   var ACTION_KEY = 'ai-final-presentation-audience-action';
+  var NAV_KEY = 'ai-final-presentation-nav-state';
   var SERVER_POLL_MS = 30000;
   var BEATS_PER_PAGE = [2, 5, 4, 5, 2, 3];
-  var ASSET_V = 'syncfix1';
+  var ASSET_V = 'syncfix2';
   var TARGET_SEC = 600;
 
   var state = {
@@ -72,14 +73,48 @@
 
   var navLeadUntil = 0;
 
-  function pushNav() {
-    send({
+  function navPayload() {
+    return {
       type: 'go',
       chapter: state.chapter,
       beat: state.beat,
       startTime: state.startTime,
-      pageStartTime: state.pageStartTime
-    });
+      pageStartTime: state.pageStartTime,
+      targetSec: TARGET_SEC,
+      at: Date.now()
+    };
+  }
+
+  function persistNav(payload) {
+    try {
+      localStorage.setItem(NAV_KEY, JSON.stringify(payload || navPayload()));
+    } catch (err) {}
+  }
+
+  function pushNavToAudienceWindow(payload) {
+    payload = payload || navPayload();
+    try {
+      var win = getAudienceWindow();
+      if (win && !win.closed) {
+        win.postMessage(payload, window.location.origin);
+      }
+    } catch (err) {}
+  }
+
+  function pushNav() {
+    var payload = navPayload();
+    persistNav(payload);
+    send(payload);
+    pushNavToAudienceWindow(payload);
+  }
+
+  function audienceUrl() {
+    var url = 'index.html?v=' + ASSET_V;
+    if (window.PRESENTER_LED_PREVIEW) url += '&led=1';
+    url += '&ch=' + state.chapter + '&beat=' + state.beat;
+    url += '&st=' + state.startTime + '&pst=' + state.pageStartTime;
+    url += '&at=' + Date.now();
+    return url;
   }
 
   function touchNavLead() {
@@ -423,7 +458,7 @@
   }
 
   function openAudience() {
-    var url = 'index.html?v=' + ASSET_V + (window.PRESENTER_LED_PREVIEW ? '&led=1' : '');
+    var url = audienceUrl();
     var win = getAudienceWindow();
     if (win) {
       audienceWin = win;
@@ -431,13 +466,17 @@
       try {
         if (win.location.href === 'about:blank' || !/\/index\.html/.test(win.location.pathname + win.location.href)) {
           win.location.href = url;
+        } else {
+          pushNavToAudienceWindow();
         }
-      } catch (err) {}
+      } catch (err) {
+        pushNavToAudienceWindow();
+      }
     } else {
       audienceWin = window.open(url, 'ai-final-audience');
     }
-    setTimeout(function () { pushNav(); }, 400);
-    setTimeout(function () { pushNav(); }, 1200);
+    setTimeout(pushNav, 400);
+    setTimeout(pushNav, 1200);
   }
 
   function setInteractMode(on) {
@@ -502,6 +541,7 @@
       var msg = ev.data;
       if (!msg) return;
       if (msg.type === 'state') applyRemote(msg);
+      if (msg.type === 'audience-ready') pushNav();
       if (msg.type === 'presenter-refocus') window.focus();
     };
   }
@@ -530,7 +570,7 @@
   document.getElementById('pv-reset-timer').onclick = function () {
     state.startTime = Date.now();
     state.pageStartTime = Date.now();
-    send({ type: 'reset-timer' });
+    pushNav();
   };
   document.getElementById('pv-save-script').onclick = function () {
     saveCurrentBeat('已手动保存当前逐字稿。');
@@ -589,6 +629,7 @@
       (manifest.assets || []).forEach(function (a) { manifestMap[a.id] = a; });
       ensureIframes();
       updateUI();
+      persistNav();
       pushNav();
       setTimeout(pushNav, 600);
       var src = notesSavedAt(serverEdited) >= notesSavedAt(localSaved) && notesSavedAt(serverEdited) > 0

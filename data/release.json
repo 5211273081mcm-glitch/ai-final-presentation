@@ -1,30 +1,23 @@
 {
-  "versionId": "final-led-20260707-syncfix",
-  "label": "讲者台主控同步修复（禁止自动跳页 / 投屏禁本地翻页）",
+  "versionId": "final-led-20260707-syncfix2",
+  "label": "讲者台→投屏三重同步（Channel + localStorage + postMessage）",
   "branch": "main",
-  "commit": "4424b2ead44def3e3eed497d165f2960491c5d49",
-  "commitShort": "4424b2e",
-  "gitTag": "final-led-20260707-syncfix",
-  "previousVersionId": "final-led-20260706-21beats-v2",
-  "baselineMain": "c4d88e6",
-  "builtAt": "2026-07-07T13:19:00+08:00",
+  "commit": "PENDING",
+  "commitShort": "PENDING",
+  "gitTag": "final-led-20260707-syncfix2",
+  "previousVersionId": "final-led-20260707-syncfix",
+  "baselineMain": "9f21f56",
+  "builtAt": "2026-07-07T13:27:00+08:00",
   "repo": "5211273081mcm-glitch/ai-final-presentation",
   "pagesBase": "https://5211273081mcm-glitch.github.io/ai-final-presentation",
   "entrypoints": {
-    "projection": "index.html?led=1&v=syncfix1",
-    "projectionShortcut": "index-led.html",
-    "presenter": "presenter.html?led=1&v=syncfix1",
-    "presenterLegacy": "presenter.html",
-    "presenterLedFile": "presenter-led.html"
-  },
-  "local": {
-    "projection": "file:///Users/Lin/Desktop/Codex/AI比赛/AI/ai-final-presentation/index.html?led=1",
-    "presenter": "file:///Users/Lin/Desktop/Codex/AI比赛/AI/ai-final-presentation/presenter.html?led=1"
+    "projection": "index.html?led=1&v=syncfix2",
+    "presenter": "presenter.html?led=1&v=syncfix2"
   },
   "features": [
     "presenter-master-nav",
-    "no-projection-keyboard-nav",
-    "explicit-go-sync",
-    "21-total-beats"
+    "nav-localStorage-bridge",
+    "audience-ready-resync",
+    "timer-sync-on-refresh"
   ]
 }

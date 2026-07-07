@@ -862,18 +862,19 @@ window.__PRESENTATION_DATA__ = {"config": {"projectTitle": "用AI重构舆情工
   }
 
   function goChapter(ch, beat) {
+    var nb = typeof beat === 'number' ? beat : 0;
     if (APP.busy) {
       navDelta = 0;
       APP._pendingGo = {
         chapter: Math.max(0, Math.min(PAGES.length - 1, ch)),
-        beat: beat || 0
+        beat: nb
       };
       pumpNavQueue();
       return;
     }
     var prev = APP.chapter;
     APP.chapter = Math.max(0, Math.min(PAGES.length - 1, ch));
-    APP.beat = beat || 0;
+    APP.beat = nb;
     if (APP.lastChapter !== APP.chapter) {
       APP.prevChapter = prev;
       APP.lastChapter = -1;
@@ -1106,6 +1107,7 @@ window.__PRESENTATION_DATA__ = {"config": {"projectTitle": "用AI重构舆情工
       bindKeys();
       bindViewportLock();
       bindPresenterChannel();
+      bindPresenterNavBridge();
     } else {
       bindPreviewChannel();
     }
@@ -1113,11 +1115,17 @@ window.__PRESENTATION_DATA__ = {"config": {"projectTitle": "用AI重构舆情工
     preloadUrl(C().masterMap.rightTexture);
     if (!APP.isPreview) {
       setInterval(updateDeckClock, 1000);
-    }
-    if (APP.isPreview) {
-      goChapter(APP.chapter, APP.beat);
+      var bootNav = loadPersistedNav() || readNavFromQuery();
+      if (bootNav) {
+        if (bootNav.at) lastNavAt = bootNav.at;
+        applyPresenterGo(bootNav);
+      } else {
+        render();
+      }
+      setTimeout(announceAudienceReady, 150);
+      setTimeout(announceAudienceReady, 900);
     } else {
-      render();
+      goChapter(APP.chapter, APP.beat);
     }
     window.addEventListener('resize', stabilizeLayout);
   }
@@ -1140,8 +1148,93 @@ window.__PRESENTATION_DATA__ = {"config": {"projectTitle": "用AI重构舆情工
   /* ═══ 讲者双屏：preview iframe + BroadcastChannel（不改变投屏默认行为） ═══ */
   var PRESENTER_CH = 'ai-final-presentation-v1';
   var PRESENTER_ACTION_KEY = 'ai-final-presentation-audience-action';
+  var PRESENTER_NAV_KEY = 'ai-final-presentation-nav-state';
   var presenterChannel = null;
   var presenterWin = null;
+  var lastNavAt = 0;
+
+  function normalizeBeat(ch, beat) {
+    ch = Math.max(0, Math.min(PAGES.length - 1, ch || 0));
+    var pg = PAGES[ch];
+    var b = typeof beat === 'number' ? beat : 0;
+    return { chapter: ch, beat: Math.max(0, Math.min(pg.beats - 1, b)) };
+  }
+
+  function applyPresenterGo(msg) {
+    if (!msg || msg.type !== 'go') return;
+    var nav = normalizeBeat(msg.chapter, msg.beat);
+    var timeChanged = msg.startTime != null && msg.startTime !== APP.startTime;
+    var pageTimeChanged = msg.pageStartTime != null && msg.pageStartTime !== APP.pageStartTime;
+    var navChanged = nav.chapter !== APP.chapter || nav.beat !== APP.beat;
+    if (!navChanged && !timeChanged && !pageTimeChanged) return;
+    if (msg.startTime != null) APP.startTime = msg.startTime;
+    if (msg.pageStartTime != null) APP.pageStartTime = msg.pageStartTime;
+    if (msg.targetSec != null) APP.targetSec = msg.targetSec;
+    goChapter(nav.chapter, nav.beat);
+    updateDeckClock();
+  }
+
+  function readNavFromQuery() {
+    var q = new URLSearchParams(window.location.search);
+    if (!q.has('ch') && !q.has('st')) return null;
+    return {
+      type: 'go',
+      chapter: +(q.get('ch') || 0),
+      beat: +(q.get('beat') || 0),
+      startTime: +(q.get('st') || Date.now()),
+      pageStartTime: +(q.get('pst') || q.get('st') || Date.now()),
+      targetSec: APP.targetSec,
+      at: +(q.get('at') || 0)
+    };
+  }
+
+  function loadPersistedNav() {
+    try {
+      var raw = localStorage.getItem(PRESENTER_NAV_KEY);
+      if (!raw) return null;
+      var msg = JSON.parse(raw);
+      if (!msg || !msg.at || Date.now() - msg.at > 86400000) return null;
+      return msg;
+    } catch (err) {
+      return null;
+    }
+  }
+
+  function announceAudienceReady() {
+    if (APP.isPreview || !presenterChannel) return;
+    presenterChannel.postMessage({ type: 'audience-ready', at: Date.now() });
+  }
+
+  function bindPresenterNavBridge() {
+    if (APP._navBridgeBound) return;
+    APP._navBridgeBound = true;
+
+    function applyRaw(raw) {
+      if (!raw) return;
+      try {
+        var msg = JSON.parse(raw);
+        if (!msg || !msg.at || msg.at === lastNavAt) return;
+        lastNavAt = msg.at;
+        applyPresenterGo(msg);
+      } catch (err) {}
+    }
+
+    window.addEventListener('storage', function (e) {
+      if (e.key === PRESENTER_NAV_KEY && e.newValue) applyRaw(e.newValue);
+    });
+
+    window.addEventListener('message', function (e) {
+      if (e.origin !== window.location.origin) return;
+      if (e.data && e.data.type === 'go') applyPresenterGo(e.data);
+    });
+
+    setInterval(function () {
+      try {
+        var raw = localStorage.getItem(PRESENTER_NAV_KEY);
+        if (raw) applyRaw(raw);
+      } catch (err) {}
+    }, 250);
+  }
 
   function initPresenterMode() {
     var q = new URLSearchParams(window.location.search);
@@ -1198,9 +1291,7 @@ window.__PRESENTATION_DATA__ = {"config": {"projectTitle": "用AI重构舆情工
           if (!APP.isPreview) retreat();
           break;
         case 'go':
-          if (msg.startTime != null) APP.startTime = msg.startTime;
-          if (msg.pageStartTime != null) APP.pageStartTime = msg.pageStartTime;
-          goChapter(msg.chapter || 0, msg.beat || 0);
+          applyPresenterGo(msg);
           break;
         case 'open-evidence':
           if (msg.ids && msg.ids.length) openLightbox(msg.ids, msg.idx || 0);
@@ -1214,7 +1305,7 @@ window.__PRESENTATION_DATA__ = {"config": {"projectTitle": "用AI重构舆情工
           break;
         case 'request-sync':
         case 'request-state':
-          /* 投屏不再向讲者台推送导航；等待讲者台 go 指令 */
+          announceAudienceReady();
           break;
         case 'reset-timer':
           APP.startTime = Date.now();
