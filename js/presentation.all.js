@@ -614,7 +614,10 @@ window.__PRESENTATION_DATA__ = {"config": {"projectTitle": "用AI重构舆情工
       return '<div class="cn-seg" data-ch="' + i + '"><span class="cn-label">' + esc(p.tag) + '</span><span class="cn-beat-bar"></span></div>';
     }).join('') + '</div>';
     $('chapter-nav').querySelectorAll('.cn-seg').forEach(function (el) {
-      el.onclick = function () { goChapter(+el.dataset.ch, 0); };
+      el.onclick = function () {
+        if (APP.navLocked) return;
+        goChapter(+el.dataset.ch, 0);
+      };
     });
   }
 
@@ -635,7 +638,6 @@ window.__PRESENTATION_DATA__ = {"config": {"projectTitle": "用AI重构舆情工
       else if (i === APP.chapter) done += APP.beat + 1;
     });
     $('progress-fill').style.width = (done / total * 100) + '%';
-    if (!APP.isPreview) broadcastPresenterState();
   }
 
   function applyBeat(root, beat) {
@@ -1011,7 +1013,7 @@ window.__PRESENTATION_DATA__ = {"config": {"projectTitle": "用AI重构舆情工
   }
 
   function bindKeys() {
-    if (APP.isPreview) return;
+    if (APP.isPreview || APP.navLocked) return;
     document.addEventListener('keydown', function (e) {
       if (APP.lbOpen) {
         if (e.key === 'Escape') { e.preventDefault(); closeLightbox(); return; }
@@ -1098,6 +1100,7 @@ window.__PRESENTATION_DATA__ = {"config": {"projectTitle": "用AI重构舆情工
     initData();
     initDeckChrome();
     buildChapterNav();
+    APP.navLocked = !APP.isPreview;
     if (!APP.isPreview) {
       bindChrome();
       bindKeys();
@@ -1117,7 +1120,6 @@ window.__PRESENTATION_DATA__ = {"config": {"projectTitle": "用AI重构舆情工
       render();
     }
     window.addEventListener('resize', stabilizeLayout);
-    if (!APP.isPreview) broadcastPresenterState();
   }
 
   /* ═══ 投屏增权：黑底不变，?led=1 / L 键，不改布局字号 ═══ */
@@ -1189,9 +1191,15 @@ window.__PRESENTATION_DATA__ = {"config": {"projectTitle": "用AI重构舆情工
       var msg = ev.data;
       if (!msg) return;
       switch (msg.type) {
-        case 'advance': advance(); break;
-        case 'retreat': retreat(); break;
+        case 'advance':
+          if (!APP.isPreview) advance();
+          break;
+        case 'retreat':
+          if (!APP.isPreview) retreat();
+          break;
         case 'go':
+          if (msg.startTime != null) APP.startTime = msg.startTime;
+          if (msg.pageStartTime != null) APP.pageStartTime = msg.pageStartTime;
           goChapter(msg.chapter || 0, msg.beat || 0);
           break;
         case 'open-evidence':
@@ -1206,13 +1214,12 @@ window.__PRESENTATION_DATA__ = {"config": {"projectTitle": "用AI重构舆情工
           break;
         case 'request-sync':
         case 'request-state':
-          broadcastPresenterState();
+          /* 投屏不再向讲者台推送导航；等待讲者台 go 指令 */
           break;
         case 'reset-timer':
           APP.startTime = Date.now();
           APP.pageStartTime = Date.now();
           updateDeckClock();
-          broadcastPresenterState();
           break;
       }
     };

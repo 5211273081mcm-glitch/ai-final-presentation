@@ -1,19 +1,19 @@
 {
-  "versionId": "final-led-20260706-21beats-v2",
-  "label": "决赛 LED 21幕（移除解析/处置 outro 页 + JS 缓存刷新）",
+  "versionId": "final-led-20260707-syncfix",
+  "label": "讲者台主控同步修复（禁止自动跳页 / 投屏禁本地翻页）",
   "branch": "main",
-  "commit": "a3bca1ac4a4dc36bc88b05e776143368ac7127f7",
-  "commitShort": "a3bca1a",
-  "gitTag": "final-led-20260706-21beats-v2",
-  "previousVersionId": "final-led-20260706-21beats",
-  "baselineMain": "7f0aecf",
-  "builtAt": "2026-07-06T23:48:00+08:00",
+  "commit": "PENDING",
+  "commitShort": "PENDING",
+  "gitTag": "final-led-20260707-syncfix",
+  "previousVersionId": "final-led-20260706-21beats-v2",
+  "baselineMain": "c4d88e6",
+  "builtAt": "2026-07-07T13:19:00+08:00",
   "repo": "5211273081mcm-glitch/ai-final-presentation",
   "pagesBase": "https://5211273081mcm-glitch.github.io/ai-final-presentation",
   "entrypoints": {
-    "projection": "index.html?led=1&v=21beats2",
+    "projection": "index.html?led=1&v=syncfix1",
     "projectionShortcut": "index-led.html",
-    "presenter": "presenter.html?led=1&v=21beats2",
+    "presenter": "presenter.html?led=1&v=syncfix1",
     "presenterLegacy": "presenter.html",
     "presenterLedFile": "presenter-led.html"
   },
@@ -22,11 +22,9 @@
     "presenter": "file:///Users/Lin/Desktop/Codex/AI比赛/AI/ai-final-presentation/presenter.html?led=1"
   },
   "features": [
-    "projection-mode-led",
-    "presenter-led-via-query-param",
-    "speaker-beats-v8-script",
-    "21-total-beats",
-    "no-parse-handle-outro",
-    "asset-cache-bust"
+    "presenter-master-nav",
+    "no-projection-keyboard-nav",
+    "explicit-go-sync",
+    "21-total-beats"
   ]
 }

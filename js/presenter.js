@@ -12,7 +12,7 @@
   var ACTION_KEY = 'ai-final-presentation-audience-action';
   var SERVER_POLL_MS = 30000;
   var BEATS_PER_PAGE = [2, 5, 4, 5, 2, 3];
-  var ASSET_V = '21beats2';
+  var ASSET_V = 'syncfix1';
   var TARGET_SEC = 600;
 
   var state = {
@@ -72,6 +72,16 @@
 
   var navLeadUntil = 0;
 
+  function pushNav() {
+    send({
+      type: 'go',
+      chapter: state.chapter,
+      beat: state.beat,
+      startTime: state.startTime,
+      pageStartTime: state.pageStartTime
+    });
+  }
+
   function touchNavLead() {
     navLeadUntil = Date.now() + 700;
   }
@@ -88,7 +98,7 @@
     } else return;
     touchNavLead();
     updateUI();
-    send({ type: 'advance' });
+    pushNav();
   }
 
   function retreatLocal() {
@@ -104,7 +114,7 @@
     } else return;
     touchNavLead();
     updateUI();
-    send({ type: 'retreat' });
+    pushNav();
   }
 
   function goLocal(ch, beat) {
@@ -116,7 +126,7 @@
     state.pageStartTime = Date.now();
     touchNavLead();
     updateUI();
-    send({ type: 'go', chapter: ch, beat: beat });
+    pushNav();
   }
 
   function previewUrl(ch, beat) {
@@ -309,17 +319,8 @@
 
   function applyRemote(msg) {
     if (!msg || msg.type !== 'state') return;
-    if (Date.now() < navLeadUntil &&
-        (msg.chapter !== state.chapter || msg.beat !== state.beat)) {
-      if (msg.startTime) state.startTime = msg.startTime;
-      return;
-    }
-    var chChanged = state.chapter !== msg.chapter;
-    state.chapter = msg.chapter;
-    state.beat = msg.beat;
+    /* 讲者台为导航主控：绝不接受投屏回传的 chapter/beat，避免自动跳页 */
     if (msg.startTime) state.startTime = msg.startTime;
-    if (chChanged || msg.pageStartTime) state.pageStartTime = msg.pageStartTime || Date.now();
-    updateUI();
   }
 
   function send(cmd) {
@@ -435,7 +436,8 @@
     } else {
       audienceWin = window.open(url, 'ai-final-audience');
     }
-    setTimeout(function () { send({ type: 'request-sync' }); }, 800);
+    setTimeout(function () { pushNav(); }, 400);
+    setTimeout(function () { pushNav(); }, 1200);
   }
 
   function setInteractMode(on) {
@@ -466,6 +468,7 @@
 
   function bindKeys() {
     document.addEventListener('keydown', function (e) {
+      if (e.repeat) return;
       if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
       if (e.key === 'Escape' && !pvOverlay.hidden) {
         e.preventDefault();
@@ -586,7 +589,8 @@
       (manifest.assets || []).forEach(function (a) { manifestMap[a.id] = a; });
       ensureIframes();
       updateUI();
-      send({ type: 'request-sync' });
+      pushNav();
+      setTimeout(pushNav, 600);
       var src = notesSavedAt(serverEdited) >= notesSavedAt(localSaved) && notesSavedAt(serverEdited) > 0
         ? '线上稿'
         : (notesSavedAt(localSaved) > 0 ? '本机稿' : '默认稿');
