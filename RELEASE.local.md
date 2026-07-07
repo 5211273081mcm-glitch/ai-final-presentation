@@ -1,7 +1,7 @@
 # 决赛 LED 投屏 · 线上发布链接
 
 > **版本 ID：** `final-led-20260707-syncfix3`  
-> **Commit：** `PENDING`
+> **Commit：** `3e9f975`
 
 ## GitHub Pages
 
