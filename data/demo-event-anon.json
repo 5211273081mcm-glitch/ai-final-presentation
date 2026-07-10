@@ -1,0 +1,94 @@
+{
+  "id": "EVT-DEMO-0147",
+  "name": "主播A—主播B搭档变动及健康高敏争议",
+  "riskLevel": "高敏复核",
+  "priority": "P1立即关注",
+  "stage": "持续追问",
+  "duration": "6天",
+  "heating": true,
+  "facts": {
+    "mainSubjects": ["T.主播A", "T.主播B"],
+    "relatedSubjects": ["粉丝群体", "粉圈讨论"],
+    "firstSeen": "2026-03-12 09:14",
+    "lastUpdate": "2026-03-16 21:03",
+    "sessionCount": 8,
+    "messageCount": 23,
+    "sources": ["大秘书", "社区讨论", "社交媒体"]
+  },
+  "aiInsights": {
+    "topDemands": ["要求调查主播A言行", "要求暂停直播", "要求发布官方公告"],
+    "riskTags": ["医疗高敏", "隐私争议", "法律责任"],
+    "frequentExpressions": ["为什么不处理", "情况真假", "停播还是处罚", "平台责任"],
+    "sentiment": "焦虑、追问、对立",
+    "trend": "持续新增"
+  },
+  "pendingVerification": [
+    "主播B健康状况的真实信息来源",
+    "主播言行与健康状况之间的直接因果",
+    "主播A停播属于主动行为还是平台处理",
+    "双方管理及粉丝是否继续对线"
+  ],
+  "complaintCloud": [
+    { "text": "主播B健康状况引发高敏关注", "weight": 45 },
+    { "text": "主播A被指言行不当影响搭档状态", "weight": 43 },
+    { "text": "主播A单方面解除搭档关系引发争议", "weight": 43 },
+    { "text": "粉丝质疑主播A言行与搭档健康关联", "weight": 40 },
+    { "text": "粉丝要求平台发布公告并公开说明", "weight": 37 },
+    { "text": "主播A被投诉长期语言刺激及精神打压", "weight": 36 },
+    { "text": "粉丝要求平台严肃处理相关主播", "weight": 35 },
+    { "text": "平台被质疑管理失职、未及时介入", "weight": 34 },
+    { "text": "主播A事后仍被允许正常开播排挡", "weight": 33 },
+    { "text": "粉丝要求平台整顿主播及艺人风气", "weight": 33 },
+    { "text": "粉丝质疑平台迟迟未公布处理结果", "weight": 18 },
+    { "text": "粉丝要求平台尽快处理并给出交代", "weight": 17 },
+    { "text": "粉丝要求平台通报真实情况", "weight": 16 },
+    { "text": "主播A被指事后态度冷漠", "weight": 12 },
+    { "text": "主播A被投诉辱骂粉丝并煽动对立", "weight": 11 },
+    { "text": "主播A被质疑涉嫌违规及承担法律责任", "weight": 9 },
+    { "text": "主播A被投诉泄露搭档隐私信息", "weight": 7 },
+    { "text": "粉丝要求平台严惩并追究责任", "weight": 7 },
+    { "text": "粉丝追问医疗相关传言真实性", "weight": 6 },
+    { "text": "主播A被指持续骚扰搭档", "weight": 5 },
+    { "text": "粉丝认为平台处罚过轻", "weight": 4 },
+    { "text": "粉丝质疑平台偏袒某一方", "weight": 4 },
+    { "text": "粉丝群体被指遭受网暴及恶意攻击", "weight": 4 },
+    { "text": "粉丝要求平台保护主播身心安全", "weight": 3 }
+  ],
+  "suggestedRoles": ["大秘书", "主播管理", "舆情公关", "法务"],
+  "cardDimensions": {
+    "riskScore": 1536,
+    "riskScoreLevel": "高风险",
+    "org": "示例厅",
+    "department": "运营一部",
+    "category": "01 | 粉圈对立/搭档争议",
+    "categoryScene": "01-08 | 人设与现实矛盾",
+    "impactScope": ["粉丝群体", "平台舆论"],
+    "claimStage": "待大秘书回复",
+    "nextActionShort": "归类信源，指派主责同事",
+    "stageTrack": ["常规投诉", "单点事件", "多点风险", "预警舆情", "危机公关"],
+    "currentStageIndex": 3
+  },
+  "nextActions": [
+    "统一回复口径",
+    "核实停播及内部处理情况",
+    "监测社交平台扩散",
+    "避免对直接因果作未经核验的判断"
+  ],
+  "footer": {
+    "relatedHistory": ["2025-11 搭档变动争议", "2026-01 粉丝对立事件"],
+    "sceneCode": "R-D087",
+    "inMonthlyReport": true,
+    "inKnowledgeBase": true
+  },
+  "alertCard": {
+    "title": "高敏风险预警",
+    "event": "主播A—主播B健康与搭档争议",
+    "triggerReason": "医疗高敏词 + 投诉持续增长",
+    "sessions": 8,
+    "messages": 23,
+    "demands": ["调查", "停播", "公告", "处罚"],
+    "trend": "持续新增",
+    "deadline": "立即",
+    "prototype": true
+  }
+}

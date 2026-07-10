@@ -4,9 +4,7 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
-<meta http-equiv="Pragma" content="no-cache"/>
-<meta http-equiv="Expires" content="0"/>
-<title>讲者控制台 · LED 本地预览</title>
+<title>讲者控制台 · 全员路演脱敏版</title>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="css/presenter.css"/>
 </head>
@@ -14,7 +12,7 @@
 <div class="presenter-shell">
   <section class="pv-panel pv-current">
     <header class="pv-head">
-      <span>当前画面 · <b id="pv-cur-label">—</b> · <b style="color:#22D3EE">LED</b></span>
+      <span>当前画面 · <b id="pv-cur-label">—</b></span>
       <div class="pv-head-actions">
         <button type="button" id="pv-toggle-interact">启用点击</button>
         <button type="button" id="pv-close-evidence">关闭图片</button>
@@ -45,15 +43,15 @@
   </section>
   <section class="pv-panel pv-timer">
     <header class="pv-head">
-      <span>时间把控 · 目标 <b>10:00</b></span>
+      <span>时间把控 · 目标 <b id="pv-target-label">209:00</b> · 脱敏路演</span>
       <div class="pv-head-actions">
-        <button type="button" id="pv-open-audience">打开 LED 投屏窗</button>
+        <button type="button" id="pv-open-audience">打开投屏窗</button>
         <button type="button" id="pv-reset-timer">重置计时</button>
       </div>
     </header>
     <div class="pv-timer-body">
       <div class="pv-clock-row">
-        <span class="pv-clock" id="pv-total">10:00</span>
+        <span class="pv-clock" id="pv-total">209:00</span>
         <span class="pv-clock sub" id="pv-remain-total">已用 00:00</span>
       </div>
       <div class="pv-clock-row">
@@ -80,8 +78,19 @@
     </div>
   </section>
 </div>
-<p class="pv-keys">LED 本地预览 · 投屏 iframe 带 ?led=1 · 空格/→ 下一幕 · ← 上一幕 · 1–6 跳章</p>
-<script>window.PRESENTER_LED_PREVIEW = true;</script>
-<script src="js/presenter.js?v=syncfix5"></script>
+<p class="pv-keys">空格/→ 下一幕 · ← 上一幕 · 1–6 跳章 · 全员路演脱敏版 · 209分钟</p>
+<script>
+(function () {
+  window.PRESENTER_ROADSHOW = true;
+  var q = new URLSearchParams(window.location.search);
+  if (q.get('led') === '1' || q.get('led') === 'true') {
+    window.PRESENTER_LED_PREVIEW = true;
+    document.title = '讲者控制台 · LED · 全员路演脱敏版';
+    var btn = document.getElementById('pv-open-audience');
+    if (btn) btn.textContent = '打开 LED 投屏窗';
+  }
+})();
+</script>
+<script src="js/presenter.js?v=roadshow1"></script>
 </body>
 </html>

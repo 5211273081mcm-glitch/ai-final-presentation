@@ -39,11 +39,46 @@
   function names() {
     return APP.config.useAnonymizedNames ? APP.config.names.anon : APP.config.names.real;
   }
+  function desensitizeRules() {
+    var n = names();
+    var d = (APP.config && APP.config.desensitize) || {};
+    return [
+      [/九叔/g, n.hostA || '主播A'],
+      [/哈哈/g, n.hostB || '主播B'],
+      [/姜添/g, n.hostC || '主播C'],
+      [/萨满/g, n.hostD || '主播D'],
+      [/事业二部/g, d.department || '运营一部'],
+      [/听潮阁/g, '示例厅'],
+      [/水都/g, '示例厅'],
+      [/豆瓣/g, '社区讨论'],
+      [/EVT-2026-\d+/g, (d.eventIdPrefix || 'EVT-DEMO') + '-0147'],
+      [/R-087/g, d.sceneCode || 'R-D087'],
+      [/CP解绑/g, '搭档变动'],
+      [/CP引战/g, '粉圈对立'],
+      [/CP粉圈/g, '粉圈讨论'],
+      [/CP争议/g, '搭档争议'],
+      [/九叔—哈哈/g, (n.hostA || '主播A') + '—' + (n.hostB || '主播B')],
+      [/九叔-哈哈/g, (n.hostA || '主播A') + '—' + (n.hostB || '主播B')]
+    ];
+  }
   function swap(text, n) {
-    return String(text || '').replace(/九叔/g, n.hostA).replace(/哈哈/g, n.hostB);
+    var out = String(text || '');
+    if (!APP.config.useAnonymizedNames) return out;
+    desensitizeRules().forEach(function (rule) {
+      out = out.replace(rule[0], rule[1]);
+    });
+    return out;
+  }
+  function isRoadshowMode() {
+    return !!(APP.config && (APP.config.presentationMode === 'roadshow' || APP.config.useAnonymizedNames));
   }
   function asset(id) {
-    return APP.manifest.assets.find(function (a) { return a.id === id; });
+    var a = APP.manifest.assets.find(function (x) { return x.id === id; });
+    if (!a) return null;
+    if (a.roadshowHidden && isRoadshowMode()) return null;
+    var exclude = (APP.config.desensitize && APP.config.desensitize.excludeEvidenceIds) || [];
+    if (isRoadshowMode() && exclude.indexOf(id) >= 0) return null;
+    return a;
   }
   function rv(html, step, extra) {
     return '<div class="reveal ' + (extra || '') + '" data-step="' + step + '">' + html + '</div>';
@@ -390,7 +425,7 @@
       '<div class="dims-stage-track">' + stageTrack + '</div>' +
       '<div class="dims-score"><span class="dims-score-label">风险评分</span><span class="dims-score-value">' + esc(dims.riskScore) + '</span><span class="dims-score-tag">' + esc(dims.riskScoreLevel) + '</span></div>' +
       '<div class="dims-grid">' +
-        '<div><label>归属厅 · 部门</label><span>' + esc(dims.org) + ' · ' + esc(dims.department) + '</span></div>' +
+        '<div><label>归属厅 · 部门</label><span>' + esc(swap(dims.org, n)) + ' · ' + esc(swap(dims.department, n)) + '</span></div>' +
         '<div><label>涉及主体</label><span>' + evt.facts.mainSubjects.map(function (s) { return esc(swap(s, n)); }).join(' · ') + '</span></div>' +
         '<div class="dims-span2"><label>类目 · 场景</label><span>' + esc(dims.category) + ' → ' + esc(dims.categoryScene) + '</span></div>' +
         '<div><label>影响范围</label><span>' + (dims.impactScope || []).join(' · ') + '</span></div>' +
@@ -401,7 +436,7 @@
 
     var col3Body = '<div class="alert-stack">' +
       '<div class="alert-box" data-box="normal"><h4>数量型预警</h4><p>普通事件累计到第 ' + APP.demoMessages.quantityThreshold + ' 条后触发，适合常规升温监测。</p></div>' +
-      '<div class="alert-box hot" data-box="hot"><h4>性质型预警</h4><p>ICU、昏迷、药物中毒等高敏词，第一条即触发介入。</p></div>' +
+      '<div class="alert-box hot" data-box="hot"><h4>性质型预警</h4><p>' + esc(isRoadshowMode() ? '医疗高敏、隐私争议等高敏词，第一条即触发介入。' : 'ICU、昏迷、药物中毒等高敏词，第一条即触发介入。') + '</p></div>' +
     '</div>' + evChips(cols[3] && cols[3].evidence);
 
     var bodies = [col0Body, col1Body, col2Body, col3Body];
@@ -478,7 +513,7 @@
         '</div>' +
       '</div>' +
       '<div class="loop-conclusion is-dormant" data-conclusion data-qa-id="page-conclusion"><p>' + esc(p.conclusion) + '</p>' +
-        '<a class="ev-link" href="' + esc(APP.config.opsSystemUrl) + '" target="_blank" rel="noopener"><span>Evidence</span>舆情系统实时环境</a>' +
+        '<a class="ev-link" href="' + esc(APP.config.opsSystemUrl) + '" target="_blank" rel="noopener"><span>Evidence</span>' + esc(APP.config.opsSystemLabel || '舆情系统实时环境') + '</a>' +
       '</div>' +
     '</div>';
   }
@@ -982,17 +1017,19 @@
       img.classList.remove('is-loading');
     };
     img.src = a.path;
-    img.alt = a.title;
-    $('lb-cap').textContent = a.title + ' - ' + a.description;
+    img.alt = swap(a.title, names());
+    $('lb-cap').textContent = swap(a.title, names()) + ' - ' + swap(a.description, names());
     var src = $('lb-source');
     if (src) {
-      if (a.sourceUrl) {
+      if (a.sourceUrl && !isRoadshowMode()) {
         src.href = a.sourceUrl;
         src.textContent = (a.sourceLabel || '打开来源网站') + ' ↗';
         src.classList.add('has-link');
+        src.hidden = false;
       } else {
         src.removeAttribute('href');
         src.classList.remove('has-link');
+        src.hidden = isRoadshowMode();
       }
     }
     var next = APP.lbImages[(APP.lbIdx + 1) % APP.lbImages.length];

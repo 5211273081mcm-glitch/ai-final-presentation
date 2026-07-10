@@ -1,0 +1,25 @@
+{
+  "complaintTarget": "T.主播A",
+  "relatedSubject": "T.主播B",
+  "problemTypes": ["主播言行", "搭档变动", "医疗高敏"],
+  "coreDemands": ["调查", "停播", "公告", "处罚"],
+  "riskTags": ["医疗高敏", "隐私争议", "法律责任"],
+  "firstMessageTime": "2026-03-12 09:14",
+  "lastMessageTime": "2026-03-16 21:03",
+  "sessionSpan": "5天",
+  "messageCount": 23,
+  "sessionCount": 8,
+  "interventionStatus": "大秘书已部分回复，待跨部门协同",
+  "secretaryReply": "已回复2条，其余待统一口径",
+  "evidence": {
+    "works": 2,
+    "images": 3,
+    "voice": 1
+  },
+  "latestSummary": "用户集中投诉主播A言行与主播B健康状况的关联，要求停播、公告与责任认定，涉及医疗高敏与隐私争议",
+  "latestConclusion": "事件已从普通搭档争议升级为涉及医疗、人身安全、主播管理和平台治理的高敏风险",
+  "latestScene": "主播言行引发健康高敏争议",
+  "latestCategory": "医疗高敏 / 主播行为 / 粉丝关系",
+  "alertLevel": "P1立即关注",
+  "aiBoundary": "AI识别的是风险升级信号，不判断谁应对健康状况负责"
+}

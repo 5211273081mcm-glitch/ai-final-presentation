@@ -7,14 +7,20 @@
   'use strict';
 
   var CHANNEL = 'ai-final-presentation-v1';
-  var STORAGE_KEY = 'ai-final-presentation-speaker-notes-v8';
-  var EDITED_URL = 'data/speaker-beats-v8-edited.json';
+  var ROADSHOW = !!(window.PRESENTER_ROADSHOW || (function () {
+    try { return new URLSearchParams(window.location.search).get('roadshow') === '1'; } catch (e) { return false; }
+  })());
+  var SPEAKER_URL = ROADSHOW ? 'data/speaker-beats-roadshow.json' : 'data/speaker-beats-v8.json';
+  var MANIFEST_URL = ROADSHOW ? 'data/asset-manifest-roadshow.json' : 'data/asset-manifest.json';
+  var AUDIENCE_PAGE = ROADSHOW ? 'index-roadshow.html' : 'index.html';
+  var STORAGE_KEY = ROADSHOW ? 'ai-final-presentation-speaker-notes-roadshow' : 'ai-final-presentation-speaker-notes-v8';
+  var EDITED_URL = ROADSHOW ? 'data/speaker-beats-roadshow-edited.json' : 'data/speaker-beats-v8-edited.json';
   var ACTION_KEY = 'ai-final-presentation-audience-action';
-  var NAV_KEY = 'ai-final-presentation-nav-state';
+  var NAV_KEY = ROADSHOW ? 'ai-final-presentation-nav-state-roadshow' : 'ai-final-presentation-nav-state';
   var SERVER_POLL_MS = 30000;
   var BEATS_PER_PAGE = [2, 5, 4, 5, 2, 3];
-  var ASSET_V = 'syncfix5';
-  var TARGET_SEC = 600;
+  var ASSET_V = ROADSHOW ? 'roadshow1' : 'syncfix5';
+  var TARGET_SEC = ROADSHOW ? 12540 : 600;
 
   var state = {
     chapter: 0,
@@ -51,7 +57,25 @@
   function fmt(sec) {
     var neg = sec < 0;
     sec = Math.abs(Math.floor(sec));
-    return (neg ? '-' : '') + String(Math.floor(sec / 60)).padStart(2, '0') + ':' + String(sec % 60).padStart(2, '0');
+    var m = Math.floor(sec / 60);
+    var s = sec % 60;
+    var clock = (m >= 100 ? String(m) : String(m).padStart(2, '0')) + ':' + String(s).padStart(2, '0');
+    return (neg ? '-' : '') + clock;
+  }
+
+  function desensitizeScript(text) {
+    if (!ROADSHOW) return text || '';
+    return String(text || '')
+      .replace(/九叔/g, '主播A')
+      .replace(/哈哈/g, '主播B')
+      .replace(/姜添/g, '主播C')
+      .replace(/萨满/g, '主播D')
+      .replace(/事业二部/g, '运营一部')
+      .replace(/听潮阁|水都/g, '示例厅')
+      .replace(/豆瓣/g, '社区讨论')
+      .replace(/EVT-2026-\d+/g, 'EVT-DEMO-0147')
+      .replace(/R-087/g, 'R-D087')
+      .replace(/九叔—哈哈|九叔-哈哈/g, '主播A—主播B');
   }
 
   function pageBeats(ch) { return BEATS_PER_PAGE[ch] || 1; }
@@ -114,8 +138,9 @@
   }
 
   function audienceUrl() {
-    var url = 'index.html?v=' + ASSET_V;
+    var url = AUDIENCE_PAGE + '?v=' + ASSET_V;
     if (window.PRESENTER_LED_PREVIEW) url += '&led=1';
+    if (ROADSHOW) url += '&roadshow=1';
     url += '&ch=' + state.chapter + '&beat=' + state.beat;
     url += '&st=' + state.startTime + '&pst=' + state.pageStartTime;
     url += '&at=' + Date.now();
@@ -182,8 +207,9 @@
   }
 
   function previewUrl(ch, beat) {
-    var url = 'index.html?preview=1&ch=' + ch + '&beat=' + beat + '&v=' + ASSET_V;
+    var url = AUDIENCE_PAGE + '?preview=1&ch=' + ch + '&beat=' + beat + '&v=' + ASSET_V;
     if (window.PRESENTER_LED_PREVIEW) url += '&led=1';
+    if (ROADSHOW) url += '&roadshow=1';
     return url;
   }
 
@@ -215,7 +241,7 @@
   function scriptText(ch, beat) {
     if (!notes || !notes.pages[ch]) return '';
     var beats = notes.pages[ch].beats;
-    return beats[beat] || '';
+    return desensitizeScript(beats[beat] || '');
   }
 
   function setStatus(text, cls) {
@@ -635,8 +661,8 @@
   };
 
   Promise.all([
-    fetch('data/speaker-beats-v8.json?t=' + Date.now(), { cache: 'no-store' }).then(function (r) { return r.json(); }),
-    fetch('data/asset-manifest.json?t=' + Date.now(), { cache: 'no-store' }).then(function (r) { return r.json(); }),
+    fetch(SPEAKER_URL + '?t=' + Date.now(), { cache: 'no-store' }).then(function (r) { return r.json(); }),
+    fetch(MANIFEST_URL + '?t=' + Date.now(), { cache: 'no-store' }).then(function (r) { return r.json(); }),
     fetchEditedNotes()
   ])
     .then(function (res) {
@@ -659,7 +685,7 @@
       var src = notesSavedAt(serverEdited) >= notesSavedAt(localSaved) && notesSavedAt(serverEdited) > 0
         ? '线上稿'
         : (notesSavedAt(localSaved) > 0 ? '本机稿' : '默认稿');
-      setStatus('逐字稿已加载（' + src + '）。编辑后自动保存；导出可发布全站。');
+      setStatus('逐字稿已加载（' + src + '）。' + (ROADSHOW ? ' 路演脱敏版 · 目标 209 分钟。' : '') + '编辑后自动保存；导出可发布全站。');
     })
     .catch(function () {
       setStatus('逐字稿加载失败，请检查 data/speaker-beats-v8.json');

@@ -1,16 +1,22 @@
-# 决赛 LED 投屏 · 线上发布链接
+# 全员路演 · 脱敏版发布链接
 
-> **版本 ID：** `final-led-20260707-syncfix5`  
-> **Commit：** `34bca7f`
+> **版本 ID：** `roadshow-desensitized-20260710`  
+> **时长：** 209 分钟 · **模式：** 全员脱敏
 
-## GitHub Pages
+## 投屏
+```
+https://5211273081mcm-glitch.github.io/ai-final-presentation/index-roadshow.html?led=1&v=roadshow1
+```
 
-### 投屏
+## 讲者台
+```
+https://5211273081mcm-glitch.github.io/ai-final-presentation/presenter-roadshow.html?led=1&v=roadshow1
+```
+
+## 决赛原版（10 分钟 · 不脱敏）
 ```
 https://5211273081mcm-glitch.github.io/ai-final-presentation/index.html?led=1&v=syncfix5
-```
-
-### 讲者控制台
-```
 https://5211273081mcm-glitch.github.io/ai-final-presentation/presenter.html?led=1&v=syncfix5
 ```
+
+详细方案见 `ROADSHOW_DESENSITIZATION_PLAN.md`
