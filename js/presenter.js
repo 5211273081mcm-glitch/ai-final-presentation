@@ -18,9 +18,9 @@
   var ACTION_KEY = 'ai-final-presentation-audience-action';
   var NAV_KEY = ROADSHOW ? 'ai-final-presentation-nav-state-roadshow' : 'ai-final-presentation-nav-state';
   var SERVER_POLL_MS = 30000;
-  var BEATS_PER_PAGE = [2, 5, 4, 5, 2, 3];
-  var ASSET_V = ROADSHOW ? 'roadshow1' : 'syncfix5';
-  var TARGET_SEC = ROADSHOW ? 12540 : 600;
+  var BEATS_PER_PAGE = ROADSHOW ? [2, 5, 4, 5, 2, 2, 3] : [2, 5, 4, 5, 2, 3];
+  var ASSET_V = ROADSHOW ? 'roadshow2' : 'syncfix5';
+  var TARGET_SEC = ROADSHOW ? 1200 : 600;
 
   var state = {
     chapter: 0,
@@ -573,7 +573,7 @@
           retreatLocal();
           break;
         default:
-          if (e.key >= '1' && e.key <= '6') {
+          if (e.key >= '1' && e.key <= (ROADSHOW ? '7' : '6')) {
             e.preventDefault();
             goLocal(+e.key - 1, 0);
           }
@@ -685,7 +685,7 @@
       var src = notesSavedAt(serverEdited) >= notesSavedAt(localSaved) && notesSavedAt(serverEdited) > 0
         ? '线上稿'
         : (notesSavedAt(localSaved) > 0 ? '本机稿' : '默认稿');
-      setStatus('逐字稿已加载（' + src + '）。' + (ROADSHOW ? ' 路演脱敏版 · 目标 209 分钟。' : '') + '编辑后自动保存；导出可发布全站。');
+      setStatus('逐字稿已加载（' + src + '）。' + (ROADSHOW ? ' 路演脱敏版 · 目标 20 分钟。' : '') + '编辑后自动保存；导出可发布全站。');
     })
     .catch(function () {
       setStatus('逐字稿加载失败，请检查 data/speaker-beats-v8.json');

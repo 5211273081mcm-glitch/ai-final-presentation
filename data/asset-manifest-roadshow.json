@@ -16,26 +16,26 @@
     {
       "id": "secretary-ai-1",
       "originalFilename": "【大秘书】AI解析后的字段结果1.png",
-      "path": "assets/evidence/【大秘书】AI解析后的字段结果1.webp",
+      "path": "assets/evidence-anon/【大秘书】AI解析后的字段结果1.webp",
       "width": 2934,
       "height": 1588,
       "category": "大秘书-AI解析",
       "suggestedPage": "page4",
       "usageTier": "main",
       "title": "AI结构化解析结果",
-      "description": "AI将非结构化私信解析为结构化风险字段，证明解析能力已运行"
+      "description": "AI将非结构化私信解析为结构化风险字段，证明解析能力已运行（脱敏打码版）"
     },
     {
       "id": "secretary-cookie-import",
       "originalFilename": "【大秘书】原始私信内容.png",
-      "path": "assets/evidence/【大秘书】原始私信内容.webp",
+      "path": "assets/evidence-anon/【大秘书】原始私信内容.webp",
       "width": 2940,
       "height": 1588,
       "category": "大秘书-Cookie导入",
       "suggestedPage": "page3",
       "usageTier": "main",
       "title": "私信Cookie导入",
-      "description": "通过Cookie免登录方式批量导入大秘书私信原始内容，减少人工搬运"
+      "description": "通过Cookie免登录方式批量导入大秘书私信原始内容，减少人工搬运（脱敏打码版）"
     },
     {
       "id": "secretary-ai-2",
@@ -52,14 +52,14 @@
     {
       "id": "secretary-raw",
       "originalFilename": "【大秘书】原始私信内容.png",
-      "path": "assets/evidence/【大秘书】原始私信内容.webp",
+      "path": "assets/evidence-anon/【大秘书】原始私信内容.webp",
       "width": 2940,
       "height": 1588,
       "category": "大秘书-原始私信",
       "suggestedPage": "page4",
       "usageTier": "main",
       "title": "大秘书原始私信",
-      "description": "大秘书渠道真实私信原始内容，证明投诉接入已运行"
+      "description": "大秘书渠道真实私信原始内容，证明投诉接入已运行（脱敏打码版）"
     },
     {
       "id": "secretary-ocr",
@@ -76,14 +76,14 @@
     {
       "id": "monthly-june",
       "originalFilename": "【月报】2026年6月舆情大盘图.png",
-      "path": "assets/evidence/【月报】2026年6月舆情大盘图.webp",
+      "path": "assets/evidence-anon/【月报】2026年6月舆情大盘图.webp",
       "width": 1672,
       "height": 941,
       "category": "月报",
       "suggestedPage": "page5",
       "usageTier": "main",
       "title": "2026年6月舆情大盘",
-      "description": "月度风险趋势汇总，证明事件可沉淀为管理视图"
+      "description": "月度风险趋势汇总，证明事件可沉淀为管理视图（脱敏打码版）"
     },
     {
       "id": "crawler-aggregate",
@@ -112,53 +112,53 @@
     {
       "id": "douban-trend-jiang",
       "originalFilename": "【社区讨论】大盘视图（主播C）.png",
-      "path": "assets/evidence/【豆瓣】大盘视图（姜添）.webp",
+      "path": "assets/evidence-anon/【豆瓣】大盘视图（姜添）.webp",
       "width": 2796,
       "height": 1752,
       "category": "豆瓣-大盘",
       "suggestedPage": "page2",
       "usageTier": "main",
       "title": "主播C相关讨论趋势",
-      "description": "将零散转发内容转化为可比较的长期讨论量级",
+      "description": "将零散转发内容转化为可比较的长期讨论量级（脱敏打码版）",
       "roadshowHidden": true
     },
     {
       "id": "douban-trend-saman",
       "originalFilename": "【社区讨论】大盘视图（主播D）.png",
-      "path": "assets/evidence/【豆瓣】大盘视图（萨满）.webp",
+      "path": "assets/evidence-anon/【豆瓣】大盘视图（萨满）.webp",
       "width": 2796,
       "height": 1752,
       "category": "豆瓣-大盘",
       "suggestedPage": "page2",
       "usageTier": "main",
       "title": "主播D相关讨论趋势",
-      "description": "多主播风险传导的可视化趋势证据",
+      "description": "多主播风险传导的可视化趋势证据（脱敏打码版）",
       "roadshowHidden": true
     },
     {
       "id": "douban-monitor-jiang",
       "originalFilename": "【社区讨论】实时讨论监测+沉淀（1月底主播C）.png",
-      "path": "assets/evidence/【豆瓣】实时讨论监测+沉淀（1月底姜添）.webp",
+      "path": "assets/evidence-anon/【豆瓣】实时讨论监测+沉淀（1月底姜添）.webp",
       "width": 2936,
       "height": 1586,
       "category": "豆瓣-监测",
       "suggestedPage": "page2",
       "usageTier": "main",
       "title": "主播C事件实时监测",
-      "description": "主播C相关讨论实时采集与内容沉淀",
+      "description": "主播C相关讨论实时采集与内容沉淀（脱敏打码版）",
       "roadshowHidden": true
     },
     {
       "id": "douban-monitor-saman",
       "originalFilename": "【社区讨论】实时讨论监测+沉淀（1月底主播D）.png",
-      "path": "assets/evidence/【豆瓣】实时讨论监测+沉淀（1月底萨满）.webp",
+      "path": "assets/evidence-anon/【豆瓣】实时讨论监测+沉淀（1月底萨满）.webp",
       "width": 2940,
       "height": 1588,
       "category": "豆瓣-监测",
       "suggestedPage": "page2",
       "usageTier": "main",
       "title": "主播D事件实时监测",
-      "description": "主播D相关讨论实时采集与内容沉淀",
+      "description": "主播D相关讨论实时采集与内容沉淀（脱敏打码版）",
       "sourceUrl": "https://dztkd8r9io.feishu.cn/wiki/A1wkwBrHriJQARkph8rcZqhgnvc?table=tbl5aU2LIEKRDWLK&view=vewpjmF9HB",
       "sourceLabel": "至豆瓣多维表",
       "roadshowHidden": true
@@ -202,14 +202,14 @@
     {
       "id": "event-card-old",
       "originalFilename": "聚合事件卡（旧版）.png",
-      "path": "assets/evidence/聚合事件卡（旧版）.webp",
+      "path": "assets/evidence-anon/聚合事件卡（旧版）.webp",
       "width": 1370,
       "height": 1462,
       "category": "聚合事件卡",
       "suggestedPage": "page5",
       "usageTier": "main",
       "title": "聚合事件卡（旧版参考）",
-      "description": "多条消息聚合为统一事件卡的产品形态参考"
+      "description": "多条消息聚合为统一事件卡的产品形态参考（脱敏打码版）"
     },
     {
       "id": "douban-slang-1",
@@ -274,14 +274,14 @@
     {
       "id": "secretary-judgement",
       "originalFilename": "【大秘书】舆情结构性研判.png",
-      "path": "assets/evidence/【大秘书】舆情结构性研判.webp",
+      "path": "assets/evidence-anon/【大秘书】舆情结构性研判.webp",
       "width": 2934,
       "height": 1456,
       "category": "大秘书-结构性研判",
       "suggestedPage": "page4",
       "usageTier": "main",
       "title": "舆情结构性研判",
-      "description": "AI 输出问题标题、主体、风险等级与研判结论，形成统一事件卡雏形"
+      "description": "AI 输出问题标题、主体、风险等级与研判结论，形成统一事件卡雏形（脱敏打码版）"
     },
     {
       "id": "secretary-bot-alert",
@@ -322,26 +322,26 @@
     {
       "id": "secretary-raw-quote",
       "originalFilename": "【大秘书】原声私信:投诉.png",
-      "path": "assets/evidence/【大秘书】原声私信:投诉.webp",
+      "path": "assets/evidence-anon/【大秘书】原声私信:投诉.webp",
       "width": 2876,
       "height": 1422,
       "category": "大秘书-原声投诉",
       "suggestedPage": "page4",
       "usageTier": "main",
       "title": "大秘书原声私信/投诉",
-      "description": "投诉原声内容真实留存，作为风险标签识别与事件卡生成的原始输入"
+      "description": "投诉原声内容真实留存，作为风险标签识别与事件卡生成的原始输入（脱敏打码版）"
     },
     {
       "id": "host-tag-library",
       "originalFilename": "【主播标签库】.png",
-      "path": "assets/evidence/【主播标签库】.webp",
+      "path": "assets/evidence-anon/【主播标签库】.webp",
       "width": 2876,
       "height": 1420,
       "category": "主播标签库",
       "suggestedPage": "page4",
       "usageTier": "main",
       "title": "主播标签库",
-      "description": "主播人设、运营归属、厅归属等标签的统一维护列表，供风险标签识别环节匹配调用",
+      "description": "主播人设、运营归属、厅归属等标签的统一维护列表，供风险标签识别环节匹配调用（脱敏打码版）",
       "sourceUrl": "https://dztkd8r9io.feishu.cn/base/KLA9bnknXaxeGPsJgjacxkHOnp8?table=tbl6qxeGJiuNXH7Y&view=vewwqS7YSZ",
       "sourceLabel": "至主播概览列表",
       "roadshowHidden": true
@@ -349,26 +349,26 @@
     {
       "id": "event-card-new",
       "originalFilename": "聚合事件卡（7.6新）.png",
-      "path": "assets/evidence/聚合事件卡（7.6新）.webp",
+      "path": "assets/evidence-anon/聚合事件卡（7.6新）.webp",
       "width": 1672,
       "height": 941,
       "category": "聚合事件卡",
       "suggestedPage": "page4",
       "usageTier": "main",
       "title": "聚合事件卡（新版参考）",
-      "description": "事件全维度信息在同一张卡片内呈现：风险评分、处置阶段、认领状态、涉及主体与下一步行动"
+      "description": "事件全维度信息在同一张卡片内呈现：风险评分、处置阶段、认领状态、涉及主体与下一步行动（脱敏打码版）"
     },
     {
       "id": "situation-review",
       "originalFilename": "【舆情态势复盘】.png",
-      "path": "assets/evidence/【舆情态势复盘】.webp",
+      "path": "assets/evidence-anon/【舆情态势复盘】.webp",
       "width": 1672,
       "height": 941,
       "category": "舆情态势复盘",
       "suggestedPage": "page5",
       "usageTier": "main",
       "title": "舆情态势复盘图",
-      "description": "围绕事件焦点还原发展脉络、核心风险与后续工作重点，形成可复盘的组织经验"
+      "description": "围绕事件焦点还原发展脉络、核心风险与后续工作重点，形成可复盘的组织经验（脱敏打码版）"
     }
   ],
   "unused": [

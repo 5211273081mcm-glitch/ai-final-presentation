@@ -1,15 +1,13 @@
 {
   "projectTitle": "用AI重构舆情工作范式",
   "projectSubtitle": "让风险更早识别、让事件更快还原、让处置更可追踪",
-  "targetTotalSec": 12540,
+  "targetTotalSec": 1200,
   "presentationMode": "roadshow",
+  "slideBeats": [2, 5, 4, 5, 2, 2, 3],
   "subtitle": "AI重构舆情的本质，是缩短从发现信号到统一行动的距离",
   "useAnonymizedNames": true,
   "names": {
-    "real": {
-      "hostA": "九叔",
-      "hostB": "哈哈"
-    },
+    "real": { "hostA": "九叔", "hostB": "哈哈" },
     "anon": {
       "hostA": "主播A",
       "hostB": "主播B",
@@ -23,6 +21,7 @@
     "eventIdPrefix": "EVT-DEMO",
     "sceneCode": "R-D087",
     "hideSourceUrls": true,
+    "evidenceAnonDir": "assets/evidence-anon",
     "excludeEvidenceIds": [
       "douban-trend-jiang",
       "douban-trend-saman",
@@ -31,14 +30,7 @@
       "host-tag-library"
     ]
   },
-  "audienceRoles": [
-    "厅管",
-    "运营",
-    "策划",
-    "粉运/经纪",
-    "法务",
-    "数据提效"
-  ],
+  "audienceRoles": ["厅管", "运营", "策划", "粉运/经纪", "法务", "数据提效"],
   "opsSystemUrl": "https://5211273081mcm-glitch.github.io/ai-final-presentation/index-roadshow.html?led=1",
   "opsSystemLabel": "舆情系统演示环境（脱敏版）",
   "sphere": {
@@ -49,84 +41,27 @@
       "code": "R-D087",
       "name": "主播言行引发健康高敏争议",
       "category": "医疗高敏",
-      "triggers": [
-        "医疗高敏",
-        "隐私争议",
-        "停播诉求"
-      ],
+      "triggers": ["医疗高敏", "隐私争议", "停播诉求"],
       "weight": 0.92,
       "alertLevel": "P1",
-      "roles": [
-        "大秘书",
-        "主播管理",
-        "舆情公关",
-        "法务"
-      ],
+      "roles": ["大秘书", "主播管理", "舆情公关", "法务"],
       "relatedEvent": "主播A—主播B搭档变动及健康高敏争议（脱敏演示）",
       "sop": "高敏医疗类事件SOP（通用版）"
     }
   },
   "evidenceMapping": {
-    "signals": [
-      "douban-crawler",
-      "douban-alert-1",
-      "secretary-raw",
-      "douban-daily-analysis"
-    ],
-    "demo": [
-      "secretary-raw",
-      "secretary-ai-1",
-      "secretary-ocr",
-      "event-card-new",
-      "douban-alert-2"
-    ],
-    "loop": [
-      "monthly-june",
-      "sphere-screenshot",
-      "situation-review",
-      "douban-slang-1"
-    ]
+    "signals": ["douban-crawler", "douban-alert-1", "secretary-raw", "douban-daily-analysis"],
+    "demo": ["secretary-raw", "secretary-ai-1", "secretary-ocr", "event-card-new", "douban-alert-2"],
+    "loop": ["monthly-june", "sphere-screenshot", "situation-review", "douban-slang-1"]
   },
-  "stats": {
-    "categories": 17,
-    "scenes": 204
-  },
+  "stats": { "categories": 17, "scenes": 204 },
   "pages": [
-    {
-      "id": 1,
-      "tag": "引语",
-      "durationSec": 720,
-      "beats": 2
-    },
-    {
-      "id": 2,
-      "tag": "总纲",
-      "durationSec": 2100,
-      "beats": 5
-    },
-    {
-      "id": 3,
-      "tag": "舆情解析",
-      "durationSec": 2400,
-      "beats": 4
-    },
-    {
-      "id": 4,
-      "tag": "舆情处置",
-      "durationSec": 3300,
-      "beats": 5
-    },
-    {
-      "id": 5,
-      "tag": "舆情回溯",
-      "durationSec": 1800,
-      "beats": 2
-    },
-    {
-      "id": 6,
-      "tag": "统一行动",
-      "durationSec": 2220,
-      "beats": 3
-    }
+    { "id": 1, "tag": "引语", "durationSec": 70, "beats": 2 },
+    { "id": 2, "tag": "总纲", "durationSec": 170, "beats": 5 },
+    { "id": 3, "tag": "舆情解析", "durationSec": 200, "beats": 4 },
+    { "id": 4, "tag": "舆情处置", "durationSec": 360, "beats": 5 },
+    { "id": 5, "tag": "舆情回溯", "durationSec": 150, "beats": 2 },
+    { "id": 6, "tag": "统一行动", "durationSec": 120, "beats": 2 },
+    { "id": 7, "tag": "岗位适配", "durationSec": 130, "beats": 3 }
   ]
 }

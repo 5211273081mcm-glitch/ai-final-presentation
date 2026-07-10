@@ -97,6 +97,7 @@ window.__PRESENTATION_DATA__ = {"config":{"projectTitle":"用AI重构舆情工�
     APP.manifest = d.manifest;
     APP.demoMessages = d.demoMessages;
     APP.demoEvent = d.demoEvent;
+    initRoadshowPages();
   }
 
   var EVIDENCE = {
@@ -611,7 +612,51 @@ window.__PRESENTATION_DATA__ = {"config":{"projectTitle":"用AI重构舆情工�
     '</div>';
   }
 
-  var PAGES = [
+  function buildClosingPageRoadshow() {
+    return '<div class="slide-body">' +
+      buildMasterMap({ complete: true, compact: true }) +
+      '<div class="closing-centerpiece" data-qa-id="page-title">' +
+        '<h1 class="spx-display">三个组织结果</h1>' +
+        '<p class="spx-note">同一件事 · 同一套行动 · 同一种可复用经验</p>' +
+      '</div>' +
+      rv('<div class="final-words roadshow-close" data-qa-id="page-conclusion">' +
+        C().closing.copyLines.map(function (l, i) {
+          return '<p' + (i === 2 ? ' class="final-emphasis"' : '') + '>' + esc(l) + '</p>';
+        }).join('') +
+        '<p class="roadshow-handoff">下一章：各岗位如何接入 →</p></div>', 1) +
+    '</div>';
+  }
+
+  function roleCard(r) {
+    if (!r) return '';
+    return '<div class="role-card"><b>' + esc(r.role) + '</b><p>' + esc(r.desc) + '</p>' +
+      (r.note ? '<p class="role-note">' + esc(r.note) + '</p>' : '') + '</div>';
+  }
+
+  function buildRolesPage() {
+    var p = C().pages[6] || { title: '各岗位如何接入', subtitle: '' };
+    var roles = C().replication || [];
+    return '<div class="slide-body roles-slide">' +
+      '<div class="slide-title-block" data-qa-id="page-title">' +
+        '<h1 class="spx-display">' + esc(p.title) + '</h1>' +
+        '<p class="spx-note">' + esc(p.subtitle) + '</p>' +
+      '</div>' +
+      rv('<div class="roles-grid">' + roles.slice(0, 2).map(roleCard).join('') + '</div>', 0) +
+      rv('<div class="roles-grid">' + roles.slice(2, 4).map(roleCard).join('') + '</div>', 1) +
+      rv('<div class="roles-grid roles-grid-final">' + roleCard(roles[4]) +
+        '<div class="roles-outro"><p>已跑通能力可复用 · 接口可按岗位扩展</p>' +
+        '<p class="final-emphasis">AI 重构的是从发现信号到统一行动的工作范式</p></div></div>', 2) +
+    '</div>';
+  }
+
+  function applyRolesBeat(root, beat) {
+    root.querySelectorAll('.roles-slide .reveal').forEach(function (el) {
+      var step = +(el.dataset.step || 0);
+      el.classList.toggle('is-primary', step <= beat);
+    });
+  }
+
+  var BASE_PAGES = [
     { beats: 2, build: buildOpening },
     { beats: 5, build: buildMasterTotalMap },
     { beats: 4, build: buildParsePage, evidence: parseEvidenceIds, apply: applyParseBeat },
@@ -619,6 +664,15 @@ window.__PRESENTATION_DATA__ = {"config":{"projectTitle":"用AI重构舆情工�
     { beats: 2, build: buildLoopPage, evidence: EVIDENCE.loop, apply: applyLoopBeat },
     { beats: 3, build: buildClosingPage }
   ];
+
+  var PAGES = BASE_PAGES.slice();
+
+  function initRoadshowPages() {
+    if (!isRoadshowMode()) return;
+    PAGES = BASE_PAGES.slice();
+    PAGES[5] = { beats: 2, build: buildClosingPageRoadshow };
+    PAGES.push({ beats: 3, build: buildRolesPage, apply: applyRolesBeat });
+  }
 
   function fmtClock(sec) {
     var neg = sec < 0;
@@ -1019,17 +1073,19 @@ window.__PRESENTATION_DATA__ = {"config":{"projectTitle":"用AI重构舆情工�
       img.classList.remove('is-loading');
     };
     img.src = a.path;
-    img.alt = a.title;
-    $('lb-cap').textContent = a.title + ' - ' + a.description;
+    img.alt = swap(a.title, names());
+    $('lb-cap').textContent = swap(a.title, names()) + ' - ' + swap(a.description, names());
     var src = $('lb-source');
     if (src) {
-      if (a.sourceUrl) {
+      if (a.sourceUrl && !isRoadshowMode()) {
         src.href = a.sourceUrl;
         src.textContent = (a.sourceLabel || '打开来源网站') + ' ↗';
         src.classList.add('has-link');
+        src.hidden = false;
       } else {
         src.removeAttribute('href');
         src.classList.remove('has-link');
+        src.hidden = isRoadshowMode();
       }
     }
     var next = APP.lbImages[(APP.lbIdx + 1) % APP.lbImages.length];
@@ -1104,7 +1160,7 @@ window.__PRESENTATION_DATA__ = {"config":{"projectTitle":"用AI重构舆情工�
           toggleProjectionMode();
           break;
         default:
-          if (e.key >= '1' && e.key <= '6') {
+          if (e.key >= '1' && e.key <= (isRoadshowMode() ? '7' : '6')) {
             e.preventDefault();
             goChapter(+e.key - 1, 0);
           }

@@ -819,3 +819,30 @@ body.qa-debug [data-qa-id] {
   outline: 1px solid rgba(72, 215, 255, 0.5);
   outline-offset: 1px;
 }
+
+/* ═══ 路演 · 岗位适配页 ═══ */
+.roles-slide .roles-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(16px, 2vw, 28px);
+  margin-top: clamp(20px, 3vh, 36px);
+  max-width: 920px;
+}
+.roles-slide .role-card {
+  padding: clamp(14px, 2vh, 22px) clamp(16px, 2vw, 24px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.04);
+}
+.roles-slide .role-card b {
+  display: block;
+  font-size: clamp(15px, 1.6vw, 18px);
+  margin-bottom: 8px;
+  color: #48d7ff;
+}
+.roles-slide .role-card p { margin: 0 0 6px; line-height: 1.55; opacity: 0.88; }
+.roles-slide .role-note { font-size: 0.92em; opacity: 0.65; }
+.roles-grid-final { grid-template-columns: 1fr; max-width: 640px; }
+.roles-outro { margin-top: 16px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.1); }
+.roadshow-handoff { margin-top: 1.2em; opacity: 0.7; font-size: 0.95em; }
+.roadshow-close .final-emphasis { margin-top: 0.8em; }
