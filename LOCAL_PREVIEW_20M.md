@@ -32,6 +32,12 @@ https://5211273081mcm-glitch.github.io/ai-final-presentation/presenter-20m.html?
 
 投屏页按 **S** 也可打开讲者台（20m 模式自动打开 `presenter-20m.html`）。
 
+### 本地预览（可选）
+```
+http://127.0.0.1:8777/index-20m.html?led=1&v=20m-evo4
+http://127.0.0.1:8777/presenter-20m.html?led=1&v=20m-evo4
+```
+
 ## 提词稿 · 编辑与保存
 
 | 项 | 说明 |
