@@ -996,24 +996,6 @@ body.projection-mode::after {
 
 .remote-follow-badge {
   position: fixed;
-  bottom: 10px;
-  left: 12px;
-  z-index: 9998;
-  padding: 4px 10px;
-  font-size: 10px;
-  letter-spacing: 0.06em;
-  color: rgba(72, 215, 255, 0.55);
-  border: 1px solid rgba(72, 215, 255, 0.2);
-  border-radius: 4px;
-  background: rgba(0, 0, 0, 0.35);
-  pointer-events: none;
-}
-body.projection-mode .remote-follow-badge {
-  opacity: 0.35;
-}
-
-.remote-follow-badge {
-  position: fixed;
   top: 10px;
   left: 10px;
   z-index: 10001;

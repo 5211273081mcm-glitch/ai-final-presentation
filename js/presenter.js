@@ -22,7 +22,7 @@
   var NAV_KEY = MODE_20M ? 'ai-final-presentation-nav-state-20m' : ROADSHOW ? 'ai-final-presentation-nav-state-roadshow' : 'ai-final-presentation-nav-state';
   var SERVER_POLL_MS = 30000;
   var BEATS_PER_PAGE = MODE_20M ? [2, 2, 5, 4, 5, 2, 3, 4, 1] : ROADSHOW ? [2, 5, 4, 5, 2, 2, 3] : [2, 5, 4, 5, 2, 3];
-  var ASSET_V = MODE_20M ? '20m-evo6' : ROADSHOW ? 'roadshow2' : 'syncfix5';
+  var ASSET_V = MODE_20M ? '20m-evo7' : ROADSHOW ? 'roadshow2' : 'syncfix5';
   var EXPORT_FILENAME = MODE_20M ? 'speaker-beats-20m-edited.json' : ROADSHOW ? 'speaker-beats-roadshow-edited.json' : 'speaker-beats-v8-edited.json';
   var EXPORT_HINT = MODE_20M ? 'data/speaker-beats-20m-edited.json' : ROADSHOW ? 'data/speaker-beats-roadshow-edited.json' : 'data/speaker-beats-v8-edited.json';
   var TARGET_SEC = MODE_20M || ROADSHOW ? 1200 : 600;
@@ -725,19 +725,32 @@
   function initRemoteSync() {
     if (!window.RemoteSync) return;
     var room = RemoteSync.ensurePresenterRoom();
+    mountRemoteSyncUI(room);
     RemoteSync.connect({
       room: room,
       role: 'presenter',
       onConnect: function () {
-        var mode = RemoteSync.getDeckMode ? RemoteSync.getDeckMode() : '20m';
-        updateRemoteSyncUI('已就绪 · 房间 ' + room + ' · ' + mode);
-        pushNav();
+        updateRemoteSyncUI('连接中… 正在测试发布');
+        RemoteSync.testPublish().then(function (ok) {
+          var mode = RemoteSync.getDeckMode ? RemoteSync.getDeckMode() : '20m';
+          var mqtt = RemoteSync.isMqttReady && RemoteSync.isMqttReady();
+          updateRemoteSyncUI(
+            ok
+              ? '已就绪 · 房间 ' + room + ' · ' + mode + (mqtt ? ' · MQTT' : ' · HTTP')
+              : '发布失败 · 请检查网络（需能访问 broker.emqx.io 或 ntfy.sh）'
+          );
+          if (ok) pushNav();
+        });
       },
       onError: function (msg) {
         updateRemoteSyncUI(msg || '同步异常');
+      },
+      onReady: function (transport) {
+        if (transport === 'mqtt') {
+          updateRemoteSyncUI('MQTT 已连接 · 房间 ' + room);
+        }
       }
     });
-    mountRemoteSyncUI(room);
   }
 
   function mountRemoteSyncUI(room) {
