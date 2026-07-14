@@ -279,9 +279,18 @@
     var winner = clone(base);
     var localAt = notesSavedAt(local);
     var serverAt = notesSavedAt(server);
-    if (server && server.pages && serverAt >= localAt && serverAt > 0) winner = clone(server);
-    else if (local && local.pages) winner = clone(local);
-    if (localAt > serverAt && local && local.pages) winner = clone(local);
+    var serverRev = server && server.publishRevision;
+    var localRev = local && local.publishRevision;
+    if (server && server.pages && serverRev && serverRev !== localRev) {
+      winner = clone(server);
+    } else if (server && server.pages && serverAt >= localAt && serverAt > 0) {
+      winner = clone(server);
+    } else if (local && local.pages) {
+      winner = clone(local);
+    }
+    if (localAt > serverAt && local && local.pages && !(serverRev && serverRev !== localRev)) {
+      winner = clone(local);
+    }
     if (!winner.savedAt) winner.savedAt = Math.max(localAt, serverAt) || Date.now();
     return winner;
   }
@@ -315,6 +324,15 @@
 
   function applyServerNotesIfNewer(server) {
     if (!server || !server.pages || !notes) return false;
+    var serverRev = server.publishRevision;
+    var localRev = notes.publishRevision;
+    if (serverRev && serverRev !== localRev) {
+      notes = clone(server);
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(notes)); } catch (err) {}
+      syncEditorFromState(true);
+      setStatus('已同步线上最新逐字稿（' + serverRev + '）。', 'is-saved');
+      return true;
+    }
     if (notesSavedAt(server) <= notesSavedAt(notes)) return false;
     notes = clone(server);
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(notes)); } catch (err) {}
