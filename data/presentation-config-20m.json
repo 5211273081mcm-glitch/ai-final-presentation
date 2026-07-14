@@ -1,0 +1,87 @@
+{
+  "projectTitle": "用AI重构舆情工作范式",
+  "projectSubtitle": "让风险更早识别、让事件更快还原、让处置更可追踪",
+  "targetTotalSec": 1200,
+  "presentationMode": "20m",
+  "subtitle": "AI重构舆情的本质，是缩短从发现信号到统一行动的距离",
+  "useAnonymizedNames": false,
+  "names": {
+    "real": {
+      "hostA": "九叔",
+      "hostB": "哈哈"
+    },
+    "anon": {
+      "hostA": "主播A",
+      "hostB": "主播B"
+    }
+  },
+  "opsSystemUrl": "http://localhost:5173/",
+  "opsSystemLabel": "舆情系统实时环境",
+  "sphere": {
+    "url": "https://5211273081mcm-glitch.github.io/tcg-scene-library-v41/#s-univ",
+    "fallbackImage": "assets/evidence/3D场景球体截图.webp",
+    "loadTimeoutMs": 8000,
+    "currentScene": {
+      "code": "R-087",
+      "name": "主播言行引发健康高敏争议",
+      "category": "医疗高敏",
+      "triggers": ["ICU", "昏迷", "药物中毒", "停播诉求"],
+      "weight": 0.92,
+      "alertLevel": "P1",
+      "roles": ["大秘书", "主播管理", "舆情公关", "法务"],
+      "relatedEvent": "九叔—哈哈解绑及健康高敏争议",
+      "sop": "高敏医疗类事件SOP v2.1"
+    }
+  },
+  "stats": {
+    "categories": 17,
+    "scenes": 204
+  },
+  "pages": [
+    {
+      "tag": "AI趋势",
+      "durationSec": 120,
+      "beats": 2
+    },
+    {
+      "tag": "舆情难点",
+      "durationSec": 40,
+      "beats": 2
+    },
+    {
+      "tag": "解决方向",
+      "durationSec": 95,
+      "beats": 5
+    },
+    {
+      "tag": "舆情解析",
+      "durationSec": 105,
+      "beats": 4
+    },
+    {
+      "tag": "舆情处置",
+      "durationSec": 180,
+      "beats": 5
+    },
+    {
+      "tag": "舆情回溯",
+      "durationSec": 80,
+      "beats": 2
+    },
+    {
+      "tag": "统一行动",
+      "durationSec": 100,
+      "beats": 3
+    },
+    {
+      "tag": "AI心得",
+      "durationSec": 360,
+      "beats": 4
+    },
+    {
+      "tag": "提问交互",
+      "durationSec": 120,
+      "beats": 1
+    }
+  ]
+}

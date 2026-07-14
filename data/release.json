@@ -1,16 +1,28 @@
 {
-  "versionId": "final-led-20260707-syncfix5",
-  "label": "讲者台 10 分钟倒计时与投屏计时同步",
+  "versionId": "20m-final-20260714-evo4",
+  "label": "20分钟三板块 · 沙漏趋势 + AI心得4幕 + 飞书多维表",
   "branch": "main",
-  "commit": "34bca7f2a9a80c87ebf9f8e35a40f80c0c1ddbf6",
-  "commitShort": "34bca7f",
-  "gitTag": "final-led-20260707-syncfix5",
-  "previousVersionId": "final-led-20260707-syncfix4",
-  "builtAt": "2026-07-07T13:48:00+08:00",
+  "builtAt": "2026-07-14T14:30:00+08:00",
   "repo": "5211273081mcm-glitch/ai-final-presentation",
   "pagesBase": "https://5211273081mcm-glitch.github.io/ai-final-presentation",
+  "cacheVersion": "20m-evo4",
   "entrypoints": {
-    "projection": "index.html?led=1&v=syncfix5",
-    "presenter": "presenter.html?led=1&v=syncfix5"
-  }
+    "20m": {
+      "projection": "index-20m.html?led=1&v=20m-evo4",
+      "presenter": "presenter-20m.html?led=1&v=20m-evo4",
+      "durationSec": 1200,
+      "beats": 28
+    },
+    "10m": {
+      "projection": "index.html?led=1&v=syncfix5",
+      "presenter": "presenter.html?led=1&v=syncfix5",
+      "durationSec": 600
+    },
+    "roadshow": {
+      "projection": "index-roadshow.html?led=1&v=roadshow2",
+      "presenter": "presenter-roadshow.html?led=1&v=roadshow2",
+      "durationSec": 1200
+    }
+  },
+  "previousVersionId": "final-led-20260707-syncfix5"
 }

@@ -1,0 +1,327 @@
+{
+  "projectTitle": "用AI重构舆情工作范式",
+  "coreProposition": "AI重构的本质，是缩短从发现信号到统一行动的距离",
+  "corePropositionHtml": "AI重构的本质，是 <em>缩短</em> 从发现信号到统一行动的 <em>距离</em>",
+  "humanBoundary": "AI不代替公司作决策，AI让所有人先基于同一份事实行动。",
+  "masterMap": {
+    "kicker": "总纲 · 主脉络",
+    "title": "用AI重构舆情工作范式",
+    "subtitle": "核心目标：把分散信号，变成统一行动",
+    "note": "AI不是替代判断，而是重构从发现、解析、处置到闭环的协同链路。",
+    "leftTitle": "发现信号",
+    "leftDesc": "来自豆瓣、评论、私信、投诉和业务反馈的分散风险线索",
+    "leftTexture": "assets/generated/planet-signal-red.webp",
+    "leftCaption": "更少人力 · 更快 · 更准 · 更精 · 更专",
+    "rightTitle": "统一行动",
+    "rightDesc": "基于客观事实、统一口径与责任共识后的组织行动",
+    "rightTexture": "assets/generated/planet-action-blue.webp",
+    "rightCaption": "更全面 · 有事实 · 有依据 · 有建议",
+    "signalTags": [
+      "豆瓣",
+      "评论",
+      "私信",
+      "投诉",
+      "业务反馈"
+    ]
+  },
+  "stages": [
+    {
+      "id": "parse",
+      "num": "01",
+      "name": "舆情解析",
+      "capsuleDesc": "主体识别 / 问题提炼 / 事件聚合",
+      "currentPain": "信源分散 / 人工提炼",
+      "aiPath": "智能感知 / 事件聚合"
+    },
+    {
+      "id": "handle",
+      "num": "02",
+      "name": "舆情处置",
+      "capsuleDesc": "风险分级 / 责任分发 / 动作建议",
+      "currentPain": "层层转述 / 人力协同",
+      "aiPath": "统一事件 / 自动分发"
+    },
+    {
+      "id": "loop",
+      "num": "03",
+      "name": "舆情闭环",
+      "capsuleDesc": "结果追踪 / 风险沉淀 / 经验复用",
+      "currentPain": "解释回应 / 容易复发",
+      "aiPath": "风险沉淀 / 纠错闭环"
+    }
+  ],
+  "replication": [
+    {
+      "role": "大秘书 / 小秘书",
+      "desc": "同一事件卡驱动回复口径与介入跟踪",
+      "note": "后续将打通全部小秘书私信接入，100% 实现投诉自动化。"
+    },
+    {
+      "role": "粉丝运营",
+      "desc": "风险信号与处置状态同步可见",
+      "note": "粉丝投诉自动化后，长期协同看清粉丝诉求，更好维护管理粉丝。"
+    },
+    {
+      "role": "内容策划",
+      "desc": "基于历史场景规避同类内容风险",
+      "note": "评论区、大字报、社媒负面爬虫抓取，快速看清内容创意的问题。"
+    },
+    {
+      "role": "主播管理 / 法务",
+      "desc": "责任清单与待核验事项自动分发",
+      "note": "舆情整合系统（建设中），舆情从发酵初期，关键人员全链路提前感知，提升处置时效。"
+    }
+  ],
+  "closing": {
+    "copyLines": [
+      "过去上述需求需要等待程序和数据团队排期",
+      "现在，舆情团队逐步掌握自己开发常用技术接口的能力",
+      "我们计划将舆情转化为可检索、可关联、可复用的组织风险资产"
+    ]
+  },
+  "pages": [
+    {
+      "id": 1,
+      "code": "01",
+      "tag": "舆情难点",
+      "title": "舆情真正的难点，不是信息不足\n而是信息无法及时形成统一判断和行动",
+      "subtitle": "我们最需要重构的，不是单点工具，而是从「发现信号」到「统一行动」的整条链路。",
+      "conclusion": "接下来，先看这条链路的全貌。"
+    },
+    {
+      "id": 2,
+      "code": "02",
+      "tag": "解决方向",
+      "title": "用AI重构舆情工作范式",
+      "subtitle": "核心目标：把分散信号，变成统一行动"
+    },
+    {
+      "id": 3,
+      "code": "03",
+      "tag": "舆情解析",
+      "title": "第一段升级：舆情解析",
+      "subtitle": "信号很分散，但每一类都已经有解法",
+      "conclusion": "接入的问题已逐步解决，真正的难点在于把它们拼成同一件事。",
+      "sourceColumns": [
+        {
+          "name": "豆瓣讨论",
+          "items": [
+            "异常讨论升温 · 关联主播话题",
+            "黑话与别称需人工识别",
+            "趋势变化依赖人工盯盘"
+          ],
+          "evidence": [
+            {
+              "id": "douban-crawler",
+              "label": "数据爬虫"
+            },
+            {
+              "id": "douban-slang",
+              "label": "黑话解析"
+            },
+            {
+              "id": "douban-monitor-saman",
+              "label": "实时监测"
+            },
+            {
+              "id": "douban-alert-4",
+              "label": "群预警推送"
+            },
+            {
+              "id": "douban-dashboard",
+              "label": "豆瓣看板"
+            },
+            {
+              "id": "douban-daily-analysis",
+              "label": "每日豆瓣分析"
+            }
+          ]
+        },
+        {
+          "name": "大秘书私信 / 投诉",
+          "items": [
+            "用户诉求碎片化",
+            "图片 / 链接需 OCR 解析",
+            "多条会话是否同一事件需人工判断"
+          ],
+          "evidence": [
+            {
+              "id": "secretary-cookie-import",
+              "label": "私信cookie导入"
+            },
+            {
+              "id": "secretary-ai-1",
+              "label": "AI字段解析"
+            },
+            {
+              "id": "secretary-ocr",
+              "label": "图片OCR解析"
+            }
+          ]
+        },
+        {
+          "name": "业务反馈 / 社媒评论",
+          "items": [
+            "业务上报与社媒评论渠道分散",
+            "海量评论为非结构化文本，人工难以逐条研判",
+            "口径不统一，难以与外部舆情自动关联"
+          ],
+          "evidence": [
+            {
+              "id": "social-crawler",
+              "label": "社媒发文爬虫"
+            },
+            {
+              "id": "crawler-aggregate",
+              "label": "评论聚合分析"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "code": "04",
+      "tag": "舆情处置",
+      "title": "第二段升级：舆情处置",
+      "subtitle": "从0到1：一条投诉如何在同一屏内长成事件卡并触发预警",
+      "conclusion": "同一件事，从投诉到事件卡、预警，第一次被组织用同一个视角看见。",
+      "aiBoundary": {
+        "not": "AI 不判断主播是否应对病情负责。",
+        "does": [
+          "事件聚合",
+          "风险识别",
+          "责任建议",
+          "介入触发"
+        ]
+      },
+      "handleColumns": [
+        {
+          "name": "原始投诉",
+          "kicker": "01 · 信号涌入",
+          "evidence": [
+            {
+              "id": "secretary-raw-quote",
+              "label": "原声私信/投诉"
+            }
+          ]
+        },
+        {
+          "name": "风险标签识别",
+          "kicker": "02 · AI结构化",
+          "evidence": [
+            {
+              "id": "host-tag-library",
+              "label": "主播标签库"
+            },
+            {
+              "id": "secretary-inbox",
+              "label": "事件入库解析"
+            },
+            {
+              "id": "secretary-multiformat",
+              "label": "图文链接解析"
+            },
+            {
+              "id": "secretary-judgement",
+              "label": "结构性研判"
+            }
+          ]
+        },
+        {
+          "name": "舆情事件卡",
+          "kicker": "03 · 统一事件卡",
+          "evidence": [
+            {
+              "id": "event-card-new",
+              "label": "聚合事件卡参考"
+            }
+          ]
+        },
+        {
+          "name": "预警触发",
+          "kicker": "04 · 自动触达",
+          "evidence": [
+            {
+              "id": "secretary-bot-alert",
+              "label": "群机器人预警"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "code": "05",
+      "tag": "舆情回溯",
+      "title": "第三段升级：舆情闭环",
+      "subtitle": "预警不是终点，闭环才是价值",
+      "conclusion": "事件结束以后，它应该成为下一次判断可以调用的组织资产。"
+    },
+    {
+      "id": 6,
+      "code": "06",
+      "tag": "统一行动",
+      "title": "回到总纲 · 闭环完成",
+      "subtitle": "一条已跑通的路径，可复制到更多业务岗位"
+    }
+  ],
+  "splitStages": {
+    "vs": {
+      "topTitle": "任务提效",
+      "bottomTitle": "流程重构",
+      "topSub": "用AI干活",
+      "bottomSub": "用AI改变干活的方法",
+      "topWireTag": "让一个动作更快",
+      "bottomWireTag": "让整件事情更顺"
+    },
+    "evolution": {
+      "leftTitle": "AI工具",
+      "rightTitle": "AI思维",
+      "leftLead": "AI 自身版本与工具之间每天都在迭代、竞争，国内外在性能与价格上差异显著",
+      "rightLead": "先按需求分型，再组合国内与海外模型——单点选型撑不住长期迭代",
+      "toolRows": [
+        {
+          "cat": "文生文",
+          "domestic": ["豆包", "DeepSeek", "Kimi"],
+          "intl": ["GPT", "Claude", "Gemini", "Grok"]
+        },
+        {
+          "cat": "文生图 / 视频",
+          "domestic": ["即梦", "通义千问", "可灵"],
+          "intl": ["Midjourney", "Stable Diffusion", "ComfyUI", "Runway"]
+        },
+        {
+          "cat": "Coding Agent",
+          "domestic": ["通义灵码"],
+          "intl": ["Claude Code", "Codex", "Cursor"]
+        }
+      ],
+      "mindFlows": [
+        {
+          "label": "使用前",
+          "nodes": [
+            { "icon": "问", "title": "先问任务类型", "desc": "采集 / 推理 / 生成 / 触达", "color": "#48d7ff" },
+            { "icon": "比", "title": "同题多模对比", "desc": "国内 + 海外各跑一版", "color": "#d97757" },
+            { "icon": "选", "title": "按性价比选型", "desc": "性能、价格、合规一并评估", "color": "#a78bfa" }
+          ]
+        },
+        {
+          "label": "使用后",
+          "nodes": [
+            { "icon": "分", "title": "分活给不同模型", "desc": "OCR / 推理 / 摘要各就其位", "color": "#38bdf8" },
+            { "icon": "交", "title": "结果交叉校验", "desc": "关键结论不依赖单模型", "color": "#fbbf24" },
+            { "icon": "迭", "title": "周期性复评", "desc": "几周一换代，习惯比工具更重要", "color": "#34d399" }
+          ]
+        }
+      ],
+      "fullSlide": {
+        "image": "assets/slides/feishu-multitable-demo.png",
+        "alt": "飞书多维表：AI落地的业务中枢"
+      }
+    },
+    "qa": {
+      "title": "提问交互"
+    }
+  }
+}

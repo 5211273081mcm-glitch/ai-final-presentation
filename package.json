@@ -4,10 +4,17 @@
   "description": "面向公司 AI 课代表决赛的 **6 页叙事型** HTML 演示，围绕 **「舆情工作链总图」** 展开，演讲者键盘完全掌控节奏。",
   "main": "index.js",
   "scripts": {
+    "build:hourglass": "node scripts/build-hourglass.mjs",
+    "build:20m": "node scripts/build-hourglass.mjs && node scripts/bundle-presentation.mjs 20m",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs"
+  "type": "commonjs",
+  "devDependencies": {
+    "esbuild": "^0.28.1",
+    "playwright": "^1.61.1",
+    "three": "^0.185.1"
+  }
 }

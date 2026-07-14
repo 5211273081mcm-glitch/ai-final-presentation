@@ -1,0 +1,1282 @@
+/* ═══ 三板块：沙漏趋势 · 引力进化 · 提问交互 ═══ */
+
+.split-stage {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: #030508;
+}
+
+.split-half {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: width 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: width;
+  overflow: hidden;
+}
+
+.split-half-left {
+  left: 0;
+  width: var(--split, 50%);
+  background: linear-gradient(135deg, rgba(12, 28, 48, 0.95) 0%, rgba(6, 14, 24, 0.98) 100%);
+  border-right: 1px solid rgba(72, 215, 255, 0.08);
+}
+
+.split-half-right {
+  right: 0;
+  width: calc(100% - var(--split, 50%));
+  background: linear-gradient(225deg, rgba(48, 18, 32, 0.95) 0%, rgba(18, 8, 14, 0.98) 100%);
+  border-left: 1px solid rgba(255, 120, 80, 0.08);
+}
+
+.split-head {
+  text-align: center;
+  padding: clamp(16px, 3vw, 32px);
+  transition: transform 0.9s cubic-bezier(0.22, 1, 0.36, 1),
+              text-align 0.5s ease,
+              align-self 0.5s ease;
+  width: 100%;
+  max-width: 920px;
+}
+
+.split-main-title {
+  font-family: 'Noto Sans SC', sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  line-height: 1.15;
+  margin: 0;
+  transition: font-size 0.9s cubic-bezier(0.22, 1, 0.36, 1),
+              opacity 0.5s ease,
+              transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+  text-shadow: 0 0 40px rgba(255, 255, 255, 0.12);
+}
+
+.split-sub-title {
+  font-family: 'Noto Sans SC', sans-serif;
+  font-weight: 500;
+  margin: clamp(12px, 2vh, 24px) 0 0;
+  opacity: 0;
+  transform: translateY(24px) scale(0.96);
+  transition: opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+  letter-spacing: 0.12em;
+  color: rgba(240, 245, 255, 0.72);
+}
+
+.split-body-list {
+  list-style: none;
+  margin: clamp(20px, 3vh, 36px) 0 0;
+  padding: 0;
+  text-align: left;
+  max-width: 520px;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.55s ease 0.15s, transform 0.55s ease 0.15s;
+  pointer-events: none;
+}
+
+.split-body-list li {
+  position: relative;
+  padding: clamp(8px, 1.2vh, 14px) 0 clamp(8px, 1.2vh, 14px) 1.2em;
+  font-size: clamp(15px, 1.65vw, 22px);
+  line-height: 1.45;
+  color: rgba(235, 240, 250, 0.88);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.split-body-list li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  transform: translateY(-50%);
+  background: #48d7ff;
+  box-shadow: 0 0 10px rgba(72, 215, 255, 0.6);
+}
+
+.split-half-right .split-body-list li::before {
+  background: #c89bff;
+  box-shadow: 0 0 10px rgba(200, 155, 255, 0.55);
+}
+
+/* ── AI趋势 · 沙漏视频主视觉 ── */
+.split-hourglass-stage {
+  --hg-copy-w: min(56vw, 680px);
+  --hg-tag-gap: clamp(14px, 2.2vw, 28px);
+  background: #000;
+}
+
+.hg-video-stage {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: #000;
+  overflow: hidden;
+}
+
+.hg-video-poster {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  z-index: 2;
+  opacity: 1;
+  transition: opacity 450ms ease;
+  background: #000;
+}
+
+.hg-video-poster.hg-video-poster-hidden {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.hg-video-stack {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  opacity: 0;
+  transition: opacity 450ms ease;
+  background: #000;
+}
+
+.split-hourglass-stage.hg-video-ready .hg-video-stack {
+  opacity: 1;
+}
+
+.hg-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  opacity: 0;
+  transition: opacity 650ms ease;
+  background: #000;
+  pointer-events: none;
+}
+
+.hg-video-visible {
+  opacity: 1;
+}
+
+.hg-video-hidden {
+  display: none !important;
+}
+
+.hg-vignette {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 85% 75% at 50% 50%, transparent 42%, rgba(0, 0, 0, 0.42) 100%);
+}
+
+.hg-text-gradient {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 750ms ease;
+  background:
+    radial-gradient(ellipse 55% 38% at 50% 25%, rgba(0, 0, 0, 0.38) 0%, transparent 72%),
+    radial-gradient(ellipse 55% 38% at 50% 75%, rgba(0, 0, 0, 0.38) 0%, transparent 72%);
+}
+
+.hg-row {
+  position: absolute;
+  z-index: 5;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.hg-row-top {
+  top: 25%;
+}
+
+.hg-row-bottom {
+  top: 75%;
+}
+
+.hg-copy {
+  position: relative;
+  width: var(--hg-copy-w);
+  text-align: center;
+}
+
+.hg-label-rail {
+  position: absolute;
+  z-index: 5;
+  top: 25%;
+  bottom: 25%;
+  left: calc(50% - var(--hg-copy-w) / 2 - var(--hg-tag-gap));
+  transform: translateX(-100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0;
+  padding: 0 6px;
+  pointer-events: none;
+}
+
+.hg-wire-tag {
+  position: relative;
+  top: auto;
+  right: auto;
+  transform: translateX(14px);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(11px, 1.5vh, 16px) clamp(16px, 2vw, 26px);
+  border: 2px solid rgba(255, 255, 255, 0.32);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(235, 242, 255, 0.94);
+  font-size: clamp(1.12rem, 2.65vw, 1.72rem);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+  opacity: 0;
+  pointer-events: none;
+  flex-shrink: 0;
+  transition: opacity 650ms ease, transform 650ms ease;
+}
+
+.hg-label-arrow {
+  flex: 1 1 auto;
+  align-self: center;
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  width: clamp(20px, 2.4vw, 32px);
+  min-height: clamp(96px, 18vh, 220px);
+  margin: clamp(2px, 0.35vh, 6px) 0;
+  opacity: 0;
+  transform: scaleY(0.55);
+  transform-origin: center top;
+  transition: opacity 650ms ease, transform 650ms ease;
+}
+
+.hg-label-arrow-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.22));
+}
+
+.split-hourglass-stage[data-beat="1"] .hg-wire-tag,
+.split-hourglass-stage[data-beat="1"] .hg-label-arrow {
+  opacity: 1;
+}
+
+.split-hourglass-stage[data-beat="1"] .hg-wire-tag {
+  transform: translateX(0);
+}
+
+.split-hourglass-stage[data-beat="1"] .hg-label-arrow {
+  transform: scaleY(1);
+}
+
+.split-hourglass-stage .split-main-title.hg-copy-title {
+  font-size: clamp(1.8rem, 4.8vw, 3.6rem);
+  line-height: 1.12;
+  letter-spacing: 0.06em;
+  color: rgba(245, 248, 255, 0.96);
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.62);
+  margin: 0;
+}
+
+.split-hourglass-stage .split-sub-title.hg-copy-sub {
+  font-size: clamp(1.1rem, 3vw, 2.2rem);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  margin-top: clamp(10px, 1.6vh, 18px);
+  color: rgba(235, 240, 250, 0.84);
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.55);
+  opacity: 1;
+  transform: none;
+}
+
+.split-hourglass-stage[data-beat="1"] .split-sub-title.hg-copy-sub {
+  opacity: 1;
+  transform: none;
+}
+
+body.led-projection .hg-wire-tag {
+  font-size: clamp(1.28rem, 3.2vw, 2.15rem);
+  padding: clamp(13px, 1.7vh, 20px) clamp(18px, 2.4vw, 30px);
+}
+
+body.led-projection .hg-label-arrow {
+  width: clamp(26px, 3vw, 40px);
+  min-height: clamp(120px, 20vh, 260px);
+}
+
+.hg-kw {
+  background: linear-gradient(120deg,
+    rgba(245, 248, 255, 0.98) 0%,
+    rgba(210, 225, 255, 0.92) 45%,
+    rgba(245, 248, 255, 0.98) 100%);
+  background-size: 220% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: hgKwShine 7s ease-in-out infinite;
+}
+
+@keyframes hgKwShine {
+  0%, 100% { background-position: 0% center; }
+  50% { background-position: 100% center; }
+}
+
+/* legacy canvas / svg — 不再使用 */
+.hg-sand-canvas,
+.hg-glass-layer,
+.hg-label-top,
+.hg-label-bottom {
+  display: none !important;
+}
+
+.split-hourglass-stage.hg-webgl-pending .hg-fallback-only,
+.split-hourglass-stage.hg-webgl-failed .hg-fallback-only,
+.split-hourglass-stage.hg-webgl-active .hg-fallback-only {
+  display: none !important;
+}
+
+/* ── AI心得 · 与全稿 split 排版一致 ── */
+.split-evo-stage .split-half {
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(20px, 3vh, 40px) clamp(12px, 1.8vw, 24px);
+  overflow: visible;
+}
+
+.split-evo-stage .split-head {
+  max-width: min(92%, 880px);
+  width: 100%;
+  text-align: center;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.split-evo-stage[data-beat="0"] .split-half {
+  justify-content: center;
+}
+
+.split-evo-stage[data-beat="0"] .evo-panel {
+  display: none;
+}
+
+.evo-panel {
+  width: min(96%, 100%);
+  max-width: none;
+  margin-top: clamp(10px, 1.6vh, 18px);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.split-evo-stage[data-beat="1"] .split-half-left .evo-panel {
+  width: min(94%, 1180px);
+}
+
+.split-evo-stage[data-beat="2"] .split-half-right .evo-panel {
+  width: min(94%, 1180px);
+  padding-bottom: clamp(12px, 2vh, 24px);
+}
+
+.split-evo-stage[data-beat="2"] .split-half-right .evo-lead-prominent {
+  margin-bottom: clamp(16px, 2.5vh, 28px);
+}
+
+.evo-panel .split-sub-title {
+  max-width: none;
+  text-align: center;
+  letter-spacing: 0.04em;
+  line-height: 1.45;
+  flex-shrink: 0;
+}
+
+.evo-panel .evo-lead {
+  opacity: 0;
+  transform: translateY(16px);
+  pointer-events: none;
+}
+
+.evo-lead-prominent {
+  font-size: clamp(17px, 1.75vw, 26px) !important;
+  font-weight: 700;
+  line-height: 1.4;
+  text-align: center;
+  letter-spacing: 0.02em;
+  margin-bottom: clamp(14px, 2vh, 22px);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.split-evo-stage[data-beat="1"] .split-half-left .evo-lead,
+.split-evo-stage[data-beat="2"] .split-half-right .evo-lead {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+
+.evo-panel .split-body-list,
+.evo-mind-cols,
+.evo-tool-matrix {
+  opacity: 0;
+  transform: translateY(16px);
+  pointer-events: none;
+  transition: opacity 0.55s ease, transform 0.55s ease;
+}
+
+.split-evo-stage[data-beat="1"] .split-half-left .evo-tool-matrix,
+.split-evo-stage[data-beat="2"] .split-half-right .evo-mind-cols {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+
+/* ── AI工具 · 类别 × 国内/海外 矩阵 ── */
+.evo-tool-matrix {
+  width: 100%;
+  max-width: none;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: visible;
+}
+
+.evo-tool-matrix-head,
+.evo-tool-matrix-row {
+  display: grid;
+  grid-template-columns: minmax(96px, 19%) 1fr auto 1fr;
+  gap: clamp(8px, 1vw, 12px);
+  align-items: stretch;
+}
+
+.evo-tool-matrix-head {
+  flex-shrink: 0;
+  margin-bottom: clamp(10px, 1.3vh, 14px);
+}
+
+.evo-tool-matrix-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(10px, 1.4vh, 14px);
+  min-height: 0;
+  padding: clamp(4px, 0.5vh, 8px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.012);
+}
+
+.evo-tool-matrix-row {
+  flex: 1;
+  min-height: 0;
+}
+
+.evo-tool-matrix-corner,
+.evo-tool-matrix-head-mid {
+  min-width: 0;
+}
+
+.evo-region-label,
+.evo-tool-cat-label {
+  font-size: clamp(18px, 1.85vw, 26px);
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  white-space: nowrap;
+  border-radius: 10px;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+}
+
+.evo-region-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: clamp(8px, 1vh, 12px) clamp(10px, 1vw, 14px);
+  margin: 0;
+  border: 2px solid rgba(255, 255, 255, 0.28);
+}
+
+.evo-region-label.domestic {
+  background: rgba(255, 255, 255, 0.07);
+  color: rgba(230, 242, 255, 0.98);
+  border-color: rgba(200, 225, 255, 0.42);
+}
+
+.evo-region-label.intl {
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(235, 232, 245, 0.96);
+  border-color: rgba(220, 210, 240, 0.38);
+}
+
+.evo-tool-cat-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: clamp(10px, 1.2vh, 14px) clamp(8px, 0.9vw, 12px);
+  color: rgba(220, 235, 255, 0.96);
+  line-height: 1.25;
+  align-self: stretch;
+  border: 2px solid rgba(255, 255, 255, 0.26);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.evo-tool-cell {
+  border: 2px solid rgba(255, 255, 255, 0.24);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.025);
+  padding: clamp(12px, 1.6vh, 18px) clamp(10px, 1.1vw, 14px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  min-height: 0;
+  overflow: visible;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+.evo-tool-cell .evo-brands {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-content: center;
+  gap: clamp(6px, 0.7vw, 9px);
+  width: 100%;
+  overflow: visible;
+}
+
+.evo-tool-matrix-row .evo-tool-mid {
+  align-self: center;
+  color: rgba(255, 255, 255, 0.45);
+  font-size: clamp(18px, 1.65vw, 26px);
+  font-weight: 800;
+  padding: 0 2px;
+  flex-shrink: 0;
+  line-height: 1;
+  text-shadow: 0 0 12px rgba(255, 255, 255, 0.15);
+}
+
+.evo-mind-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(20px, 2.5vw, 36px);
+  width: 100%;
+  max-width: none;
+  margin-top: clamp(8px, 1.2vh, 14px);
+  flex: 1;
+  align-items: stretch;
+  min-height: 0;
+}
+
+.evo-mind-module {
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  padding: 0;
+  min-width: 0;
+  min-height: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: visible;
+  box-shadow: none;
+}
+
+.evo-mind-module .evo-group-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(22px, 2.25vw, 32px);
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  color: rgba(230, 242, 255, 0.98);
+  margin-bottom: clamp(18px, 2.5vh, 28px);
+  text-align: center;
+  padding: clamp(12px, 1.5vh, 16px) clamp(12px, 1.2vw, 18px);
+  border: 3px solid rgba(255, 255, 255, 0.32);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  flex-shrink: 0;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+}
+
+.evo-mind-sublist {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  gap: clamp(4px, 0.8vh, 10px);
+  min-height: 0;
+}
+
+.evo-mind-point {
+  position: relative;
+  padding: clamp(14px, 2vh, 22px) clamp(12px, 1.2vw, 16px);
+  border: 3px solid rgba(255, 255, 255, 0.22);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  text-align: center;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+  flex-shrink: 0;
+}
+
+.evo-mind-point::before {
+  display: none;
+}
+
+.evo-mind-arrow {
+  list-style: none;
+  margin: 0;
+  padding: clamp(12px, 2.2vh, 26px) 0;
+  text-align: center;
+  font-size: clamp(20px, 2vw, 28px);
+  font-weight: 800;
+  line-height: 1;
+  color: rgba(255, 255, 255, 0.42);
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.12);
+  flex-shrink: 0;
+}
+
+.evo-mind-point strong {
+  display: block;
+  font-size: clamp(20px, 2.05vw, 30px);
+  font-weight: 800;
+  color: rgba(245, 247, 255, 0.98);
+  margin-bottom: 6px;
+  line-height: 1.35;
+  text-align: center;
+}
+
+.evo-mind-desc {
+  display: block;
+  font-size: clamp(16px, 1.65vw, 23px);
+  font-weight: 600;
+  line-height: 1.5;
+  color: rgba(200, 210, 230, 0.94);
+  text-align: center;
+}
+
+.split-evo-stage .split-half-left .evo-lead {
+  color: rgba(220, 235, 255, 0.92);
+}
+
+.split-evo-stage .split-half-right .evo-lead {
+  color: rgba(235, 230, 245, 0.92);
+}
+
+/* legacy evo-visual hook for beat transitions */
+.evo-visual {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+
+/* 已废弃的 mock / 卡片 UI — 不再渲染 */
+.evo-alert-bar,
+.evo-ui-mock,
+.evo-flow-block,
+.evo-flow-chain,
+.evo-flow-node,
+.evo-check-card {
+  display: none !important;
+}
+
+.evo-panel .split-sub-title,
+.evo-panel .split-body-list {
+  transition: opacity 0.55s ease, transform 0.55s ease;
+}
+
+.evo-alert-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #48d7ff;
+  box-shadow: 0 0 10px #48d7ff;
+  animation: evoPulse 2s ease-in-out infinite;
+}
+
+@keyframes evoPulse {
+  0%, 100% { opacity: 0.5; transform: scale(0.9); }
+  50% { opacity: 1; transform: scale(1.15); }
+}
+
+.evo-ui-mock {
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(8, 16, 28, 0.85);
+  margin-bottom: 14px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+}
+
+.evo-mock-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.evo-mock-dot { width: 8px; height: 8px; border-radius: 50%; }
+.evo-mock-dot.r { background: #ff5f57; }
+.evo-mock-dot.y { background: #febc2e; }
+.evo-mock-dot.g { background: #28c840; }
+
+.evo-mock-title {
+  margin-left: 8px;
+  font-size: clamp(12px, 1.2vw, 15px);
+  color: rgba(200, 210, 230, 0.65);
+  letter-spacing: 0.04em;
+}
+
+.evo-mock-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 8px 10px;
+}
+
+.evo-mock-tabs span {
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: clamp(13px, 1.35vw, 17px);
+  color: rgba(180, 190, 210, 0.72);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.evo-mock-tabs span.on {
+  color: #7ee8ff;
+  background: rgba(72, 215, 255, 0.12);
+  border: 1px solid rgba(72, 215, 255, 0.22);
+}
+
+.evo-tool-row {
+  margin-bottom: clamp(14px, 2vh, 20px);
+}
+
+.evo-tool-side {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: clamp(5px, 0.6vw, 8px);
+  padding: 0;
+  border: none;
+  background: transparent;
+  overflow: visible;
+}
+
+.evo-brands {
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(5px, 0.6vw, 8px);
+  min-width: 0;
+  overflow: visible;
+}
+
+.evo-region {
+  display: inline-block;
+  font-size: clamp(12px, 1.1vw, 15px);
+  letter-spacing: 0.06em;
+  padding: 3px 7px;
+  border-radius: 4px;
+  margin: 0;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.evo-region.domestic { background: rgba(255, 255, 255, 0.08); color: rgba(220, 235, 255, 0.85); }
+.evo-region.intl { background: rgba(255, 255, 255, 0.06); color: rgba(230, 230, 240, 0.8); }
+
+.evo-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 11px 5px 5px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  flex-shrink: 0;
+}
+
+.evo-brand-mark {
+  width: clamp(28px, 2.8vw, 36px);
+  height: clamp(28px, 2.8vw, 36px);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(11px, 1.05vw, 14px);
+  font-weight: 800;
+  color: #fff;
+  background: var(--bc, #445);
+  box-shadow: inset 0 -2px 4px rgba(0, 0, 0, 0.25);
+}
+
+.evo-brand-label {
+  font-size: clamp(14px, 1.35vw, 19px);
+  font-weight: 600;
+  color: rgba(235, 240, 250, 0.96);
+  white-space: nowrap;
+}
+
+.evo-compare-arrow {
+  display: flex;
+  align-items: center;
+  color: rgba(255, 255, 255, 0.25);
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.evo-thumb-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+  overflow: hidden;
+}
+
+.evo-thumb {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.evo-thumb img {
+  display: block;
+  width: 100%;
+  height: clamp(48px, 8vh, 72px);
+  object-fit: cover;
+  object-position: top;
+  opacity: 0.88;
+}
+
+.evo-thumb figcaption {
+  padding: 4px 6px;
+  font-size: 9px;
+  color: rgba(180, 190, 210, 0.7);
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.evo-footnote {
+  margin: clamp(14px, 2vh, 18px) 0 0;
+  font-size: clamp(15px, 1.6vw, 21px);
+  color: rgba(180, 195, 220, 0.78);
+  line-height: 1.5;
+}
+
+.evo-mind-lead {
+  margin: 0 0 clamp(16px, 2.2vh, 22px);
+  font-size: clamp(16px, 1.75vw, 23px);
+  color: rgba(210, 200, 240, 0.9);
+  line-height: 1.5;
+}
+
+.evo-flow-block {
+  margin-bottom: clamp(16px, 2.2vh, 22px);
+}
+
+.evo-flow-label {
+  font-size: clamp(14px, 1.45vw, 18px);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: rgba(180, 160, 220, 0.72);
+  margin-bottom: 10px;
+}
+
+.evo-flow-chain {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+}
+
+.evo-flow-link {
+  width: clamp(16px, 2vw, 28px);
+  flex-shrink: 0;
+  align-self: center;
+  height: 2px;
+  background: linear-gradient(90deg, rgba(72, 215, 255, 0.5), rgba(200, 155, 255, 0.5));
+  position: relative;
+}
+
+.evo-flow-link::after {
+  content: '';
+  position: absolute;
+  right: -1px;
+  top: -3px;
+  border: 4px solid transparent;
+  border-left-color: rgba(200, 155, 255, 0.6);
+}
+
+.evo-flow-node {
+  flex: 1;
+  min-width: 0;
+  padding: clamp(10px, 1.3vh, 14px);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 3px solid var(--nc, #48d7ff);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.evo-flow-node strong {
+  font-size: clamp(16px, 1.65vw, 22px);
+  color: rgba(240, 242, 255, 0.96);
+  font-weight: 700;
+}
+
+.evo-flow-node span {
+  font-size: clamp(14px, 1.4vw, 18px);
+  color: rgba(180, 190, 210, 0.82);
+  line-height: 1.4;
+}
+
+.evo-flow-icon {
+  width: clamp(34px, 3.2vw, 42px);
+  height: clamp(34px, 3.2vw, 42px);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(14px, 1.4vw, 18px);
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.95);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.evo-check-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: clamp(12px, 1.8vh, 18px);
+  padding: clamp(12px, 1.5vh, 16px) clamp(14px, 1.6vw, 18px);
+  border-radius: 10px;
+  background: rgba(168, 139, 255, 0.1);
+  border: 1px solid rgba(168, 139, 255, 0.22);
+  font-size: clamp(15px, 1.55vw, 20px);
+  line-height: 1.45;
+  color: rgba(220, 210, 245, 0.9);
+}
+
+.evo-check-icon {
+  width: clamp(28px, 2.6vw, 34px);
+  height: clamp(28px, 2.6vw, 34px);
+  border-radius: 50%;
+  background: rgba(168, 139, 255, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(14px, 1.3vw, 17px);
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.split-evo-stage[data-beat="1"] .evo-visual-tools,
+.split-evo-stage[data-beat="2"] .evo-visual-mind {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+
+.split-evo-stage .split-head {
+  text-align: center;
+}
+
+.split-evo-stage[data-beat="0"] .split-head {
+  text-align: center;
+}
+
+/* ── AI心得 · 纯黑底 + 白色渐变竖条 ── */
+.split-evo-stage.split-stage {
+  overflow: hidden;
+  background: #030508;
+}
+
+.evo-fullslide {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  background: #000;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 450ms ease, visibility 450ms ease;
+}
+
+.split-evo-stage[data-beat="3"] .evo-fullslide {
+  opacity: 1;
+  visibility: visible;
+}
+
+.split-evo-stage[data-beat="3"] .split-half,
+.split-evo-stage[data-beat="3"] .split-gravity {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 350ms ease, visibility 350ms ease;
+}
+
+.evo-fullslide-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  background: #000;
+}
+
+body.led-projection .evo-fullslide-img {
+  object-fit: cover;
+}
+
+.split-evo-stage .split-half-left,
+.split-evo-stage .split-half-right {
+  background: #030508;
+  border: none;
+}
+
+.split-evo-stage .split-half-left .split-main-title { color: #e8f4ff; }
+.split-evo-stage .split-half-right .split-main-title { color: #f0e8ff; }
+
+.split-evo-stage[data-beat="0"] .split-main-title {
+  font-size: clamp(2.2rem, 6.8vw, 4.8rem);
+}
+
+.split-gravity {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: var(--split, 50%);
+  width: 4px;
+  transform: translateX(-50%);
+  z-index: 11;
+  pointer-events: none;
+}
+
+.split-gravity-core {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.06) 18%,
+    rgba(255, 255, 255, 0.72) 50%,
+    rgba(255, 255, 255, 0.06) 82%,
+    transparent 100%);
+  border-radius: 2px;
+  box-shadow: 0 0 18px rgba(255, 255, 255, 0.12);
+}
+
+.split-gravity-orbit {
+  display: none !important;
+}
+
+/* beat 1: 左 80% */
+.split-evo-stage[data-beat="1"] {
+  --split: 80%;
+}
+
+.split-evo-stage[data-beat="1"] .split-half-left {
+  justify-content: flex-start;
+  padding-top: clamp(20px, 3.5vh, 40px);
+}
+
+.split-evo-stage[data-beat="1"] .split-half-left .split-head,
+.split-evo-stage[data-beat="2"] .split-half-right .split-head {
+  text-align: center;
+  width: 100%;
+  flex-shrink: 0;
+}
+
+.split-evo-stage[data-beat="1"] .split-half-left .split-main-title {
+  font-size: clamp(2.2rem, 6vw, 4.2rem);
+}
+
+.split-evo-stage[data-beat="1"] .split-half-right {
+  justify-content: center;
+}
+
+.split-evo-stage[data-beat="1"] .split-half-right .split-main-title {
+  font-size: clamp(1.4rem, 3.2vw, 2.2rem);
+  opacity: 0.65;
+}
+
+.split-evo-stage[data-beat="1"] .split-half-right .evo-panel {
+  display: none;
+}
+
+.split-evo-stage[data-beat="2"] .split-half-left .evo-panel {
+  display: none;
+}
+
+.split-evo-stage[data-beat="1"] .split-body-left,
+.split-evo-stage[data-beat="1"] .evo-visual-tools {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+/* beat 2: 右 80% */
+.split-evo-stage[data-beat="2"] {
+  --split: 20%;
+}
+
+.split-evo-stage[data-beat="2"] .split-half-right {
+  justify-content: flex-start;
+  padding-top: clamp(20px, 3.5vh, 40px);
+}
+
+.split-evo-stage[data-beat="2"] .split-half-left {
+  justify-content: center;
+}
+
+.split-evo-stage[data-beat="2"] .split-half-left .split-main-title {
+  font-size: clamp(1.4rem, 3.2vw, 2.2rem);
+  opacity: 0.65;
+}
+
+.split-evo-stage[data-beat="2"] .split-half-right .split-main-title {
+  font-size: clamp(2.2rem, 6vw, 4.2rem);
+}
+
+.split-evo-stage[data-beat="2"] .split-body-left,
+.split-evo-stage[data-beat="2"] .evo-visual-tools {
+  opacity: 0;
+  transform: translateY(-12px);
+  pointer-events: none;
+  transition-delay: 0s;
+}
+
+.split-evo-stage[data-beat="2"] .split-body-right,
+.split-evo-stage[data-beat="2"] .evo-visual-mind {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.split-evo-stage[data-beat="2"] .split-half-right .evo-mind-cols {
+  opacity: 1;
+  transform: none;
+}
+
+.split-evo-stage[data-beat="1"] .split-half-left,
+.split-evo-stage[data-beat="1"] .split-half-right,
+.split-evo-stage[data-beat="2"] .split-half-left,
+.split-evo-stage[data-beat="2"] .split-half-right {
+  align-items: center;
+}
+
+/* ── 提问交互 ── */
+.qa-interact-stage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(ellipse at center, rgba(20, 40, 60, 0.4) 0%, #030508 65%);
+}
+
+.qa-interact-inner {
+  text-align: center;
+  opacity: 0;
+  transform: scale(0.92);
+  transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.qa-interact-stage[data-beat="0"] .qa-interact-inner {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.qa-interact-title {
+  font-family: 'Noto Sans SC', sans-serif;
+  font-weight: 700;
+  font-size: clamp(2.8rem, 9vw, 6rem);
+  letter-spacing: 0.18em;
+  margin: 0;
+  color: #f0f4ff;
+  text-shadow: 0 0 60px rgba(72, 215, 255, 0.25);
+}
+
+.qa-interact-sub {
+  margin: clamp(16px, 2.5vh, 28px) 0 0;
+  font-size: clamp(14px, 1.6vw, 20px);
+  color: rgba(220, 225, 240, 0.55);
+  letter-spacing: 0.08em;
+}
+
+/* LED 投屏增权 */
+body.led-projection .split-hourglass-stage .split-main-title { font-size: clamp(2.8rem, 8vw, 5.8rem) !important; }
+body.led-projection .split-hourglass-stage .split-sub-title { font-size: clamp(1.4rem, 4vw, 2.8rem); }
+body.led-projection .split-evo-stage .split-main-title { font-size: clamp(2.6rem, 7.5vw, 5.2rem) !important; }
+body.led-projection .evo-lead-prominent {
+  font-size: clamp(19px, 1.85vw, 28px) !important;
+  font-weight: 800 !important;
+  white-space: nowrap;
+}
+body.led-projection .evo-brand-label {
+  font-size: clamp(16px, 1.55vw, 22px) !important;
+  font-weight: 700 !important;
+}
+body.led-projection .evo-brand-mark {
+  width: clamp(30px, 3vw, 38px) !important;
+  height: clamp(30px, 3vw, 38px) !important;
+  font-size: clamp(12px, 1.1vw, 15px) !important;
+}
+body.led-projection .evo-tool-box .evo-tool-cat,
+body.led-projection .evo-tool-cat-label { font-size: clamp(21px, 2.15vw, 30px) !important; font-weight: 800 !important; }
+body.led-projection .evo-mind-module .evo-group-label {
+  font-size: clamp(26px, 2.55vw, 38px) !important;
+  font-weight: 800 !important;
+  border-width: 3px !important;
+}
+body.led-projection .evo-mind-arrow { font-size: clamp(24px, 2.35vw, 34px) !important; }
+body.led-projection .evo-mind-point { border-width: 3px !important; }
+body.led-projection .evo-region-label { font-size: clamp(21px, 2.15vw, 30px) !important; font-weight: 800 !important; }
+body.led-projection .evo-mind-point strong {
+  font-size: clamp(22px, 2.2vw, 32px) !important;
+  font-weight: 800 !important;
+}
+body.led-projection .evo-mind-desc {
+  font-size: clamp(18px, 1.85vw, 25px) !important;
+  font-weight: 600 !important;
+}
+body.led-projection .split-main-title { font-size: clamp(2.8rem, 8.5vw, 6rem) !important; }
+body.led-projection .split-sub-title { font-size: clamp(1.1rem, 2.2vw, 1.8rem); }
+body.led-projection .split-body-list li { font-size: clamp(17px, 1.9vw, 26px); }
+body.led-projection .qa-interact-title { font-size: clamp(3.2rem, 10vw, 7rem); }

@@ -11,7 +11,7 @@ import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = resolve(__dirname, '..');
-const mode = process.argv[2] === 'roadshow' ? 'roadshow' : 'final';
+const mode = process.argv[2] === 'roadshow' ? 'roadshow' : process.argv[2] === '20m' ? '20m' : 'final';
 
 const pick = (name) => readFileSync(resolve(root, 'data', name), 'utf8');
 
@@ -24,6 +24,15 @@ const data = mode === 'roadshow'
       demoAnalysis: JSON.parse(pick('demo-analysis-anon.json')),
       demoEvent: JSON.parse(pick('demo-event-anon.json'))
     }
+  : mode === '20m'
+  ? {
+      config: JSON.parse(pick('presentation-config-20m.json')),
+      content: JSON.parse(pick('presentation-content-20m.json')),
+      manifest: JSON.parse(pick('asset-manifest.json')),
+      demoMessages: JSON.parse(pick('demo-messages.json')),
+      demoAnalysis: JSON.parse(pick('demo-analysis.json')),
+      demoEvent: JSON.parse(pick('demo-event.json'))
+    }
   : {
       config: JSON.parse(pick('presentation-config.json')),
       content: JSON.parse(pick('presentation-content.json')),
@@ -34,7 +43,7 @@ const data = mode === 'roadshow'
     };
 
 const showJs = readFileSync(resolve(root, 'js', 'final-show.js'), 'utf8');
-const outName = mode === 'roadshow' ? 'presentation-roadshow.all.js' : 'presentation.all.js';
+const outName = mode === 'roadshow' ? 'presentation-roadshow.all.js' : mode === '20m' ? 'presentation-20m.all.js' : 'presentation.all.js';
 const out = 'window.__PRESENTATION_DATA__ = ' + JSON.stringify(data, null, 0) + ';\n\n' + showJs;
 writeFileSync(resolve(root, 'js', outName), out, 'utf8');
 console.log('Bundled', mode, '->', outName, `(${Math.round(out.length / 1024)} KB)`);

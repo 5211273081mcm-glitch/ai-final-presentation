@@ -7,20 +7,25 @@
   'use strict';
 
   var CHANNEL = 'ai-final-presentation-v1';
-  var ROADSHOW = !!(window.PRESENTER_ROADSHOW || (function () {
+  var MODE_20M = !!(window.PRESENTER_20M || (function () {
+    try { return new URLSearchParams(window.location.search).get('mode') === '20m'; } catch (e) { return false; }
+  })());
+  var ROADSHOW = !MODE_20M && !!(window.PRESENTER_ROADSHOW || (function () {
     try { return new URLSearchParams(window.location.search).get('roadshow') === '1'; } catch (e) { return false; }
   })());
-  var SPEAKER_URL = ROADSHOW ? 'data/speaker-beats-roadshow.json' : 'data/speaker-beats-v8.json';
+  var SPEAKER_URL = MODE_20M ? 'data/speaker-beats-20m.json' : ROADSHOW ? 'data/speaker-beats-roadshow.json' : 'data/speaker-beats-v8.json';
   var MANIFEST_URL = ROADSHOW ? 'data/asset-manifest-roadshow.json' : 'data/asset-manifest.json';
-  var AUDIENCE_PAGE = ROADSHOW ? 'index-roadshow.html' : 'index.html';
-  var STORAGE_KEY = ROADSHOW ? 'ai-final-presentation-speaker-notes-roadshow' : 'ai-final-presentation-speaker-notes-v8';
-  var EDITED_URL = ROADSHOW ? 'data/speaker-beats-roadshow-edited.json' : 'data/speaker-beats-v8-edited.json';
+  var AUDIENCE_PAGE = MODE_20M ? 'index-20m.html' : ROADSHOW ? 'index-roadshow.html' : 'index.html';
+  var STORAGE_KEY = MODE_20M ? 'ai-final-presentation-speaker-notes-20m' : ROADSHOW ? 'ai-final-presentation-speaker-notes-roadshow' : 'ai-final-presentation-speaker-notes-v8';
+  var EDITED_URL = MODE_20M ? 'data/speaker-beats-20m-edited.json' : ROADSHOW ? 'data/speaker-beats-roadshow-edited.json' : 'data/speaker-beats-v8-edited.json';
   var ACTION_KEY = 'ai-final-presentation-audience-action';
-  var NAV_KEY = ROADSHOW ? 'ai-final-presentation-nav-state-roadshow' : 'ai-final-presentation-nav-state';
+  var NAV_KEY = MODE_20M ? 'ai-final-presentation-nav-state-20m' : ROADSHOW ? 'ai-final-presentation-nav-state-roadshow' : 'ai-final-presentation-nav-state';
   var SERVER_POLL_MS = 30000;
-  var BEATS_PER_PAGE = ROADSHOW ? [2, 5, 4, 5, 2, 2, 3] : [2, 5, 4, 5, 2, 3];
-  var ASSET_V = ROADSHOW ? 'roadshow2' : 'syncfix5';
-  var TARGET_SEC = ROADSHOW ? 1200 : 600;
+  var BEATS_PER_PAGE = MODE_20M ? [2, 2, 5, 4, 5, 2, 3, 4, 1] : ROADSHOW ? [2, 5, 4, 5, 2, 2, 3] : [2, 5, 4, 5, 2, 3];
+  var ASSET_V = MODE_20M ? '20m-evo4' : ROADSHOW ? 'roadshow2' : 'syncfix5';
+  var EXPORT_FILENAME = MODE_20M ? 'speaker-beats-20m-edited.json' : ROADSHOW ? 'speaker-beats-roadshow-edited.json' : 'speaker-beats-v8-edited.json';
+  var EXPORT_HINT = MODE_20M ? 'data/speaker-beats-20m-edited.json' : ROADSHOW ? 'data/speaker-beats-roadshow-edited.json' : 'data/speaker-beats-v8-edited.json';
+  var TARGET_SEC = MODE_20M || ROADSHOW ? 1200 : 600;
 
   var state = {
     chapter: 0,
@@ -141,6 +146,7 @@
     var url = AUDIENCE_PAGE + '?v=' + ASSET_V;
     if (window.PRESENTER_LED_PREVIEW) url += '&led=1';
     if (ROADSHOW) url += '&roadshow=1';
+    if (MODE_20M) url += '&mode=20m';
     url += '&ch=' + state.chapter + '&beat=' + state.beat;
     url += '&st=' + state.startTime + '&pst=' + state.pageStartTime;
     url += '&at=' + Date.now();
@@ -210,6 +216,7 @@
     var url = AUDIENCE_PAGE + '?preview=1&ch=' + ch + '&beat=' + beat + '&v=' + ASSET_V;
     if (window.PRESENTER_LED_PREVIEW) url += '&led=1';
     if (ROADSHOW) url += '&roadshow=1';
+    if (MODE_20M) url += '&mode=20m';
     return url;
   }
 
@@ -291,7 +298,7 @@
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(notes));
       var msg = statusText || '已保存到本机；各设备将自动拉取线上最新稿（若已发布）。';
-      if (!skipServerHint) msg += ' 导出后可放入 data/speaker-beats-v8-edited.json 推送全站。';
+      if (!skipServerHint) msg += ' 导出后可放入 ' + EXPORT_HINT + ' 推送全站。';
       setStatus(msg, 'is-saved');
     } catch (err) {
       setStatus('保存失败：浏览器本地存储不可用，请先导出备份。');
@@ -542,12 +549,12 @@
     var url = URL.createObjectURL(blob);
     var a = document.createElement('a');
     a.href = url;
-    a.download = 'speaker-beats-v8-edited.json';
+    a.download = EXPORT_FILENAME;
     document.body.appendChild(a);
     a.click();
     a.remove();
     URL.revokeObjectURL(url);
-    setStatus('已导出 speaker-beats-v8-edited.json；放入 data/ 并推送后，各设备将自动同步。', 'is-saved');
+    setStatus('已导出 ' + EXPORT_FILENAME + '；放入 data/ 并推送后，各设备将自动同步。', 'is-saved');
   }
 
   function bindKeys() {
@@ -573,7 +580,7 @@
           retreatLocal();
           break;
         default:
-          if (e.key >= '1' && e.key <= (ROADSHOW ? '7' : '6')) {
+          if (e.key >= '1' && e.key <= (MODE_20M ? '9' : ROADSHOW ? '7' : '6')) {
             e.preventDefault();
             goLocal(+e.key - 1, 0);
           }
@@ -685,10 +692,10 @@
       var src = notesSavedAt(serverEdited) >= notesSavedAt(localSaved) && notesSavedAt(serverEdited) > 0
         ? '线上稿'
         : (notesSavedAt(localSaved) > 0 ? '本机稿' : '默认稿');
-      setStatus('逐字稿已加载（' + src + '）。' + (ROADSHOW ? ' 路演脱敏版 · 目标 20 分钟。' : '') + '编辑后自动保存；导出可发布全站。');
+      setStatus('逐字稿已加载（' + src + '）。' + (MODE_20M ? ' 20分钟三板块版 · 目标 20:00。' : ROADSHOW ? ' 路演脱敏版 · 目标 20 分钟。' : '') + '编辑后自动保存；导出可发布全站。');
     })
     .catch(function () {
-      setStatus('逐字稿加载失败，请检查 data/speaker-beats-v8.json');
+      setStatus('逐字稿加载失败，请检查 ' + SPEAKER_URL);
       ensureIframes();
     });
 

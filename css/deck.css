@@ -709,6 +709,7 @@ body.preview-mode .deck-main { top: 0; bottom: 0; }
 }
 .lightbox.open { display: flex; }
 .lightbox img { max-width: 90vw; max-height: 80vh; object-fit: contain; border: 1px solid var(--surface-line); transition: opacity 0.25s ease; }
+.lightbox img:not([src]), .lightbox img[src=""] { display: none; }
 .lightbox img.is-loading { opacity: 0.15; }
 .lb-spinner {
   position: absolute;
