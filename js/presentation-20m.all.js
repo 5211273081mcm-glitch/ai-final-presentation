@@ -1414,6 +1414,18 @@ window.__PRESENTATION_DATA__ = {"config":{"projectTitle":"用AI重构舆情工�
         if (e.key === 'ArrowLeft') { e.preventDefault(); moveLightbox(-1); return; }
         if (e.key === 'ArrowRight') { e.preventDefault(); moveLightbox(1); return; }
       }
+      if (APP.remoteFollow) {
+        if (e.key === 'f' || e.key === 'F') {
+          e.preventDefault();
+          if (document.fullscreenElement) document.exitFullscreen();
+          else document.documentElement.requestFullscreen();
+        }
+        if (e.key === 'l' || e.key === 'L') {
+          e.preventDefault();
+          toggleProjectionMode();
+        }
+        return;
+      }
       switch (e.key) {
         case 'ArrowRight':
         case 'PageDown':
@@ -1540,6 +1552,8 @@ window.__PRESENTATION_DATA__ = {"config":{"projectTitle":"用AI重构舆情工�
   function initPresenterMode() {
     var q = new URLSearchParams(window.location.search);
     APP.isPreview = q.get('preview') === '1';
+    APP.remoteRoom = q.get('room') ? String(q.get('room')).trim().toUpperCase() : '';
+    APP.remoteFollow = !!APP.remoteRoom;
     try { presenterChannel = new BroadcastChannel(PRESENTER_CH); } catch (err) { presenterChannel = null; }
     if (APP.isPreview) {
       document.body.classList.add('preview-mode');
@@ -1548,6 +1562,17 @@ window.__PRESENTATION_DATA__ = {"config":{"projectTitle":"用AI重构舆情工�
       APP.busy = false;
       APP.lastChapter = -1;
       return;
+    }
+    if (APP.remoteFollow) {
+      document.body.classList.add('remote-follow');
+      if (q.get('ch') != null) {
+        APP.chapter = Math.max(0, Math.min(PAGES.length - 1, +(q.get('ch') || 0)));
+      }
+      if (q.get('beat') != null) {
+        APP.beat = Math.max(0, +(q.get('beat') || 0));
+      }
+      if (q.get('st')) APP.startTime = +q.get('st');
+      if (q.get('pst')) APP.pageStartTime = +q.get('pst');
     }
   }
 
@@ -1560,6 +1585,7 @@ window.__PRESENTATION_DATA__ = {"config":{"projectTitle":"用AI重构舆情工�
     var presenterPage = is20MinMode()
       ? 'presenter-20m.html'
       : (isRoadshowMode() ? 'presenter-roadshow.html' : 'presenter.html');
+    if (APP.remoteRoom) presenterPage += '?room=' + encodeURIComponent(APP.remoteRoom);
     presenterWin = window.open(presenterPage, 'ai-final-presenter', 'width=1280,height=800');
     setTimeout(broadcastPresenterState, 600);
   }
@@ -1579,42 +1605,107 @@ window.__PRESENTATION_DATA__ = {"config":{"projectTitle":"用AI重构舆情工�
     });
   }
 
+  function applyPresenterCommand(msg) {
+    if (!msg) return;
+    switch (msg.type) {
+      case 'advance': advance(); break;
+      case 'retreat': retreat(); break;
+      case 'go':
+        if (msg.startTime) APP.startTime = msg.startTime;
+        if (msg.pageStartTime) APP.pageStartTime = msg.pageStartTime;
+        goChapter(msg.chapter || 0, msg.beat || 0);
+        break;
+      case 'open-evidence':
+        if (msg.ids && msg.ids.length) openLightbox(msg.ids, msg.idx || 0);
+        break;
+      case 'close-evidence':
+        APP.lbOpen = false;
+        if ($('lightbox')) $('lightbox').classList.remove('open');
+        break;
+      case 'move-evidence':
+        moveLightbox(msg.dir || 1);
+        break;
+      case 'reset-timer':
+        APP.startTime = Date.now();
+        APP.pageStartTime = Date.now();
+        updateDeckClock();
+        break;
+    }
+  }
+
   function bindPresenterChannel() {
-    if (!presenterChannel) return;
+    if (!presenterChannel && !APP.remoteFollow) return;
     APP.pageStartTime = APP.startTime;
     APP._lastBroadcastCh = APP.chapter;
     bindPresenterStorageActions();
-    presenterChannel.onmessage = function (ev) {
-      var msg = ev.data;
-      if (!msg) return;
-      switch (msg.type) {
-        case 'advance': advance(); break;
-        case 'retreat': retreat(); break;
-        case 'go':
-          goChapter(msg.chapter || 0, msg.beat || 0);
-          break;
-        case 'open-evidence':
-          if (msg.ids && msg.ids.length) openLightbox(msg.ids, msg.idx || 0);
-          break;
-        case 'close-evidence':
+    if (presenterChannel) {
+      presenterChannel.onmessage = function (ev) {
+        var msg = ev.data;
+        if (!msg) return;
+        switch (msg.type) {
+          case 'request-sync':
+          case 'request-state':
+            broadcastPresenterState();
+            break;
+          default:
+            applyPresenterCommand(msg);
+        }
+      };
+    }
+    bindRemoteSync();
+  }
+
+  function bindRemoteSync() {
+    if (!APP.remoteFollow || !window.RemoteSync) return;
+    var lastNavAt = 0;
+    var lastActionAt = 0;
+    RemoteSync.connect({
+      room: APP.remoteRoom,
+      role: 'audience',
+      onNav: function (msg) {
+        if (!msg || !msg.at || msg.at <= lastNavAt) return;
+        lastNavAt = msg.at;
+        applyPresenterCommand(msg);
+        updateRemoteFollowBadge('已同步');
+      },
+      onAction: function (msg) {
+        if (!msg || !msg.action || !msg.at || msg.at <= lastActionAt) return;
+        lastActionAt = msg.at;
+        if (msg.action === 'close-evidence') {
           APP.lbOpen = false;
           if ($('lightbox')) $('lightbox').classList.remove('open');
-          break;
-        case 'move-evidence':
-          moveLightbox(msg.dir || 1);
-          break;
-        case 'request-sync':
-        case 'request-state':
-          broadcastPresenterState();
-          break;
-        case 'reset-timer':
-          APP.startTime = Date.now();
-          APP.pageStartTime = Date.now();
-          updateDeckClock();
-          broadcastPresenterState();
-          break;
+          return;
+        }
+        if (msg.action === 'move-evidence') {
+          moveLightbox(msg.payload && msg.payload.dir ? msg.payload.dir : 1);
+          return;
+        }
+        if (msg.action === 'open-evidence' && msg.payload && msg.payload.ids && msg.payload.ids.length) {
+          openLightbox(msg.payload.ids, msg.payload.idx || 0);
+        }
+      },
+      onConnect: function () {
+        mountRemoteFollowBadge('已连接 · 等待讲者…');
+      },
+      onError: function (msg) {
+        updateRemoteFollowBadge(msg || '连接中断…');
       }
-    };
+    });
+  }
+
+  function mountRemoteFollowBadge(statusText) {
+    var badge = document.getElementById('remote-follow-badge');
+    if (!badge) {
+      badge = document.createElement('div');
+      badge.id = 'remote-follow-badge';
+      badge.className = 'remote-follow-badge';
+      document.body.appendChild(badge);
+    }
+    badge.textContent = (statusText || '跟随讲者') + ' · 房间 ' + APP.remoteRoom;
+  }
+
+  function updateRemoteFollowBadge(statusText) {
+    mountRemoteFollowBadge(statusText);
   }
 
   function bindPresenterStorageActions() {

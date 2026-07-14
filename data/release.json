@@ -1,18 +1,18 @@
 {
-  "versionId": "20m-final-20260714-evo4",
-  "label": "20分钟三板块 · 沙漏趋势 + AI心得4幕 + 飞书多维表",
+  "versionId": "20m-final-20260714-evo6",
+  "label": "20分钟三板块 · 跨设备投屏同步 (ntfy)",
   "branch": "main",
   "commit": "ea9bd0750928a6d72b3d1fcd664243e88ffb91e6",
   "commitShort": "ea9bd07",
-  "gitTag": "20m-final-20260714-evo4",
-  "builtAt": "2026-07-14T14:33:00+08:00",
+  "gitTag": "20m-final-20260714-evo6",
+  "builtAt": "2026-07-14T15:40:00+08:00",
   "repo": "5211273081mcm-glitch/ai-final-presentation",
   "pagesBase": "https://5211273081mcm-glitch.github.io/ai-final-presentation",
-  "cacheVersion": "20m-evo4",
+  "cacheVersion": "20m-evo6",
   "entrypoints": {
     "20m": {
-      "projection": "index-20m.html?led=1&v=20m-evo4",
-      "presenter": "presenter-20m.html?led=1&v=20m-evo4",
+      "projection": "index-20m.html?led=1&v=20m-evo6",
+      "presenter": "presenter-20m.html?led=1&v=20m-evo6",
       "durationSec": 1200,
       "beats": 28
     },

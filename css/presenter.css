@@ -256,6 +256,55 @@ html, body {
 .pv-script-status.is-dirty { color: #ffb45e; }
 .pv-script-status.is-saved { color: #7fd8b2; }
 
+.pv-remote-sync {
+  margin-top: 14px;
+  padding: 10px 12px;
+  border: 1px solid rgba(72, 215, 255, 0.22);
+  border-radius: 6px;
+  background: rgba(72, 215, 255, 0.06);
+}
+.pv-remote-title {
+  margin: 0 0 6px;
+  font-size: 12px;
+  color: rgba(240, 240, 250, 0.72);
+}
+.pv-remote-title b {
+  color: #48d7ff;
+  font-size: 14px;
+  letter-spacing: 0.12em;
+}
+.pv-remote-status {
+  margin: 0 0 6px;
+  font-size: 11px;
+  color: rgba(127, 216, 178, 0.9);
+}
+.pv-remote-hint {
+  margin: 0 0 8px;
+  font-size: 10px;
+  line-height: 1.45;
+  color: rgba(240, 240, 250, 0.42);
+}
+.pv-remote-hint code {
+  color: #48d7ff;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10px;
+}
+.pv-remote-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.pv-remote-actions button {
+  padding: 4px 10px;
+  border: 1px solid rgba(72, 215, 255, 0.35);
+  background: rgba(72, 215, 255, 0.08);
+  color: #48d7ff;
+  font-size: 11px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.pv-remote-actions button:hover { background: rgba(72, 215, 255, 0.16); }
+
 /* 投屏预览模式：隐藏讲者无关 chrome */
 body.preview-mode .deck-header,
 body.preview-mode .progress-bar,

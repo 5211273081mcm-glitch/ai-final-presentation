@@ -22,7 +22,7 @@
   var NAV_KEY = MODE_20M ? 'ai-final-presentation-nav-state-20m' : ROADSHOW ? 'ai-final-presentation-nav-state-roadshow' : 'ai-final-presentation-nav-state';
   var SERVER_POLL_MS = 30000;
   var BEATS_PER_PAGE = MODE_20M ? [2, 2, 5, 4, 5, 2, 3, 4, 1] : ROADSHOW ? [2, 5, 4, 5, 2, 2, 3] : [2, 5, 4, 5, 2, 3];
-  var ASSET_V = MODE_20M ? '20m-evo4' : ROADSHOW ? 'roadshow2' : 'syncfix5';
+  var ASSET_V = MODE_20M ? '20m-evo6' : ROADSHOW ? 'roadshow2' : 'syncfix5';
   var EXPORT_FILENAME = MODE_20M ? 'speaker-beats-20m-edited.json' : ROADSHOW ? 'speaker-beats-roadshow-edited.json' : 'speaker-beats-v8-edited.json';
   var EXPORT_HINT = MODE_20M ? 'data/speaker-beats-20m-edited.json' : ROADSHOW ? 'data/speaker-beats-roadshow-edited.json' : 'data/speaker-beats-v8-edited.json';
   var TARGET_SEC = MODE_20M || ROADSHOW ? 1200 : 600;
@@ -140,6 +140,7 @@
     persistNav(payload);
     send(payload);
     pushNavToAudienceWindow(payload);
+    if (window.RemoteSync) RemoteSync.publishNav(payload);
   }
 
   function audienceUrl() {
@@ -150,6 +151,7 @@
     url += '&ch=' + state.chapter + '&beat=' + state.beat;
     url += '&st=' + state.startTime + '&pst=' + state.pageStartTime;
     url += '&at=' + Date.now();
+    if (window.RemoteSync) url = RemoteSync.appendRoom(url);
     return url;
   }
 
@@ -482,14 +484,17 @@
       controlAudience('close-evidence');
       send({ type: 'close-evidence' });
       broadcastAudienceAction('close-evidence');
+      if (window.RemoteSync) RemoteSync.publishAction('close-evidence');
       return;
     }
     if (action === 'move-evidence') {
       send({ type: 'move-evidence', dir: payload.dir || 1 });
+      if (window.RemoteSync) RemoteSync.publishAction('move-evidence', { dir: payload.dir || 1 });
       return;
     }
     if (action === 'open-evidence') {
       send({ type: 'open-evidence', ids: payload.ids || [], idx: payload.idx || 0 });
+      if (window.RemoteSync) RemoteSync.publishAction('open-evidence', payload);
     }
   }
 
@@ -717,6 +722,84 @@
       ensureIframes();
     });
 
+  function initRemoteSync() {
+    if (!window.RemoteSync) return;
+    var room = RemoteSync.ensurePresenterRoom();
+    RemoteSync.connect({
+      room: room,
+      role: 'presenter',
+      onConnect: function () {
+        var mode = RemoteSync.getDeckMode ? RemoteSync.getDeckMode() : '20m';
+        updateRemoteSyncUI('已就绪 · 房间 ' + room + ' · ' + mode);
+        pushNav();
+      },
+      onError: function (msg) {
+        updateRemoteSyncUI(msg || '同步异常');
+      }
+    });
+    mountRemoteSyncUI(room);
+  }
+
+  function mountRemoteSyncUI(room) {
+    if (document.getElementById('pv-remote-sync')) return;
+    var timerPanel = document.querySelector('.pv-timer-body');
+    if (!timerPanel) return;
+    var box = document.createElement('div');
+    box.id = 'pv-remote-sync';
+    box.className = 'pv-remote-sync';
+    box.innerHTML =
+      '<p class="pv-remote-title">跨设备投屏 · 房间 <b id="pv-room-code">' + room + '</b></p>' +
+      '<p class="pv-remote-status" id="pv-remote-status">初始化…</p>' +
+      '<p class="pv-remote-hint">把「投屏链接」发给其他电脑打开；对方链接须含 <code>&amp;room=' + room + '</code></p>' +
+      '<div class="pv-remote-actions">' +
+      '<button type="button" id="pv-copy-audience">复制投屏链接</button>' +
+      '<button type="button" id="pv-copy-room">复制房间号</button>' +
+      '</div>';
+    timerPanel.appendChild(box);
+    document.getElementById('pv-copy-audience').onclick = function () {
+      var url = new URL(audienceUrl(), window.location.href).href;
+      copyText(url, '已复制投屏链接（含 room=' + room + '）');
+    };
+    document.getElementById('pv-copy-room').onclick = function () {
+      var base = new URL(AUDIENCE_PAGE + '?v=' + ASSET_V + (window.PRESENTER_LED_PREVIEW ? '&led=1' : '') + '&mode=20m&room=' + room, window.location.href).href;
+      copyText(base, '已复制带房间号的投屏链接');
+    };
+  }
+
+  function updateRemoteSyncUI(text) {
+    var el = document.getElementById('pv-remote-status');
+    if (el) el.textContent = text;
+  }
+
+  function copyText(text, okMsg) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () {
+        setStatus(okMsg, 'is-saved');
+      }).catch(function () {
+        fallbackCopy(text, okMsg);
+      });
+      return;
+    }
+    fallbackCopy(text, okMsg);
+  }
+
+  function fallbackCopy(text, okMsg) {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.left = '-9999px';
+    document.body.appendChild(ta);
+    ta.select();
+    try {
+      document.execCommand('copy');
+      setStatus(okMsg, 'is-saved');
+    } catch (err) {
+      setStatus('复制失败，请手动复制链接。');
+    }
+    ta.remove();
+  }
+
+  initRemoteSync();
   bindKeys();
   setInteractMode(false);
   frameWrap.addEventListener('mouseenter', function () {

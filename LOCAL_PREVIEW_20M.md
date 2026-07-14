@@ -22,20 +22,40 @@ python3 -m http.server 8777
 
 ### 投屏（建议加 `?led=1` 模拟 LED 字号）
 ```
-https://5211273081mcm-glitch.github.io/ai-final-presentation/index-20m.html?led=1&v=20m-evo4
+https://5211273081mcm-glitch.github.io/ai-final-presentation/index-20m.html?led=1&v=20m-evo6
 ```
 
 ### 讲者台（可编辑提词稿）
 ```
-https://5211273081mcm-glitch.github.io/ai-final-presentation/presenter-20m.html?led=1&v=20m-evo4
+https://5211273081mcm-glitch.github.io/ai-final-presentation/presenter-20m.html?led=1&v=20m-evo6
 ```
 
 投屏页按 **S** 也可打开讲者台（20m 模式自动打开 `presenter-20m.html`）。
 
+## 跨设备投屏同步（讲者遥控多台电脑）
+
+**之前不生效的常见原因：**
+1. 线上还是旧版（没有 `remote-sync.js`）→ 需 push 后等 GitHub Pages 更新
+2. 另一台电脑打开的投屏链接 **没有 `&room=房间号`** → 只会本机同浏览器同步
+3. 网络无法访问 `ntfy.sh` → 讲者台会提示「发布失败」
+
+**正确步骤：**
+
+1. **在你电脑上**打开讲者台（会自动生成房间号，如 `K7M2NP`）
+2. 点击 **「复制投屏链接」**（链接已含 `room=` 和 `mode=20m`）
+3. 把完整链接发给另一台电脑打开，例如：
+   ```
+   https://5211273081mcm-glitch.github.io/ai-final-presentation/index-20m.html?led=1&v=20m-evo6&mode=20m&room=K7M2NP
+   ```
+4. 投屏页左下角应显示 **「已连接 · 等待讲者…」** 或 **「已同步」**
+5. 你在讲者台翻页，其他电脑实时跟随
+
+> 技术：通过 ntfy.sh (HTTP/SSE) 同步，不依赖同浏览器。同机「打开投屏窗」仍走 BroadcastChannel，与跨设备无关。
+
 ### 本地预览（可选）
 ```
-http://127.0.0.1:8777/index-20m.html?led=1&v=20m-evo4
-http://127.0.0.1:8777/presenter-20m.html?led=1&v=20m-evo4
+http://127.0.0.1:8777/presenter-20m.html?led=1&v=20m-evo6
+http://127.0.0.1:8777/index-20m.html?led=1&v=20m-evo6&mode=20m&room=XXXXXX
 ```
 
 ## 提词稿 · 编辑与保存
