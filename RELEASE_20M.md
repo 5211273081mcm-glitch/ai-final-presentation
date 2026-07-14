@@ -16,7 +16,7 @@ https://5211273081mcm-glitch.github.io/ai-final-presentation/presenter-20m.html?
 
 ## 提词稿数据
 - 默认稿：`data/speaker-beats-20m.json`
-- 线上编辑稿（若已发布）：`data/speaker-beats-20m-edited.json`
+- 线上编辑稿（7.14 最终版）：`data/speaker-beats-20m-edited.json`
 
 ## 其他版本（未改动）
 - 10 分钟决赛：`index.html?led=1&v=syncfix5`
